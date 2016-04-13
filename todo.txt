@@ -1,0 +1,68 @@
+Doubility3D_Tools
+Doubility3D_Engine
+Doubility3D_Client
+
+
+如何在导入时直接把shader指定成想要的。
+StreamingAssets 只保存一个zip包作为运行时数据。
+	先在.data中读取，如果没有则在
+	问题变成如何直读zip包。（最差情况，也只在第一次运行时需要一次拷贝）
+	如何产生相应平台
+		纹理。
+			可利用assetBundle打包
+			Texture2D.GetRawTextureData
+			Texture2D.LoadRawTextureData
+		Shader
+			这是唯一要做成assetBundle的部分。	
+
+在U3D和客户端逻辑之间传送消息 以flatbuffer为手段
+	U->N	
+		所有逻辑物体的 Transform
+		动画播放完毕事件
+		非界面操作
+		界面操作
+	N->U
+		装载地图
+		创建指定参数的逻辑物体
+		向GameObject发出指令
+		刷新界面数据
+		
+	服务器<->逻辑客户端<->图形层	
+	
+	传输效率值得担心！
+		
+
+逻辑客户端使用 golang.
+	go 1.5可以编译为桌面程序的动态链接库
+	go mobile 可以编译为 android ios 的库
+		编译ios库需要在 mac 机器上进行。
+		
+0.资源准备
+	角色网格+动作
+	角色特效
+	场景地形+植被、摆设
+	场景网格+动画+特效
+1.美术工具
+	资源输出
+		场景
+			场景物体记录细化
+				因为场景非常大，原方式已经不适用。
+		网格 对材质和shader的引用
+		材质 对纹理的引用
+		纹理
+		动画
+		shader
+		界面
+		音效
+		音乐
+2.图形层
+	资源管理器
+	角色显示
+	场景显示
+	自定义资源包
+	游戏视觉协议 flatbuffer C#
+	2D模拟图形层
+3.逻辑客户端
+	与图形层协议 flatbuffer Go
+	编译golang模块
+	
