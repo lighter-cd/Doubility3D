@@ -1,0 +1,19 @@
+include "basetype.fbs";
+include "skeleton.fbs";
+include "mesh.fbs";
+namespace Doubility3D.Resource.Schema;
+
+table Header {
+  magic:int;
+  version:int;	
+}
+
+union Context {
+	Skeletons,
+	Mesh
+}
+
+table File {
+	header:Header;
+	context:Context;
+}

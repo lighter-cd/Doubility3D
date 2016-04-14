@@ -138,7 +138,7 @@ namespace Doubility3D
 
 				foreach (var pair in dictFiles) {
 					string targetDir = targetFolder + "/" + pair.Key;
-					if(System.IO.Directory.Exists(targetDir)){
+					if(!System.IO.Directory.Exists(targetDir)){
 						System.IO.Directory.CreateDirectory(targetDir);
 					}
 
