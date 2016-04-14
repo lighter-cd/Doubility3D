@@ -1,0 +1,70 @@
+namespace Doubility3D.Resource.Schema;
+
+struct Vec3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct Vec2 {
+  x:float;
+  y:float;
+}
+
+struct Vec4 {
+  x:float;
+  y:float;
+  z:float;
+  w:float;
+}
+
+struct Quat {
+  x:float;
+  y:float;
+  z:float;
+  w:float;
+}
+
+struct Matrix16 {
+  m00:float;
+  m01:float;
+  m02:float;
+  m03:float;
+  m10:float;
+  m11:float;
+  m12:float;
+  m13:float;
+  m20:float;
+  m21:float;
+  m22:float;
+  m23:float;
+  m30:float;
+  m31:float;
+  m32:float;
+  m33:float;
+}
+
+struct Color {
+  r:float;
+  g:float;
+  b:float;
+  a:float;
+}
+
+struct Color32 {
+  r:ubyte;
+  g:ubyte;
+  b:ubyte;
+  a:ubyte;
+}
+
+struct Transform {
+  pos:Vec3;
+  rot:Quat;
+  scl:Vec3;
+}
+
+struct Bound {
+  min:Vec3;
+  max:Vec3;
+}

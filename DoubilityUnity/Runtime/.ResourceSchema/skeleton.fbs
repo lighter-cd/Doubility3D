@@ -1,0 +1,12 @@
+include "basetype.fbs";
+namespace Doubility3D.Resource.Schema;
+
+table Joint {
+	names:string;
+	transform:Transform;
+	parent:int;
+}
+
+table Skeletons {
+  joints:[Joint];
+}

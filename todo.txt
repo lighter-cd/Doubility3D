@@ -13,6 +13,43 @@
 		ok 遍历文件
 		如何输出/还原动画文件
 		如何还原texture的类型
+
+
+	这样做是和shader的算法相关。实际上为了shader算法，是已经改变了normalmap的内容。
+	it seems when you import a normal map to unity, it intenally has the setup of RGB = y normal, A = x normal.
+			
+	loadedTexture = www.texture;
+	normalTexture = new Texture2D(loadedTexture.width,loadedTexture.height,TextureFormat.ARGB32,false);
+	Color theColour = new Color();
+	for (int x=0; x<loadedTexture.width; x++){
+	for (int y=0; y<loadedTexture.height; y++){
+	   theColour.r = loadedTexture.GetPixel(x,y).g;
+	   theColour.g = theColour.r;
+	   theColour.b = theColour.r;
+	   theColour.a = loadedTexture.GetPixel(x,y).r;
+	   normalTexture.SetPixel(x,y, theColour);
+	}
+	}
+	normalTexture.Apply();
+
+	private Texture2D NormalMap(Texture2D source) {
+         Texture2D normalTexture = new Texture2D(source.width, source.height, TextureFormat.ARGB32, true);
+         Color theColour = new Color();
+         for (int x = 0; x < source.width; x++)
+         {
+             for (int y = 0; y < source.height; y++)
+             {
+                 theColour.r = 0;
+                 theColour.g = source.GetPixel(x, y).g;
+                 theColour.b = 0;
+                 theColour.a = source.GetPixel(x, y).r;
+                 normalTexture.SetPixel(x, y, theColour);
+             }
+         }
+         normalTexture.Apply();
+         return normalTexture;
+     }
+		
 	按照模型组配置输出
 	场景输出	
 

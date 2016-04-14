@@ -1,0 +1,16 @@
+include "basetype.fbs";
+namespace Doubility3D.Resource.Schema;
+
+enum ShaderPropertyType : byte { Color = 0, Vector, Float, Range, TexEnv }
+
+table ShaderProperty {
+	names:string;
+	type:ShaderPropertyType = Float;
+	value:[byte];
+}
+
+table Material {
+  name:string;
+  shader:string;
+  properties:[ShaderProperty];
+}

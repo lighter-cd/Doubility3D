@@ -1,0 +1,61 @@
+include "basetype.fbs";
+include "material.fbs";
+namespace Doubility3D.Resource.Schema;
+
+enum MeshTopology : byte {Triangles = 0, Quads = 2, Lines , LineStrip, Points}
+
+table SubMesh{
+	startTriangle:uint;
+	numOfTriangles:uint;
+	meshTopology:MeshTopology = Triangles;
+}
+
+struct BoneWeight{
+	boneIndex0:int;
+	boneIndex1:int;
+	boneIndex2:int;
+	boneIndex3:int;
+	weight0:float;
+	weight1:float;
+	weight2:float;
+	weight3:float;
+}
+
+table BlendShapeFrame{
+	weight:float;
+	deltaVertices:[Vec3];
+	deltaNormals:[Vec3];
+	deltaTangents:[Vec3];
+}
+table BlendShape{
+	name:string;
+	frames:[BlendShapeFrame];
+}
+
+table Mesh{
+	name:string;
+	
+	vertices:[Vec3] (required);
+	uv:[Vec2];
+	uv2:[Vec2];
+	uv3:[Vec2];
+	uv4:[Vec2];
+	normals:[Vec3];
+	tangents:[Vec3];
+	colors:[Color];
+	colors32:[Color32];
+	
+	submeshes:[SubMesh];
+	triangles:[int];
+	
+	joints:[string];
+	bindposes:[Matrix16];
+	boneWeights:[BoneWeight];
+	
+	blendShapes:[BlendShape];
+	
+	bound:Bound;
+	
+	materials:[Material];
+}
+
