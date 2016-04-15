@@ -33,8 +33,6 @@ table BlendShape{
 }
 
 table Mesh{
-	name:string;
-	
 	vertices:[Vec3] (required);
 	uv:[Vec2];
 	uv2:[Vec2];
