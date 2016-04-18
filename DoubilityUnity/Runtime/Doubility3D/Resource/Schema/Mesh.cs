@@ -57,11 +57,8 @@ public sealed class Mesh : Table {
   public int BlendShapesLength { get { int o = __offset(32); return o != 0 ? __vector_len(o) : 0; } }
   public Doubility3D.Resource.Schema.Bound Bound { get { return GetBound(new Doubility3D.Resource.Schema.Bound()); } }
   public Doubility3D.Resource.Schema.Bound GetBound(Doubility3D.Resource.Schema.Bound obj) { int o = __offset(34); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
-  public Doubility3D.Resource.Schema.Material GetMaterials(int j) { return GetMaterials(new Doubility3D.Resource.Schema.Material(), j); }
-  public Doubility3D.Resource.Schema.Material GetMaterials(Doubility3D.Resource.Schema.Material obj, int j) { int o = __offset(36); return o != 0 ? obj.__init(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int MaterialsLength { get { int o = __offset(36); return o != 0 ? __vector_len(o) : 0; } }
 
-  public static void StartMesh(FlatBufferBuilder builder) { builder.StartObject(17); }
+  public static void StartMesh(FlatBufferBuilder builder) { builder.StartObject(16); }
   public static void AddVertices(FlatBufferBuilder builder, VectorOffset verticesOffset) { builder.AddOffset(0, verticesOffset.Value, 0); }
   public static void StartVerticesVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(12, numElems, 4); }
   public static void AddUv(FlatBufferBuilder builder, VectorOffset uvOffset) { builder.AddOffset(1, uvOffset.Value, 0); }
@@ -97,9 +94,6 @@ public sealed class Mesh : Table {
   public static VectorOffset CreateBlendShapesVector(FlatBufferBuilder builder, Offset<BlendShape>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static void StartBlendShapesVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
   public static void AddBound(FlatBufferBuilder builder, Offset<Doubility3D.Resource.Schema.Bound> boundOffset) { builder.AddStruct(15, boundOffset.Value, 0); }
-  public static void AddMaterials(FlatBufferBuilder builder, VectorOffset materialsOffset) { builder.AddOffset(16, materialsOffset.Value, 0); }
-  public static VectorOffset CreateMaterialsVector(FlatBufferBuilder builder, Offset<Doubility3D.Resource.Schema.Material>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
-  public static void StartMaterialsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
   public static Offset<Mesh> EndMesh(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     builder.Required(o, 4);  // vertices

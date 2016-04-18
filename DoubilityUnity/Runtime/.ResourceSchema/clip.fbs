@@ -1,0 +1,29 @@
+include "basetype.fbs";
+namespace Doubility3D.Resource.Schema;
+
+struct KeyFrame {
+  inTangent:float;
+  outTangent:float;
+  tangentMode:int;
+  time:float;
+  value:float;
+}
+
+enum WrapMode : byte {Default = 0, Once = 1, Loop = 2, PingPong = 4, ClampForever = 8}
+
+table AnimationCurve {
+  keyFrames:[KeyFrame];
+  postWrapMode:WrapMode;
+  preWrapMode:WrapMode;
+}
+
+table CurveBinding {
+  propertyName:string;
+  path:string;
+  type:string;
+  curve:AnimationCurve;
+}
+
+table AnimationClip {
+  bindings:[CurveBinding];	
+}

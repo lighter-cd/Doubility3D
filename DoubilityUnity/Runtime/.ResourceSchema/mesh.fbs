@@ -53,7 +53,5 @@ table Mesh{
 	blendShapes:[BlendShape];
 	
 	bound:Bound;
-	
-	materials:[Material];
 }
 
