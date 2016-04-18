@@ -6,7 +6,7 @@ enum ShaderPropertyType : byte { Color = 0, Vector, Float, Range, TexEnv }
 table ShaderProperty {
 	names:string;
 	type:ShaderPropertyType = Float;
-	value:[byte];
+	value:[ubyte];
 }
 
 table Material {

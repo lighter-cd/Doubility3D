@@ -14,7 +14,7 @@ public sealed class ShaderProperty : Table {
   public string Names { get { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; } }
   public ArraySegment<byte>? GetNamesBytes() { return __vector_as_arraysegment(4); }
   public ShaderPropertyType Type { get { int o = __offset(6); return o != 0 ? (ShaderPropertyType)bb.GetSbyte(o + bb_pos) : ShaderPropertyType.Float; } }
-  public sbyte GetValue(int j) { int o = __offset(8); return o != 0 ? bb.GetSbyte(__vector(o) + j * 1) : (sbyte)0; }
+  public byte GetValue(int j) { int o = __offset(8); return o != 0 ? bb.Get(__vector(o) + j * 1) : (byte)0; }
   public int ValueLength { get { int o = __offset(8); return o != 0 ? __vector_len(o) : 0; } }
   public ArraySegment<byte>? GetValueBytes() { return __vector_as_arraysegment(8); }
 
@@ -33,7 +33,7 @@ public sealed class ShaderProperty : Table {
   public static void AddNames(FlatBufferBuilder builder, StringOffset namesOffset) { builder.AddOffset(0, namesOffset.Value, 0); }
   public static void AddType(FlatBufferBuilder builder, ShaderPropertyType type) { builder.AddSbyte(1, (sbyte)type, 2); }
   public static void AddValue(FlatBufferBuilder builder, VectorOffset valueOffset) { builder.AddOffset(2, valueOffset.Value, 0); }
-  public static VectorOffset CreateValueVector(FlatBufferBuilder builder, sbyte[] data) { builder.StartVector(1, data.Length, 1); for (int i = data.Length - 1; i >= 0; i--) builder.AddSbyte(data[i]); return builder.EndVector(); }
+  public static VectorOffset CreateValueVector(FlatBufferBuilder builder, byte[] data) { builder.StartVector(1, data.Length, 1); for (int i = data.Length - 1; i >= 0; i--) builder.AddByte(data[i]); return builder.EndVector(); }
   public static void StartValueVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(1, numElems, 1); }
   public static Offset<ShaderProperty> EndShaderProperty(FlatBufferBuilder builder) {
     int o = builder.EndObject();

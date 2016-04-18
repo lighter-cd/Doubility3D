@@ -20,7 +20,7 @@ namespace Doubility3D
 		static public void Convert (string src, string dstFolder)
 		{
 			if (src.LastIndexOf ('@') < 0) {
-				//ConvertMesh (src, dstFolder);
+				ConvertMesh (src, dstFolder);
 			} else {
 				ConvertAction (src, dstFolder);
 			}

@@ -28,7 +28,7 @@ namespace Doubility3D.Resource.Saver
                 Schema.AnimationCurve.StartKeyFramesVector(builder, kfs.Length);
                 for (int j = 0; j < kfs.Length; j++)
                 {
-                    Offset<Schema.KeyFrame> offset = Schema.KeyFrame.CreateKeyFrame(builder, kfs[i].inTangent, kfs[i].outTangent, kfs[i].tangentMode, kfs[i].time, kfs[i].value);
+                    Offset<Schema.KeyFrame> offset = Schema.KeyFrame.CreateKeyFrame(builder, kfs[j].inTangent, kfs[j].outTangent, kfs[j].tangentMode, kfs[j].time, kfs[j].value);
                     builder.AddOffset(offset.Value);
                 }
                 VectorOffset vecKeyFrames = builder.EndVector();
@@ -37,18 +37,25 @@ namespace Doubility3D.Resource.Saver
                 Schema.AnimationCurve.AddKeyFrames(builder,vecKeyFrames);
                 Schema.AnimationCurve.AddPostWrapMode(builder, (Schema.WrapMode)curve.postWrapMode);
                 Schema.AnimationCurve.AddPostWrapMode(builder, (Schema.WrapMode)curve.preWrapMode);
-                Offset<Schema.AnimationCurve> vecCurve = Schema.AnimationCurve.EndAnimationCurve(builder);
+                Offset<Schema.AnimationCurve> offCurve = Schema.AnimationCurve.EndAnimationCurve(builder);
+
+				StringOffset offPropertyName = builder.CreateString(bindings[i].propertyName);
+				StringOffset offPath = builder.CreateString(bindings[i].path);
+				StringOffset offType = builder.CreateString(bindings[i].type.FullName);
 
                 Schema.CurveBinding.StartCurveBinding(builder);
-                Schema.CurveBinding.AddPropertyName(builder,builder.CreateString(bindings[i].propertyName));
-                Schema.CurveBinding.AddPath(builder, builder.CreateString(bindings[i].propertyName));
-                Schema.CurveBinding.AddType(builder, builder.CreateString(bindings[i].type.FullName));
-                Schema.CurveBinding.AddCurve(builder, vecCurve);
+				Schema.CurveBinding.AddPropertyName(builder,offPropertyName);
+				Schema.CurveBinding.AddPath(builder, offPath);
+				Schema.CurveBinding.AddType(builder, offType);
+				Schema.CurveBinding.AddCurve(builder, offCurve);
                 vecOffsetCurveBindings[i] = Schema.CurveBinding.EndCurveBinding(builder);
             }
 
-            Schema.AnimationClip.StartAnimationClip(builder);
-            Schema.AnimationClip.CreateBindingsVector(builder, vecOffsetCurveBindings);
+			VectorOffset vecCurveBindings = Schema.AnimationClip.CreateBindingsVector(builder, vecOffsetCurveBindings);
+
+
+			Schema.AnimationClip.StartAnimationClip(builder);
+			Schema.AnimationClip.AddBindings(builder,vecCurveBindings);
             Offset<Schema.AnimationClip> offClip = Schema.AnimationClip.EndAnimationClip(builder);
 
             builder.Finish(offClip.Value);
