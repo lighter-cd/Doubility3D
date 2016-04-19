@@ -6,7 +6,7 @@ namespace Doubility3D
 {
 	static public class Test
 	{
-		[MenuItem ("逗逼引擎/搞一哈!")]
+		[MenuItem ("逗逼雷踢/搞一哈!")]
 		static void DoIt()
 		{
 			if(Selection.activeObject is Material)

@@ -52,13 +52,13 @@ namespace FlatBuffers
         {
             _pos = 0;
         }
-
+#if !UNSAFE_BYTEBUFFER
         // Pre-allocated helper arrays for convertion.
         private float[] floathelper = new[] { 0.0f };
         private int[] inthelper = new[] { 0 };
         private double[] doublehelper = new[] { 0.0 };
         private ulong[] ulonghelper = new[] { 0UL };
-
+#endif
         // Helper functions for the unsafe version.
         static public ushort ReverseBytes(ushort input)
         {

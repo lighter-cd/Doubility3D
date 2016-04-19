@@ -41,13 +41,17 @@ namespace Doubility3D.Resource
 
         static public Schema.Context FromBytes(byte[] bytes)
         {
-            ByteBuffer bf = new ByteBuffer(bytes);
+			if (bytes.Length >= numberOfBytes) {
+				ByteBuffer bf = new ByteBuffer (bytes);
 
-            int _magic = bf.GetInt(0);
-            int _version = bf.GetInt(4);
-            Schema.Context _context = (Schema.Context)bf.GetInt(8);
-
-            return _context;
+				int _magic = bf.GetInt (0);
+				int _version = bf.GetInt (4);
+				Schema.Context _context = (Schema.Context)bf.GetInt (8);
+				if(_magic == magic && _version == version){
+					return _context;
+				}
+			}
+			return Schema.Context.Unknown;
         }
     }
 }

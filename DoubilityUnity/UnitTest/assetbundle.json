@@ -1,0 +1,10 @@
+{
+	"buildMap": [
+		{
+			"assetBundleName": "SkeletonTest.bundle",
+			"assetNames": [
+				"Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male.FBX"
+			]
+		}
+	]
+}

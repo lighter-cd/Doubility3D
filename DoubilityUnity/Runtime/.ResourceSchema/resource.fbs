@@ -5,6 +5,7 @@ include "material.fbs";
 namespace Doubility3D.Resource.Schema;
 
 enum Context : int {
+	Unknown = 0,
 	Skeletons = 1,
 	Mesh,
 	Material,
@@ -13,7 +14,7 @@ enum Context : int {
 
 table Header {
   magic:int;
-  context:Context = Skeletons;
+  context:Context = Unknown;
   version:int;
 }
 

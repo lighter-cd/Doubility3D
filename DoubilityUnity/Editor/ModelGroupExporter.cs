@@ -22,7 +22,7 @@ namespace Doubility3D
 		private string[] filterTypeString = { "无", "符合条件", "排除条件" };
 		private int[] filterTypeIndex = { 0, 1, 2 };
 
-		[MenuItem ("逗逼引擎/转换模型组")]
+		[MenuItem ("逗逼雷踢/转换模型组")]
 
 		static void Init ()
 		{
@@ -67,8 +67,8 @@ namespace Doubility3D
 							configData.pathSelect = folder;
 						}
 					} else if (configData.selectType == 2) {
-                        string[] filter = { "原始模型", "fbx", "预置模型", "prefab", "材质文件", "mat", "All files", "*" };
-                        string file = EditorUtility.OpenFilePanelWithFilters("选择文件", configData.assetRoot, filter);
+						string[] filter = { "原始模型", "fbx", "预置模型", "prefab", "材质文件", "mat", "All files", "*" };
+						string file = EditorUtility.OpenFilePanelWithFilters ("选择文件", configData.assetRoot, filter);
 						if (file != string.Empty) {
 							configData.pathSelect = file;
 						}
@@ -104,7 +104,7 @@ namespace Doubility3D
 		public string getPath (string src)
 		{
 			src = src.Replace ("\\", "/");
-			src = src.Replace(configData.assetRoot + "/","");
+			src = src.Replace (configData.assetRoot + "/", "");
 			return src;
 		}
 
@@ -123,7 +123,9 @@ namespace Doubility3D
 			}
 
 			files = Array.ConvertAll<string, string> (files, new Converter<string, string> (getPath));
-            Array.Sort<string>(files, new Comparison<string>((s1, s2) => { return string.Compare(s1, s2); }));
+			Array.Sort<string> (files, new Comparison<string> ((s1, s2) => {
+				return string.Compare (s1, s2);
+			}));
 
 			if (files != null) {
 				// 以目录为单位进行pass
@@ -138,8 +140,8 @@ namespace Doubility3D
 
 				foreach (var pair in dictFiles) {
 					string targetDir = targetFolder + "/" + pair.Key;
-					if(!System.IO.Directory.Exists(targetDir)){
-						System.IO.Directory.CreateDirectory(targetDir);
+					if (!System.IO.Directory.Exists (targetDir)) {
+						System.IO.Directory.CreateDirectory (targetDir);
 					}
 
 					List<string> thisFiles = pair.Value;
@@ -151,7 +153,7 @@ namespace Doubility3D
 						}
 
 						// todo:转换文件 
-						UnityModelConvert.Convert(sourceFolder + "/" + file,targetDir);
+						UnityModelConvert.Convert (sourceFolder + "/" + file, targetDir);
 					}
 				}
 				Debug.Log ("全部转换完毕");
