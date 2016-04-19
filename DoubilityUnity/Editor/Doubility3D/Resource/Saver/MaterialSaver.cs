@@ -14,12 +14,12 @@ namespace Doubility3D.Resource.Saver
     {
 		const int InitBufferSize = 8192;
 
-        public static void Save(UnityEngine.Material material, string dstFolder)
+        public static ByteBuffer Save(UnityEngine.Material material)
         {
 			FlatBufferBuilder builder = new FlatBufferBuilder(InitBufferSize);
 
 			int count = ShaderUtil.GetPropertyCount(material.shader);
-			Offset<ShaderProperty>[] offShaderProperties = new Offset<ShaderProperty>[count];
+			List<Offset<ShaderProperty>> listOffShaderProperties = new List<Offset<ShaderProperty>>();
 
 			for(int i=0;i<count;i++){
 				string name = ShaderUtil.GetPropertyName(material.shader,i);
@@ -58,24 +58,28 @@ namespace Doubility3D.Resource.Saver
 				case ShaderUtil.ShaderPropertyType.TexEnv:
 					{
 						Texture t = material.GetTexture(name);
-						string path = AssetDatabase.GetAssetPath(t.GetInstanceID());
-						bytes = System.Text.Encoding.Default.GetBytes(path);
+                        if (t != null)
+                        {
+                            string path = AssetDatabase.GetAssetPath(t.GetInstanceID());
+                            bytes = System.Text.Encoding.Default.GetBytes(path);
+                        }
 					}
 					break;
 				}
 
-				StringOffset offName = builder.CreateString(name);
-				VectorOffset vecValue = ShaderProperty.CreateValueVector(builder,bytes);
-				offShaderProperties[i] = ShaderProperty.CreateShaderProperty(builder,offName,(Schema.ShaderPropertyType)type,vecValue);
+				if(bytes != null){
+                    StringOffset offName = builder.CreateString(name);
+				    VectorOffset vecValue = ShaderProperty.CreateValueVector(builder,bytes);
+				    listOffShaderProperties.Add(ShaderProperty.CreateShaderProperty(builder,offName,(Schema.ShaderPropertyType)type,vecValue));
+                }
 			}
 			StringOffset offMaterialName = builder.CreateString(material.name);
 			StringOffset offShader = builder.CreateString(material.shader.name);
 			Offset<Schema.Material> offMaterial = Schema.Material.CreateMaterial(
-				builder,offMaterialName,offShader,Schema.Material.CreatePropertiesVector(builder,offShaderProperties));
+                builder, offMaterialName, offShader, Schema.Material.CreatePropertiesVector(builder, listOffShaderProperties.ToArray()));
 
 			builder.Finish(offMaterial.Value);
-
-			FileSaver.Save(builder.DataBuffer,Context.Material,dstFolder + "/" + material.name + ".db3d");
+            return builder.DataBuffer;
         }
     }
 }

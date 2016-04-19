@@ -54,12 +54,10 @@ namespace FlatBuffers
         }
 
         // Pre-allocated helper arrays for convertion.
-#if !UNSAFE_BYTEBUFFER
         private float[] floathelper = new[] { 0.0f };
         private int[] inthelper = new[] { 0 };
         private double[] doublehelper = new[] { 0.0 };
         private ulong[] ulonghelper = new[] { 0UL };
-#endif
 
         // Helper functions for the unsafe version.
         static public ushort ReverseBytes(ushort input)
@@ -131,8 +129,7 @@ namespace FlatBuffers
         private void AssertOffsetAndLength(int offset, int length)
         {
             if (offset < 0 ||
-                offset >= _buffer.Length ||
-                offset + length > _buffer.Length)
+                offset > _buffer.Length - length)
                 throw new ArgumentOutOfRangeException();
         }
 

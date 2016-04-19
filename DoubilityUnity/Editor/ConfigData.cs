@@ -10,7 +10,7 @@ namespace Doubility3D
     {
         public string assetRoot = string.Empty;
         public int selectType = 0;
-        public string bsonSelect = string.Empty;
+        public string pathSelect = string.Empty;
         public int filterType = 0;
         public bool regularExp = false;
         public string filter = string.Empty;

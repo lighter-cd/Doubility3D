@@ -12,7 +12,7 @@ namespace Doubility3D.Resource.Saver
     {
         const int InitBufferSize = 8192;
 
-        static public void Save(GameObject go, string dstFolder)
+        static public ByteBuffer Save(GameObject go)
         {
             // 第一层，寻找自己不带Renderer的节点
             List<UnityEngine.Transform> lstTfs = new List<UnityEngine.Transform>();
@@ -49,7 +49,7 @@ namespace Doubility3D.Resource.Saver
             
             builder.Finish(skeleton.Value);
 
-            FileSaver.Save(builder.DataBuffer, Context.Skeletons, dstFolder + "/skeleton.db3d");
+            return builder.DataBuffer;
         }
 
         static void CollectTransforms(List<UnityEngine.Transform> lstTfs, UnityEngine.Transform parent)

@@ -28,7 +28,7 @@ namespace Doubility3D.Resource.Saver
     {
         const int InitBufferSize = 8192;
 
-        public static void Save(UnityEngine.Mesh mesh, UnityEngine.Transform[] bones, string dstFolder)
+        public static ByteBuffer Save(UnityEngine.Mesh mesh, UnityEngine.Transform[] bones)
         {
             FlatBufferBuilder builder = new FlatBufferBuilder(InitBufferSize);
 
@@ -167,8 +167,7 @@ namespace Doubility3D.Resource.Saver
             Offset<Schema.Mesh> offMesh = Schema.Mesh.EndMesh(builder);
 
             builder.Finish(offMesh.Value);
-
-            FileSaver.Save(builder.DataBuffer, Context.Mesh, dstFolder + "/" + mesh.name + ".db3d");
+            return builder.DataBuffer;
         }
     }
 }

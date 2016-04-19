@@ -26,7 +26,7 @@ namespace Doubility3D
 			}
 
 			EditorUtility.UnloadUnusedAssetsImmediate ();
-
+            UnityEngine.Debug.Log(src);
 		}
 
 		static void ConvertMesh (string src, string dstFolder)
@@ -34,14 +34,25 @@ namespace Doubility3D
 			GameObject go = AssetDatabase.LoadAssetAtPath<GameObject> (src);
 			if (go != null) {
 				// 输出骨架
-                SkeletonSaver.Save(go, dstFolder);
+                ByteBuffer bfSkeleton = SkeletonSaver.Save(go);
+                FileSaver.Save(bfSkeleton, Context.Skeletons, dstFolder + "/skeleton.db3d");
 
 				// 输出网格
 				SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer> ();
 				for (int i = 0; i < smrs.Length; i++) {
-                    MeshSaver.Save(smrs[i].sharedMesh, smrs[i].bones, dstFolder);
+
+                    string nameMesh = System.IO.Path.GetFileNameWithoutExtension(src);
+                    if (smrs.Length > 1)
+                    {
+                        nameMesh = smrs[i].sharedMesh.name + "@" + nameMesh;
+                    }
+                    
+                    ByteBuffer bfMesh = MeshSaver.Save(smrs[i].sharedMesh, smrs[i].bones);
+                    FileSaver.Save(bfMesh, Context.Mesh, dstFolder + "/" + nameMesh + ".db3d");
+
                     for(int j=0;j<smrs[i].sharedMaterials.Length;j++){
-                        MaterialSaver.Save(smrs[i].sharedMaterials[j], dstFolder);
+                        ByteBuffer bfMaterial = MaterialSaver.Save(smrs[i].sharedMaterials[j]);
+                        FileSaver.Save(bfMaterial, Context.Material, dstFolder + "/" + smrs[i].sharedMaterials[j].name + ".db3d");
                     }
 				}
 			} else {

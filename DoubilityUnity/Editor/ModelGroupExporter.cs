@@ -56,21 +56,21 @@ namespace Doubility3D
 			}
 			EditorGUILayout.EndHorizontal ();
 			EditorGUILayout.Separator ();
-
 			configData.selectType = EditorGUILayout.IntPopup ("导出方式", configData.selectType, selectTypeString, selectTypeIndex, textFieldStyles);
 			if (configData.selectType != 0) {
 				EditorGUILayout.BeginHorizontal ();
-				configData.bsonSelect = EditorGUILayout.TextField ("Bson源文件", configData.bsonSelect);
+				configData.pathSelect = EditorGUILayout.TextField ("源文件", configData.pathSelect);
 				if (GUILayout.Button ("...", GUILayout.Width (25))) {
 					if (configData.selectType == 1) {
 						string folder = EditorUtility.OpenFolderPanel ("选择源目录", configData.assetRoot, string.Empty);
 						if (folder != string.Empty) {
-							configData.bsonSelect = folder;
+							configData.pathSelect = folder;
 						}
 					} else if (configData.selectType == 2) {
-						string file = EditorUtility.OpenFilePanel ("选择文件", configData.assetRoot, "bson");
+                        string[] filter = { "原始模型", "fbx", "预置模型", "prefab", "材质文件", "mat", "All files", "*" };
+                        string file = EditorUtility.OpenFilePanelWithFilters("选择文件", configData.assetRoot, filter);
 						if (file != string.Empty) {
-							configData.bsonSelect = file;
+							configData.pathSelect = file;
 						}
 					}
 				}
@@ -87,10 +87,10 @@ namespace Doubility3D
 			EditorGUILayout.Separator ();
 			if (GUILayout.Button ("开始转换")) {
 				if (configData.assetRoot == string.Empty) {
-					EditorUtility.DisplayDialog ("错误", "选择Bson根文件夹", "准备好了告诉我");
+					EditorUtility.DisplayDialog ("错误", "选择根文件夹", "准备好了告诉我");
 					return;
 				}
-				if ((configData.selectType > 0) && (configData.bsonSelect == string.Empty)) {
+				if ((configData.selectType > 0) && (configData.pathSelect == string.Empty)) {
 					EditorUtility.DisplayDialog ("错误", "选择需要导出的文件或者文件夹", "准备好了告诉我");
 					return;
 				}
@@ -115,15 +115,15 @@ namespace Doubility3D
 				Debug.Log (configData.assetRoot + "是文件夹");
 				files = Directory.GetFiles (configData.assetRoot, "*.fbx", SearchOption.AllDirectories);
 			} else if (configData.selectType == 1) {
-				Debug.Log (configData.bsonSelect + "是文件夹");
-				files = Directory.GetFiles (configData.bsonSelect, "*.fbx", SearchOption.AllDirectories);
+				Debug.Log (configData.pathSelect + "是文件夹");
+				files = Directory.GetFiles (configData.pathSelect, "*.fbx", SearchOption.AllDirectories);
 			} else if (configData.selectType == 2) {
-				Debug.Log (configData.bsonSelect + "是文件");
-				files = new string[] { configData.bsonSelect };
+				Debug.Log (configData.pathSelect + "是文件");
+				files = new string[] { configData.pathSelect };
 			}
 
 			files = Array.ConvertAll<string, string> (files, new Converter<string, string> (getPath));
-
+            Array.Sort<string>(files, new Comparison<string>((s1, s2) => { return string.Compare(s1, s2); }));
 
 			if (files != null) {
 				// 以目录为单位进行pass
