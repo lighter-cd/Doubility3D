@@ -48,7 +48,6 @@ namespace Doubility3D.Resource.Saver
             Offset<Schema.Skeletons> skeleton = Skeletons.EndSkeletons(builder);
             
             builder.Finish(skeleton.Value);
-
             return builder.DataBuffer;
         }
 

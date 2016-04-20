@@ -337,7 +337,7 @@ namespace FlatBuffers
 		/// </summary>
 		public VectorOffset EndVector ()
 		{
-			Prep (sizeof(int), 1);
+			Prep (sizeof(int), 0);
 			PutInt (_vectorNumElems);
 			return new VectorOffset (Offset);
 		}

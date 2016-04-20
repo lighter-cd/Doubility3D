@@ -46,16 +46,24 @@ namespace UnitTest.Doubility3D.Resource.Saver
 		[Test]
 		public void JointEqualSource()
 		{
+            List<UnityEngine.Transform> lstTfs = new List<UnityEngine.Transform>();
+            CollectTransforms(lstTfs, go.transform);
+            Dictionary<string, UnityEngine.Transform> dictTfs = new Dictionary<string, UnityEngine.Transform>();
+            for (int i = 0; i < lstTfs.Count; i++)
+            {
+                dictTfs.Add(lstTfs[i].name, lstTfs[i]);
+            }
+
 			for(int i=0;i<skeletons.JointsLength;i++){
 				Schema.Joint j = skeletons.GetJoints(i);
 
-				UnityEngine.Transform tf = go.transform.Find(j.Names);
-				Assert.IsNotNull(tf);
+                Assert.IsTrue(dictTfs.ContainsKey(j.Names));
+                UnityEngine.Transform tf = dictTfs[j.Names];
 
-				Renderer r = tf.gameObject.GetComponent<Renderer>();
-				Assert.IsNull(r);
+                Renderer r = tf.gameObject.GetComponent<Renderer>();
+				Assert.IsTrue(r == null);
 
-				string parentGoName = tf.parent?tf.parent.name:null;
+				string parentGoName = (tf.parent!=go.transform)?tf.parent.name:null;
 				string parentJointName = (j.Parent >= 0)?skeletons.GetJoints(j.Parent).Names:null;
 				Assert.AreEqual(parentGoName,parentJointName);
 
@@ -68,9 +76,9 @@ namespace UnitTest.Doubility3D.Resource.Saver
 				Assert.AreEqual(tf.localRotation.z,j.Transform.Rot.Z);
 				Assert.AreEqual(tf.localRotation.w,j.Transform.Rot.W);
 
-				Assert.AreEqual(tf.localScale.x,j.Transform.Pos.X);
-				Assert.AreEqual(tf.localScale.y,j.Transform.Pos.Y);
-				Assert.AreEqual(tf.localScale.z,j.Transform.Pos.Z);
+				Assert.AreEqual(tf.localScale.x, j.Transform.Scl.X);
+                Assert.AreEqual(tf.localScale.y, j.Transform.Scl.Y);
+                Assert.AreEqual(tf.localScale.z, j.Transform.Scl.Z);
 			}
 		}
 		[Test]
