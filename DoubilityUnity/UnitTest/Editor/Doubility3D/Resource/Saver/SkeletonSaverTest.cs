@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using NUnit.Framework;
 
 using FlatBuffers;
@@ -15,14 +14,15 @@ namespace UnitTest.Doubility3D.Resource.Saver
 	[TestFixture]
 	public class SkeletonSaverTest
 	{
-		AssetBundle ab;
+        const string testData_path = "Assets/Doubility3D/UnitTest/.TestData/";
+
+        AssetBundle ab;
 		GameObject go;
 		Schema.Skeletons skeletons;
 
 		[SetUp]
 		public void Init ()
 		{
-			const string testData_path = "Assets/Doubility3D/UnitTest/.TestData/";
 			string testData_folder = testData_path + PlatformPath.GetPath(Application.platform);
 
 			ab = AssetBundle.LoadFromFile(testData_folder + "/skeletontest.bundle");
