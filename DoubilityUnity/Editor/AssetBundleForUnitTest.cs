@@ -14,22 +14,22 @@ public class AssetBundleForUnitTest : ScriptableObject
 		public AssetBundleBuild[] buildMap;
 	}
 
-	[MenuItem("逗逼雷踢/打包测试数据/Windows(x86)")]
+	[MenuItem("逗逼工具/打包测试数据/Windows(x86)")]
 	static void DoItWindows(){
 		DoIt(BuildTarget.StandaloneWindows);
 	}
-	[MenuItem("逗逼雷踢/打包测试数据/Android")]
+	[MenuItem("逗逼工具/打包测试数据/Android")]
 	static void DoItAndroid(){
 		DoIt(BuildTarget.Android);
 	}
-	[MenuItem("逗逼雷踢/打包测试数据/iOS")]
+	[MenuItem("逗逼工具/打包测试数据/iOS")]
 	static void DoItiOS(){
 		DoIt(BuildTarget.iOS);
 	}
 
 	static void DoIt(BuildTarget target)
     {
-		const string config_path = "Assets/Doubility3D/UnitTest/assetbundle.json";
+		const string config_path = "Assets/Doubility3D/UnitTest/Editor/assetbundle.json";
 		const string output_path = "Assets/Doubility3D/UnitTest/.TestData/";
 
 		if(!System.IO.File.Exists(config_path)){

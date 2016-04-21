@@ -10,13 +10,13 @@ using Doubility3D.Util;
 using System.Collections.Generic;
 using System;
 
+using UnitTest.Doubility3D;
+
 namespace UnitTest.Doubility3D.Resource.Saver
 {
     [TestFixture]
     public class MeshSaverTest
     {
-        const string testData_path = "Assets/Doubility3D/UnitTest/.TestData/";
-
         AssetBundle ab;
         GameObject go;
         
@@ -26,12 +26,9 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [SetUp]
         public void Init()
         {
-            string testData_folder = testData_path + PlatformPath.GetPath(Application.platform);
-
-            ab = AssetBundle.LoadFromFile(testData_folder + "/skeletontest.bundle");
-            UnityEngine.Object obj = ab.LoadAsset("Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male.FBX");
-            Assert.IsInstanceOf<GameObject>(obj);
-            go = obj as GameObject;
+            ab = TestData.LoadBundle("skeletontest.bundle");
+            go = TestData.LoadFirstAsset<GameObject>(ab);
+            Assert.IsNotNull(go);
 
             smr = go.GetComponentInChildren<SkinnedMeshRenderer>();
             ByteBuffer result = MeshSaver.Save(smr.sharedMesh,smr.bones);
@@ -120,11 +117,12 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.IsTrue(mesh.TangentsLength == originMesh.tangents.Length);
             for (int i = 0; i < mesh.TangentsLength; i++)
             {
-                Vec3 v1 = mesh.GetTangents(i);
-                Vector3 v2 = originMesh.tangents[i];
+                Vec4 v1 = mesh.GetTangents(i);
+                Vector4 v2 = originMesh.tangents[i];
                 Assert.AreEqual(v1.X, v2.x);
                 Assert.AreEqual(v1.Y, v2.y);
                 Assert.AreEqual(v1.Z, v2.z);
+                Assert.AreEqual(v1.W, v2.w);
             }
 
             // colors
@@ -184,8 +182,60 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.IsTrue(mesh.SubmeshesLength == originMesh.subMeshCount);
             for (int i = 0; i < mesh.SubmeshesLength; i++)
             {
+                Schema.SubMesh sb = mesh.GetSubmeshes(i);
+                int[] indices = originMesh.GetIndices(i);
+                
+                Assert.AreEqual(sb.MeshTopology, (Schema.MeshTopology)originMesh.GetTopology(i));
+                Assert.AreEqual(sb.NumOfTriangles, indices.Length);
 
+                for (int j = 0; j < sb.NumOfTriangles; j++)
+                {
+                    int t1 = mesh.GetTriangles((int)sb.StartTriangle + j);
+                    Assert.AreEqual(t1,indices[j]);
+                }
             }
         }
+        [Test]
+        public void Joints()
+        {
+            Assert.AreEqual(smr.bones.Length, mesh.JointsLength);
+            for (int i = 0; i < mesh.JointsLength; i++)
+            {
+                Assert.AreEqual(smr.bones[i].name, mesh.GetJoints(i));
+            }
+        }
+        [Test]
+        public void BindPoses()
+        {
+            UnityEngine.Mesh originMesh = smr.sharedMesh;
+            Assert.AreEqual(originMesh.bindposes.Length, mesh.BindposesLength);
+            for (int i = 0; i < mesh.BindposesLength; i++)
+            {
+                Matrix4x4 originMatrix = originMesh.bindposes[i];
+                Matrix16 matrix = mesh.GetBindposes(i);
+
+                Assert.AreEqual(originMatrix.m00, matrix.M00);
+                Assert.AreEqual(originMatrix.m01, matrix.M01);
+                Assert.AreEqual(originMatrix.m02, matrix.M02);
+                Assert.AreEqual(originMatrix.m03, matrix.M03);
+
+                Assert.AreEqual(originMatrix.m10, matrix.M10);
+                Assert.AreEqual(originMatrix.m11, matrix.M11);
+                Assert.AreEqual(originMatrix.m12, matrix.M12);
+                Assert.AreEqual(originMatrix.m13, matrix.M13);
+
+                Assert.AreEqual(originMatrix.m20, matrix.M20);
+                Assert.AreEqual(originMatrix.m21, matrix.M21);
+                Assert.AreEqual(originMatrix.m22, matrix.M22);
+                Assert.AreEqual(originMatrix.m23, matrix.M23);
+
+                Assert.AreEqual(originMatrix.m30, matrix.M30);
+                Assert.AreEqual(originMatrix.m31, matrix.M31);
+                Assert.AreEqual(originMatrix.m32, matrix.M32);
+                Assert.AreEqual(originMatrix.m33, matrix.M33);
+            }
+        }
+
+        // todo 增加多个submesh的测试
     }
 }

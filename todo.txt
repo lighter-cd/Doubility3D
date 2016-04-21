@@ -9,11 +9,13 @@
 	Sprite(2D&UI)
 Shader
 
-unsafe代码在il2cpp模式下
-	unity 在运行时的单元测试
+
+unity 在运行时的单元测试
 	创建单元测试场景
 		专门的单元测试版本。
+unsafe代码在il2cpp模式下
 flatbuffers读取结构数组的效率		
+
 
 ok.?文件的格式
 	ok 文件头的写法、读法
@@ -32,14 +34,15 @@ ok 逗逼引擎规则。
 		更换shader 同上
 	ok 输出网格时，如果原资源中包含多网格，输出后文件名使用 网格名@资源名.db3d 形式
 
-.资源输出的单元测试
+ok.资源输出的单元测试
 	ok.单元测试的资源怎么办？
 		ok 方案 
 			以.开头的资源目录
 			以assetBundle方式工作。
 			打包工具，读取打包列表
-			
 		no unity的打包是有比较的.
+		
+		
 		
 	ok 输出和存盘分开	得益于单元测试，这样更好测试。
 	ok 骨骼输出测试用例
@@ -49,7 +52,7 @@ ok 逗逼引擎规则。
 			输出的骨骼都是不带renderer的。
 			每个被输出的骨骼的父节点都是正确的
 			每个骨骼的局部矩阵都是相应的。
-	网格输出测试用例
+	ok 网格输出测试用例
 		顶点成分
 			每个顶点成分都被输出了
 			每个输出的顶点成分都存在着原成分
@@ -59,15 +62,24 @@ ok 逗逼引擎规则。
 		submeshes:[SubMesh];
 		joints:[string];
 		bindposes:[Matrix16];
-	材质输出测试用例
-	动作输出测试用例
+	ok 材质输出测试用例
+		结果中的属性与源材质都相等。
+		源材质的属性都被输出了。
+			
+	ok 动作输出测试用例
+		
+	ok 递归收集骨骼独立出工具类.
+	ok 单元测试装载assetbundle功能单独出工具类
 	
-	单元测试装载assetbundle功能单独出工具类
-	递归收集骨骼独立出工具类.
 	
-	
-.资源读入的单元测试
+ok.资源读入功能
+	纹理加入 offset 和 scale
 
+.资源读入的单元测试
+	预先写入文件，
+		读入文件作为源数据
+		生成的模型作为比较目标
+.显示测试角色
 .纹理，shader输出
 	纹理打包工具
 	从包中读取原始纹理数据
@@ -75,18 +87,22 @@ ok 逗逼引擎规则。
 .纹理，shader输出的单元测试
 	windows平台
 	android&ios
-	
-
-.地形	
-.组件信息
-	transform
-	renderer
-	collider
-	Camera
-	Light
-	Sound
-	terrain
-	
+.加入粒子资源
+.modelGroup机制
+.虚拟文件系统
+.资源管理和加载机制	
+.角色查看器
+.动态场景
+	.地形	
+	.组件信息
+		transform
+		renderer
+		collider
+		Camera
+		Light
+		Sound
+		terrain
+.界面	
 	
 	
 .?逻辑数据直接客户端模块读取？	

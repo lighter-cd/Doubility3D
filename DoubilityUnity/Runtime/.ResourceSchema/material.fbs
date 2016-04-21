@@ -3,14 +3,31 @@ namespace Doubility3D.Resource.Schema;
 
 enum ShaderPropertyType : byte { Color = 0, Vector, Float, Range, TexEnv }
 
+table ShaderPropertyColor{
+	color:Color (required);
+}
+table ShaderPropertyVector{
+	vector:Vec4 (required);
+}
+table ShaderPropertyFloat{
+	value:float;
+}
+table ShaderPropertyTexture{
+	name:string (required);
+	offset:Vec2 (required);
+	scale:Vec2 (required);
+}
+
+union ShaderPropertyValue {ShaderPropertyColor,ShaderPropertyVector,ShaderPropertyFloat,ShaderPropertyTexture}
+
 table ShaderProperty {
-	names:string;
+	names:string (required);
 	type:ShaderPropertyType = Float;
-	value:[ubyte];
+	value:ShaderPropertyValue (required);
 }
 
 table Material {
-  name:string;
-  shader:string;
+  name:string (required);
+  shader:string (required);
   properties:[ShaderProperty];
 }

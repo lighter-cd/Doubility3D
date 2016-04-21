@@ -24,53 +24,69 @@ namespace Doubility3D.Resource.Saver
 			for(int i=0;i<count;i++){
 				string name = ShaderUtil.GetPropertyName(material.shader,i);
 				ShaderUtil.ShaderPropertyType type = ShaderUtil.GetPropertyType(material.shader,i);
-				byte[] bytes = null;
+				Schema.ShaderPropertyValue valueType = ShaderPropertyValue.NONE;
+                int valueOffset = -1;
 				switch(type){
 				case ShaderUtil.ShaderPropertyType.Color:
 					{
 						UnityEngine.Color c = material.GetColor(name);
-						bytes = new byte[16];
-						ByteBuffer byteBuf = new ByteBuffer(bytes);
-						byteBuf.PutFloat(0,c.a);	
-						byteBuf.PutFloat(4,c.b);
-						byteBuf.PutFloat(8,c.g);
-						byteBuf.PutFloat(12,c.r);	
+                        ShaderPropertyColor.StartShaderPropertyColor(builder);
+                        ShaderPropertyColor.AddColor(builder, Schema.Color.CreateColor(builder, c.a, c.b, c.g, c.r));
+                        Offset<ShaderPropertyColor> offset = ShaderPropertyColor.EndShaderPropertyColor(builder);
+                        valueType = ShaderPropertyValue.ShaderPropertyColor;
+                        valueOffset = offset.Value;
 					}
 					break;
 				case ShaderUtil.ShaderPropertyType.Vector:
 					{
 						Vector4 v = material.GetVector(name);
-						bytes = new byte[16];
-						ByteBuffer byteBuf = new ByteBuffer(bytes);
-						byteBuf.PutFloat(0,v.x);	
-						byteBuf.PutFloat(4,v.y);
-						byteBuf.PutFloat(8,v.z);
-						byteBuf.PutFloat(12,v.w);	
-					}
+                        ShaderPropertyVector.StartShaderPropertyVector(builder);
+                        ShaderPropertyVector.AddVector(builder, Schema.Vec4.CreateVec4(builder, v.x, v.y, v.z, v.w));
+                        Offset<ShaderPropertyVector> offset = ShaderPropertyVector.EndShaderPropertyVector(builder);
+                        valueType = ShaderPropertyValue.ShaderPropertyVector;
+                        valueOffset = offset.Value;
+                    }
 					break;
 				case ShaderUtil.ShaderPropertyType.Range:
 				case ShaderUtil.ShaderPropertyType.Float:
 					{
 						float f = material.GetFloat(name);
-						bytes = System.BitConverter.GetBytes(f);
+                        ShaderPropertyFloat.StartShaderPropertyFloat(builder);
+                        ShaderPropertyFloat.AddValue(builder, f);
+                        Offset<ShaderPropertyFloat> offset = ShaderPropertyFloat.EndShaderPropertyFloat(builder);
+                        valueType = ShaderPropertyValue.ShaderPropertyFloat;
+                        valueOffset = offset.Value;
 					}
 					break;
 				case ShaderUtil.ShaderPropertyType.TexEnv:
 					{
 						Texture t = material.GetTexture(name);
+                        string textureName = "$NULL_TEXTURE";
                         if (t != null)
                         {
-                            string path = AssetDatabase.GetAssetPath(t.GetInstanceID());
-                            bytes = System.Text.Encoding.Default.GetBytes(path);
+                            textureName = t.name;
                         }
+                        Vector2 toffset = material.GetTextureOffset(name);
+                        Vector2 tscale = material.GetTextureScale(name);
+
+                        StringOffset pathOffset = builder.CreateString(textureName);
+                        ShaderPropertyTexture.StartShaderPropertyTexture(builder);
+                        ShaderPropertyTexture.AddName(builder, pathOffset);
+                        ShaderPropertyTexture.AddOffset(builder, Vec2.CreateVec2(builder, toffset.x, toffset.y));
+                        ShaderPropertyTexture.AddScale(builder, Vec2.CreateVec2(builder, tscale.x, tscale.y));
+                        Offset<ShaderPropertyTexture> offset = ShaderPropertyTexture.EndShaderPropertyTexture(builder);
+                        valueType = ShaderPropertyValue.ShaderPropertyTexture;
+                        valueOffset = offset.Value;
 					}
 					break;
 				}
 
-				if(bytes != null){
-                    StringOffset offName = builder.CreateString(name);
-				    VectorOffset vecValue = ShaderProperty.CreateValueVector(builder,bytes);
-				    listOffShaderProperties.Add(ShaderProperty.CreateShaderProperty(builder,offName,(Schema.ShaderPropertyType)type,vecValue));
+                if (valueOffset >= 0)
+                {
+                    listOffShaderProperties.Add(
+                        ShaderProperty.CreateShaderProperty(
+                            builder, builder.CreateString(name), (Schema.ShaderPropertyType)type, valueType, valueOffset
+                            ));
                 }
 			}
 			StringOffset offMaterialName = builder.CreateString(material.name);

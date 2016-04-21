@@ -6,6 +6,8 @@ using FlatBuffers;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 
+using Doubility3D.Util;
+
 namespace Doubility3D.Resource.Saver
 {
     static public class SkeletonSaver
@@ -16,7 +18,7 @@ namespace Doubility3D.Resource.Saver
         {
             // 第一层，寻找自己不带Renderer的节点
             List<UnityEngine.Transform> lstTfs = new List<UnityEngine.Transform>();
-            CollectTransforms(lstTfs, go.transform);
+            CollectTransforms.Do(lstTfs, go.transform);
 
             FlatBufferBuilder builder = new FlatBufferBuilder(InitBufferSize);
 
@@ -49,19 +51,6 @@ namespace Doubility3D.Resource.Saver
             
             builder.Finish(skeleton.Value);
             return builder.DataBuffer;
-        }
-
-        static void CollectTransforms(List<UnityEngine.Transform> lstTfs, UnityEngine.Transform parent)
-        {
-            for (int i = 0; i < parent.childCount; i++)
-            {
-                UnityEngine.Transform tf = parent.transform.GetChild(i);
-                if (tf.gameObject.GetComponent<Renderer>() == null)
-                {
-                    lstTfs.Add(tf);
-                    CollectTransforms(lstTfs, tf);
-                }
-            }
         }
     }
 }

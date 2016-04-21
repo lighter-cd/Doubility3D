@@ -13,9 +13,9 @@ namespace Doubility3D.Resource.Saver
     {
         const int InitBufferSize = 8192;
 
-        public static void Save(UnityEngine.AnimationClip clip, string dstFolder)
+        public static ByteBuffer Save(UnityEngine.AnimationClip clip)
         {
-           EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(clip);
+            EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(clip);
 
             FlatBufferBuilder builder = new FlatBufferBuilder(InitBufferSize);
             Offset<Schema.CurveBinding>[] vecOffsetCurveBindings = new Offset<CurveBinding>[bindings.Length];
@@ -26,17 +26,16 @@ namespace Doubility3D.Resource.Saver
                 Keyframe[] kfs = curve.keys;
 
                 Schema.AnimationCurve.StartKeyFramesVector(builder, kfs.Length);
-                for (int j = 0; j < kfs.Length; j++)
+                for (int j = kfs.Length-1; j >= 0; j--)
                 {
-                    Offset<Schema.KeyFrame> offset = Schema.KeyFrame.CreateKeyFrame(builder, kfs[j].inTangent, kfs[j].outTangent, kfs[j].tangentMode, kfs[j].time, kfs[j].value);
-                    builder.AddOffset(offset.Value);
+                    Schema.KeyFrame.CreateKeyFrame(builder, kfs[j].inTangent, kfs[j].outTangent, kfs[j].tangentMode, kfs[j].time, kfs[j].value);
                 }
                 VectorOffset vecKeyFrames = builder.EndVector();
 
                 Schema.AnimationCurve.StartAnimationCurve(builder);
                 Schema.AnimationCurve.AddKeyFrames(builder,vecKeyFrames);
                 Schema.AnimationCurve.AddPostWrapMode(builder, (Schema.WrapMode)curve.postWrapMode);
-                Schema.AnimationCurve.AddPostWrapMode(builder, (Schema.WrapMode)curve.preWrapMode);
+                Schema.AnimationCurve.AddPreWrapMode(builder, (Schema.WrapMode)curve.preWrapMode);
                 Offset<Schema.AnimationCurve> offCurve = Schema.AnimationCurve.EndAnimationCurve(builder);
 
 				StringOffset offPropertyName = builder.CreateString(bindings[i].propertyName);
@@ -59,7 +58,7 @@ namespace Doubility3D.Resource.Saver
             Offset<Schema.AnimationClip> offClip = Schema.AnimationClip.EndAnimationClip(builder);
 
             builder.Finish(offClip.Value);
-            FileSaver.Save(builder.DataBuffer, Context.AnimationClip, dstFolder + "/" + clip.name + ".db3d");
+            return builder.DataBuffer;
         }
     }
 }

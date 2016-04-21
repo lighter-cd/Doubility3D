@@ -81,7 +81,7 @@ namespace Doubility3D.Resource.Saver
                 new MeshComponent(
 					() => { return (mesh.tangents != null) && (mesh.tangents.Length>0); },    
                     () => { Schema.Mesh.StartTangentsVector(builder, mesh.vertexCount); },
-                    (i) => {Vec3.CreateVec3(builder, mesh.tangents[i].x, mesh.tangents[i].y, mesh.tangents[i].z); },
+                    (i) => {Vec4.CreateVec4(builder, mesh.tangents[i].x, mesh.tangents[i].y, mesh.tangents[i].z, mesh.tangents[i].w); },
                     (vo) =>{Schema.Mesh.AddTangents(builder,vo);}
                     ),
                 // colors
@@ -140,6 +140,19 @@ namespace Doubility3D.Resource.Saver
             {
                 offJoints[i] = builder.CreateString(bones[i].name);
             }
+            // BindPoses
+            Schema.Mesh.StartBindposesVector(builder, mesh.bindposes.Length);
+            for (int i = mesh.bindposes.Length-1; i >=0; i--)
+            {
+                Matrix4x4 m = mesh.bindposes[i];
+                Matrix16.CreateMatrix16(builder,
+                    m.m00, m.m01, m.m02, m.m03,
+                    m.m10, m.m11, m.m12, m.m13,
+                    m.m20, m.m21, m.m22, m.m23,
+                    m.m30, m.m31, m.m32, m.m33
+                    );
+            }
+            VectorOffset vecBindPoses = builder.EndVector();
 
 			// 三角面索引数据  标量数组可以直接添加。
 			VectorOffset vecTrangles = Schema.Mesh.CreateTrianglesVector(builder, mesh.triangles);
@@ -161,6 +174,7 @@ namespace Doubility3D.Resource.Saver
 			Schema.Mesh.AddTriangles(builder,vecTrangles);
 			Schema.Mesh.AddSubmeshes(builder,vecSubmeshes);
 			Schema.Mesh.AddJoints(builder,vecJoints);
+            Schema.Mesh.AddBindposes(builder, vecBindPoses);
 
             // 边界
             Vector3 min = mesh.bounds.min;

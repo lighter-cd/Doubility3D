@@ -39,12 +39,12 @@ table Mesh{
 	uv3:[Vec2];
 	uv4:[Vec2];
 	normals:[Vec3];
-	tangents:[Vec3];
+	tangents:[Vec4];
 	colors:[Color];
 	colors32:[Color32];
 	
 	submeshes:[SubMesh];
-	triangles:[int];
+	triangles:[int] (required);
 	
 	joints:[string];
 	bindposes:[Matrix16];
@@ -52,6 +52,6 @@ table Mesh{
 	
 	blendShapes:[BlendShape];
 	
-	bound:Bound;
+	bound:Bound (required);
 }
 

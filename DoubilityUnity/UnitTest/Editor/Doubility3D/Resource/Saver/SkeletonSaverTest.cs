@@ -9,13 +9,13 @@ using Doubility3D.Util;
 
 using System.Collections.Generic;
 
+using UnitTest.Doubility3D;
+
 namespace UnitTest.Doubility3D.Resource.Saver
 {
 	[TestFixture]
 	public class SkeletonSaverTest
 	{
-        const string testData_path = "Assets/Doubility3D/UnitTest/.TestData/";
-
         AssetBundle ab;
 		GameObject go;
 		Schema.Skeletons skeletons;
@@ -23,12 +23,9 @@ namespace UnitTest.Doubility3D.Resource.Saver
 		[SetUp]
 		public void Init ()
 		{
-			string testData_folder = testData_path + PlatformPath.GetPath(Application.platform);
-
-			ab = AssetBundle.LoadFromFile(testData_folder + "/skeletontest.bundle");
-			UnityEngine.Object obj = ab.LoadAsset("Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male.FBX");
-			Assert.IsInstanceOf<GameObject>(obj);
-			go = obj as GameObject;
+            ab = TestData.LoadBundle("skeletontest.bundle");
+            go = TestData.LoadFirstAsset<GameObject>(ab);
+            Assert.IsNotNull(go);
 
 			ByteBuffer result = SkeletonSaver.Save(go);
 			skeletons = Schema.Skeletons.GetRootAsSkeletons(result);
@@ -47,7 +44,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
 		public void JointEqualSource()
 		{
             List<UnityEngine.Transform> lstTfs = new List<UnityEngine.Transform>();
-            CollectTransforms(lstTfs, go.transform);
+            CollectTransforms.Do(lstTfs, go.transform);
             Dictionary<string, UnityEngine.Transform> dictTfs = new Dictionary<string, UnityEngine.Transform>();
             for (int i = 0; i < lstTfs.Count; i++)
             {
@@ -101,7 +98,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
 		[Test]
 		public void AllSourceBeExported(){
 			List<UnityEngine.Transform> lstTfs = new List<UnityEngine.Transform>();
-			CollectTransforms(lstTfs, go.transform);
+			CollectTransforms.Do(lstTfs, go.transform);
 
 			HashSet<string> hashJoints = new HashSet<string>();
 			for(int i=0;i<skeletons.JointsLength;i++){
@@ -111,19 +108,6 @@ namespace UnitTest.Doubility3D.Resource.Saver
 
 			for(int i=0;i<lstTfs.Count;i++){
 				Assert.IsTrue(hashJoints.Contains(lstTfs[i].name)); 
-			}
-		}
-
-		void CollectTransforms(List<UnityEngine.Transform> lstTfs, UnityEngine.Transform parent)
-		{
-			for (int i = 0; i < parent.childCount; i++)
-			{
-				UnityEngine.Transform tf = parent.transform.GetChild(i);
-				if (tf.gameObject.GetComponent<Renderer>() == null)
-				{
-					lstTfs.Add(tf);
-					CollectTransforms(lstTfs, tf);
-				}
 			}
 		}
 	}

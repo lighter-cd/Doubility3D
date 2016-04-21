@@ -29,8 +29,8 @@ public sealed class Mesh : Table {
   public Doubility3D.Resource.Schema.Vec3 GetNormals(int j) { return GetNormals(new Doubility3D.Resource.Schema.Vec3(), j); }
   public Doubility3D.Resource.Schema.Vec3 GetNormals(Doubility3D.Resource.Schema.Vec3 obj, int j) { int o = __offset(14); return o != 0 ? obj.__init(__vector(o) + j * 12, bb) : null; }
   public int NormalsLength { get { int o = __offset(14); return o != 0 ? __vector_len(o) : 0; } }
-  public Doubility3D.Resource.Schema.Vec3 GetTangents(int j) { return GetTangents(new Doubility3D.Resource.Schema.Vec3(), j); }
-  public Doubility3D.Resource.Schema.Vec3 GetTangents(Doubility3D.Resource.Schema.Vec3 obj, int j) { int o = __offset(16); return o != 0 ? obj.__init(__vector(o) + j * 12, bb) : null; }
+  public Doubility3D.Resource.Schema.Vec4 GetTangents(int j) { return GetTangents(new Doubility3D.Resource.Schema.Vec4(), j); }
+  public Doubility3D.Resource.Schema.Vec4 GetTangents(Doubility3D.Resource.Schema.Vec4 obj, int j) { int o = __offset(16); return o != 0 ? obj.__init(__vector(o) + j * 16, bb) : null; }
   public int TangentsLength { get { int o = __offset(16); return o != 0 ? __vector_len(o) : 0; } }
   public Doubility3D.Resource.Schema.Color GetColors(int j) { return GetColors(new Doubility3D.Resource.Schema.Color(), j); }
   public Doubility3D.Resource.Schema.Color GetColors(Doubility3D.Resource.Schema.Color obj, int j) { int o = __offset(18); return o != 0 ? obj.__init(__vector(o) + j * 16, bb) : null; }
@@ -72,7 +72,7 @@ public sealed class Mesh : Table {
   public static void AddNormals(FlatBufferBuilder builder, VectorOffset normalsOffset) { builder.AddOffset(5, normalsOffset.Value, 0); }
   public static void StartNormalsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(12, numElems, 4); }
   public static void AddTangents(FlatBufferBuilder builder, VectorOffset tangentsOffset) { builder.AddOffset(6, tangentsOffset.Value, 0); }
-  public static void StartTangentsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(12, numElems, 4); }
+  public static void StartTangentsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(16, numElems, 4); }
   public static void AddColors(FlatBufferBuilder builder, VectorOffset colorsOffset) { builder.AddOffset(7, colorsOffset.Value, 0); }
   public static void StartColorsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(16, numElems, 4); }
   public static void AddColors32(FlatBufferBuilder builder, VectorOffset colors32Offset) { builder.AddOffset(8, colors32Offset.Value, 0); }
@@ -97,6 +97,8 @@ public sealed class Mesh : Table {
   public static Offset<Mesh> EndMesh(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     builder.Required(o, 4);  // vertices
+    builder.Required(o, 24);  // triangles
+    builder.Required(o, 34);  // bound
     return new Offset<Mesh>(o);
   }
 };

@@ -14,29 +14,31 @@ public sealed class ShaderProperty : Table {
   public string Names { get { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; } }
   public ArraySegment<byte>? GetNamesBytes() { return __vector_as_arraysegment(4); }
   public ShaderPropertyType Type { get { int o = __offset(6); return o != 0 ? (ShaderPropertyType)bb.GetSbyte(o + bb_pos) : ShaderPropertyType.Float; } }
-  public byte GetValue(int j) { int o = __offset(8); return o != 0 ? bb.Get(__vector(o) + j * 1) : (byte)0; }
-  public int ValueLength { get { int o = __offset(8); return o != 0 ? __vector_len(o) : 0; } }
-  public ArraySegment<byte>? GetValueBytes() { return __vector_as_arraysegment(8); }
+  public ShaderPropertyValue ValueType { get { int o = __offset(8); return o != 0 ? (ShaderPropertyValue)bb.Get(o + bb_pos) : ShaderPropertyValue.NONE; } }
+  public TTable GetValue<TTable>(TTable obj) where TTable : Table { int o = __offset(10); return o != 0 ? __union(obj, o) : null; }
 
   public static Offset<ShaderProperty> CreateShaderProperty(FlatBufferBuilder builder,
       StringOffset namesOffset = default(StringOffset),
       ShaderPropertyType type = ShaderPropertyType.Float,
-      VectorOffset valueOffset = default(VectorOffset)) {
-    builder.StartObject(3);
+      ShaderPropertyValue value_type = ShaderPropertyValue.NONE,
+      int valueOffset = 0) {
+    builder.StartObject(4);
     ShaderProperty.AddValue(builder, valueOffset);
     ShaderProperty.AddNames(builder, namesOffset);
+    ShaderProperty.AddValueType(builder, value_type);
     ShaderProperty.AddType(builder, type);
     return ShaderProperty.EndShaderProperty(builder);
   }
 
-  public static void StartShaderProperty(FlatBufferBuilder builder) { builder.StartObject(3); }
+  public static void StartShaderProperty(FlatBufferBuilder builder) { builder.StartObject(4); }
   public static void AddNames(FlatBufferBuilder builder, StringOffset namesOffset) { builder.AddOffset(0, namesOffset.Value, 0); }
   public static void AddType(FlatBufferBuilder builder, ShaderPropertyType type) { builder.AddSbyte(1, (sbyte)type, 2); }
-  public static void AddValue(FlatBufferBuilder builder, VectorOffset valueOffset) { builder.AddOffset(2, valueOffset.Value, 0); }
-  public static VectorOffset CreateValueVector(FlatBufferBuilder builder, byte[] data) { builder.StartVector(1, data.Length, 1); for (int i = data.Length - 1; i >= 0; i--) builder.AddByte(data[i]); return builder.EndVector(); }
-  public static void StartValueVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(1, numElems, 1); }
+  public static void AddValueType(FlatBufferBuilder builder, ShaderPropertyValue valueType) { builder.AddByte(2, (byte)valueType, 0); }
+  public static void AddValue(FlatBufferBuilder builder, int valueOffset) { builder.AddOffset(3, valueOffset, 0); }
   public static Offset<ShaderProperty> EndShaderProperty(FlatBufferBuilder builder) {
     int o = builder.EndObject();
+    builder.Required(o, 4);  // names
+    builder.Required(o, 10);  // value
     return new Offset<ShaderProperty>(o);
   }
 };

@@ -35,7 +35,7 @@ namespace Doubility3D
 			if (go != null) {
 				// 输出骨架
                 ByteBuffer bfSkeleton = SkeletonSaver.Save(go);
-                FileSaver.Save(bfSkeleton, Context.Skeletons, dstFolder + "/skeleton.db3d");
+                FileSaver.Save(bfSkeleton, Context.Skeletons, dstFolder + "/skeleton.doub");
 
 				// 输出网格
 				SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer> ();
@@ -48,11 +48,11 @@ namespace Doubility3D
                     }
                     
                     ByteBuffer bfMesh = MeshSaver.Save(smrs[i].sharedMesh, smrs[i].bones);
-                    FileSaver.Save(bfMesh, Context.Mesh, dstFolder + "/" + nameMesh + ".db3d");
+                    FileSaver.Save(bfMesh, Context.Mesh, dstFolder + "/" + nameMesh + ".doub");
 
                     for(int j=0;j<smrs[i].sharedMaterials.Length;j++){
                         ByteBuffer bfMaterial = MaterialSaver.Save(smrs[i].sharedMaterials[j]);
-                        FileSaver.Save(bfMaterial, Context.Material, dstFolder + "/" + smrs[i].sharedMaterials[j].name + ".db3d");
+                        FileSaver.Save(bfMaterial, Context.Material, dstFolder + "/" + smrs[i].sharedMaterials[j].name + ".doub");
                     }
 				}
 			} else {
@@ -68,7 +68,8 @@ namespace Doubility3D
                 UnityEngine.AnimationClip[] clips = AnimationUtility.GetAnimationClips(go);
                 for (int i = 0; i < clips.Length; i++)
                 {
-                    AnimationClipSaver.Save(clips[i], dstFolder);
+                    ByteBuffer bfClip = AnimationClipSaver.Save(clips[i]);
+                    FileSaver.Save(bfClip, Context.AnimationClip, dstFolder + "/" + clips[i].name + ".doub");
                 }
             }
             else

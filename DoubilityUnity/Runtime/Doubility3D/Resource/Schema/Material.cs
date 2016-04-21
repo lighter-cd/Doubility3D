@@ -38,6 +38,8 @@ public sealed class Material : Table {
   public static void StartPropertiesVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
   public static Offset<Material> EndMaterial(FlatBufferBuilder builder) {
     int o = builder.EndObject();
+    builder.Required(o, 4);  // name
+    builder.Required(o, 6);  // shader
     return new Offset<Material>(o);
   }
 };

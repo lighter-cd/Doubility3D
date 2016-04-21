@@ -22,7 +22,7 @@ namespace Doubility3D
 		private string[] filterTypeString = { "无", "符合条件", "排除条件" };
 		private int[] filterTypeIndex = { 0, 1, 2 };
 
-		[MenuItem ("逗逼雷踢/转换模型组")]
+		[MenuItem ("逗逼工具/转换模型组")]
 
 		static void Init ()
 		{
