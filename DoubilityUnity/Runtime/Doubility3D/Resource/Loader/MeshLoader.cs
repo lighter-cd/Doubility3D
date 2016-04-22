@@ -86,7 +86,7 @@ namespace Doubility3D.Resource.Loader
                 for (int i = 0; i < fbMesh.TangentsLength; i++)
                 {
                     Vec4 v = fbMesh.GetTangents(v4, i);
-                    tangents[i] = new Vector3(v.X, v.Y, v.Z);
+                    tangents[i] = new Vector4(v.X, v.Y, v.Z,v.W);
                 }
                 mesh.tangents = tangents;
             }
@@ -133,10 +133,11 @@ namespace Doubility3D.Resource.Loader
                 mesh.boneWeights = boneWeights;
             }
 
-            mesh.triangles = new int[fbMesh.TrianglesLength];
+            int[] triangles = new int[fbMesh.TrianglesLength];
             for(int i=0;i<fbMesh.TrianglesLength;i++){
-                mesh.triangles[i] = fbMesh.GetTriangles(i);
+                triangles[i] = fbMesh.GetTriangles(i);
             }
+            mesh.triangles = triangles;
             
             if (fbMesh.SubmeshesLength > 1)
             {

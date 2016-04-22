@@ -7,6 +7,7 @@ using System;
 
 using LitJson;
 using Doubility3D.Util;
+using UnitTest.Doubility3D;
 
 public class AssetBundleForUnitTest : ScriptableObject
 {
@@ -29,20 +30,18 @@ public class AssetBundleForUnitTest : ScriptableObject
 
 	static void DoIt(BuildTarget target)
     {
-		const string config_path = "Assets/Doubility3D/UnitTest/Editor/assetbundle.json";
-		const string output_path = "Assets/Doubility3D/UnitTest/.TestData/";
-
-		if(!System.IO.File.Exists(config_path)){
-			EditorUtility.DisplayDialog("不得行","找不到"+config_path,"咋办喃");
+        if (!System.IO.File.Exists(TestData.config_path))
+        {
+			EditorUtility.DisplayDialog("不得行","找不到"+TestData.config_path,"咋办喃");
 			return;
 		}
 
-		string output_folder = output_path + TargetPath.GetPath(target);
+        string output_folder = TestData.testBundle_path + TargetPath.GetPath(target);
 		if(!System.IO.Directory.Exists(output_folder)){
 			System.IO.Directory.CreateDirectory(output_folder);
 		}
 
-		string json = System.IO.File.ReadAllText(config_path);
+        string json = System.IO.File.ReadAllText(TestData.config_path);
 		BuildMaps maps = JsonMapper.ToObject<BuildMaps>(json);
 
 		BuildPipeline.BuildAssetBundles(output_folder,maps.buildMap,BuildAssetBundleOptions.None,target);
