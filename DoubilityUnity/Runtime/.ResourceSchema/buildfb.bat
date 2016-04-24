@@ -1,1 +1,1 @@
-flatc --csharp -o ../ basetype.fbs skeleton.fbs mesh.fbs material.fbs clip.fbs resource.fbs
+flatc --csharp -o ../ basetype.fbs skeleton.fbs mesh.fbs material.fbs clip.fbs texture.fbs resource.fbs

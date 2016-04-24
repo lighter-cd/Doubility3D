@@ -1,7 +1,4 @@
 include "basetype.fbs";
-include "skeleton.fbs";
-include "mesh.fbs";
-include "material.fbs";
 namespace Doubility3D.Resource.Schema;
 
 enum Context : int {
@@ -9,7 +6,8 @@ enum Context : int {
 	Skeletons = 1,
 	Mesh,
 	Material,
-	AnimationClip
+	AnimationClip,
+	Texture
 }
 
 table Header {

@@ -16,7 +16,7 @@ namespace Doubility3D.Resource.Saver
 			byte[] bytes = new byte[length];
 			Array.Copy (buf.Data, buf.Position, bytes, 0, length);
 
-			System.IO.FileStream fs = System.IO.File.OpenWrite (filePath);
+			System.IO.FileStream fs = new System.IO.FileStream (filePath,System.IO.FileMode.Create);
 			if (fs != null) {
                 fs.Write(FileHeader.GetBytes(context), 0, FileHeader.NumberOfBytes);
 				fs.Write (bytes, 0, length);

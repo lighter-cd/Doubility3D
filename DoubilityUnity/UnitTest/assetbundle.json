@@ -1,0 +1,28 @@
+{
+	"buildMap": [
+		{
+			"assetBundleName": "SkeletonTest.bundle",
+			"assetNames": [
+				"Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male.FBX"
+			]
+		},
+		{
+			"assetBundleName": "MaterialTest.bundle",
+			"assetNames": [
+				"Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Materials/Suit_Metal_Dragon_Male.mat"
+			]
+		},
+		{
+			"assetBundleName": "AnimationClipTest.bundle",
+			"assetNames": [
+				"Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male@dm_siwang.FBX"
+			]
+		},
+		{
+			"assetBundleName": "TextureTest.bundle",
+			"assetNames": [
+				"Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Materials/Suit_Metal_Dragon_Male.tga"
+			]
+		}		
+	]
+}

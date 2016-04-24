@@ -19,7 +19,11 @@ namespace Doubility3D.Resource.Loader
             UnityEngine.AnimationClip clip = new UnityEngine.AnimationClip();
 
             Schema.AnimationClip _clip = Schema.AnimationClip.GetRootAsAnimationClip(bb);
-            for(int i=0; i<_clip.BindingsLength;i++){
+			clip.frameRate = _clip.FrameRate;
+			clip.wrapMode = (UnityEngine.WrapMode)_clip.WrapMode;
+			clip.legacy = true;
+				
+			for(int i=0; i<_clip.BindingsLength;i++){
                 Schema.CurveBinding bind = _clip.GetBindings(i);
                 Schema.AnimationCurve _curve = bind.Curve;
                 UnityEngine.AnimationCurve curve = new UnityEngine.AnimationCurve();

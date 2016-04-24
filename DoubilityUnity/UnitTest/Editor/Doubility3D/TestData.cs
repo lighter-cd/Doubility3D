@@ -27,7 +27,11 @@ namespace UnitTest.Doubility3D
         /// <summary>
         /// 生成测试所需要的 asset bundle 的配置文件路径
         /// </summary>
-        public const string config_path = testData_path + "assetbundle.json";
+		public const string config_path = "Assets/Doubility3D/UnitTest/assetbundle.json";
+		/// <summary>
+		/// 拷贝测试所需要的资源 的配置文件路径
+		/// </summary>
+		public const string config_resource = "Assets/Doubility3D/UnitTest/resource.json";
 
         /// <summary>
         /// 从 testBundle_path 目录装载指定名称的 asset bundle

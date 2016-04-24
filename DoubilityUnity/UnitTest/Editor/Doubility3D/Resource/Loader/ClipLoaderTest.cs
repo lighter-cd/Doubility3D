@@ -43,6 +43,9 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [Test]
         public void EqualSource()
         {
+			Assert.AreEqual(originClip.frameRate,clip.FrameRate);
+			Assert.AreEqual(originClip.wrapMode,(UnityEngine.WrapMode)clip.WrapMode);
+
             EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(originClip);
             Assert.AreEqual(clip.BindingsLength, bindings.Length);
             for (int i = 0; i < bindings.Length; i++)

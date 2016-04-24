@@ -10,6 +10,7 @@ public enum Context : int
  Mesh = 2,
  Material = 3,
  AnimationClip = 4,
+ Texture = 5,
 };
 
 

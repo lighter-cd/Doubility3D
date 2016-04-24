@@ -60,11 +60,17 @@ namespace Doubility3D.Resource.Saver
 					break;
 				case ShaderUtil.ShaderPropertyType.TexEnv:
 					{
-						Texture t = material.GetTexture(name);
+						UnityEngine.Texture t = material.GetTexture(name);
                         string textureName = "$NULL_TEXTURE";
                         if (t != null)
                         {
-                            textureName = t.name;
+							textureName = AssetDatabase.GetAssetPath(t.GetInstanceID());
+							if(string.IsNullOrEmpty(textureName)){
+								textureName = t.name;
+							}else{
+								textureName = textureName.Substring("Assets/ArtWork/".Length);
+								textureName = System.IO.Path.GetDirectoryName(textureName) + "/" + System.IO.Path.GetFileNameWithoutExtension(textureName);
+							}
                         }
                         Vector2 toffset = material.GetTextureOffset(name);
                         Vector2 tscale = material.GetTextureScale(name);

@@ -18,7 +18,7 @@ namespace Doubility3D.Resource.Loader
         static Schema.ShaderPropertyColor cObj = new ShaderPropertyColor();
         static Schema.ShaderPropertyVector vObj = new ShaderPropertyVector();
 
-        public static UnityEngine.Material Load(ByteBuffer bb,Func<string,Shader> funcShader,Func<string,string,Texture> funcTexture)
+        public static UnityEngine.Material Load(ByteBuffer bb,Func<string,Shader> funcShader,Func<string,string,UnityEngine.Texture> funcTexture)
         {
             Schema.Material _material = Schema.Material.GetRootAsMaterial(bb);
 
@@ -52,7 +52,7 @@ namespace Doubility3D.Resource.Loader
                     case ShaderPropertyType.TexEnv:
                         {
                             Schema.ShaderPropertyTexture t = p.GetValue<Schema.ShaderPropertyTexture>(tObj);
-                            Texture texture = funcTexture(t.Name,p.Names);
+							UnityEngine.Texture texture = funcTexture(t.Name,p.Names);
                             material.SetTexture(p.Names, texture);
                             material.SetTextureOffset(p.Names, new Vector2(t.Offset.X, t.Offset.Y));
                             material.SetTextureScale(p.Names, new Vector2(t.Scale.X, t.Scale.Y));

@@ -15,20 +15,8 @@ public class AssetBundleForUnitTest : ScriptableObject
 		public AssetBundleBuild[] buildMap;
 	}
 
-	[MenuItem("逗逼工具/打包测试数据/Windows(x86)")]
-	static void DoItWindows(){
-		DoIt(BuildTarget.StandaloneWindows);
-	}
-	[MenuItem("逗逼工具/打包测试数据/Android")]
-	static void DoItAndroid(){
-		DoIt(BuildTarget.Android);
-	}
-	[MenuItem("逗逼工具/打包测试数据/iOS")]
-	static void DoItiOS(){
-		DoIt(BuildTarget.iOS);
-	}
-
-	static void DoIt(BuildTarget target)
+	[MenuItem("逗逼工具/单元测试/打包测试数据")]
+	static void DoIt()
     {
         if (!System.IO.File.Exists(TestData.config_path))
         {
@@ -36,7 +24,7 @@ public class AssetBundleForUnitTest : ScriptableObject
 			return;
 		}
 
-        string output_folder = TestData.testBundle_path + TargetPath.GetPath(target);
+		string output_folder = TestData.testBundle_path + TargetPath.GetPath(EditorUserBuildSettings.activeBuildTarget);
 		if(!System.IO.Directory.Exists(output_folder)){
 			System.IO.Directory.CreateDirectory(output_folder);
 		}
@@ -44,6 +32,6 @@ public class AssetBundleForUnitTest : ScriptableObject
         string json = System.IO.File.ReadAllText(TestData.config_path);
 		BuildMaps maps = JsonMapper.ToObject<BuildMaps>(json);
 
-		BuildPipeline.BuildAssetBundles(output_folder,maps.buildMap,BuildAssetBundleOptions.None,target);
+		BuildPipeline.BuildAssetBundles(output_folder,maps.buildMap,BuildAssetBundleOptions.None,EditorUserBuildSettings.activeBuildTarget);
     }
 }

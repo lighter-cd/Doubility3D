@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 
 using Doubility3D.Resource.Loader;
@@ -54,14 +53,11 @@ public class CharactorLoader : MonoBehaviour
         }
 
         UnityEngine.AnimationClip clip1 = LoadFromFile(animationResource) as UnityEngine.AnimationClip;
-        // todo:写文件加入以下属性
-        clip1.frameRate = 30;
-        clip1.legacy = true;
         clip1.wrapMode = UnityEngine.WrapMode.Loop;
 
         Animation animation = gameObject.AddComponent<Animation>();
         animation.AddClip(clip1, "daiji1");
-        animation.Play("daiji1");
+		animation.PlayQueued("daiji1",QueueMode.PlayNow);
     }
 
     // Update is called once per frame
@@ -104,9 +100,23 @@ public class CharactorLoader : MonoBehaviour
     {
         return Shader.Find(name);
     }
-    Texture GetTexture(string nameTexture, string nameProperty)
+    UnityEngine.Texture GetTexture(string nameTexture, string nameProperty)
     {
-        // 暂时使用 assets目录中的纹理
-        return AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/ArtWork/Character/Suit_Metal_Dragon_Male/Materials/" + nameTexture + ".tga");
+		string platform = "";
+		#if UNITY_EDITOR
+		platform = PlatformPath.GetPath(Application.platform).ToLower();
+		#else
+		platform = "ios";
+		#endif
+
+		string path = Application.streamingAssetsPath + "/.root/" + 
+			nameTexture + "." + platform +".texture";
+
+		Schema.Context context = Context.Unknown;
+		ByteBuffer bb = FileLoader.LoadFromFile(path,out context);
+		if(context == Context.Texture && (bb != null)){
+			return TextureLoader.Load(bb);
+		}
+		return null;
     }
 }

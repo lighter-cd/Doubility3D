@@ -25,5 +25,7 @@ table CurveBinding {
 }
 
 table AnimationClip {
+  frameRate:float;
+  wrapMode:WrapMode;
   bindings:[CurveBinding];	
 }

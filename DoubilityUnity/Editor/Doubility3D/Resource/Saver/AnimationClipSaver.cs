@@ -54,6 +54,8 @@ namespace Doubility3D.Resource.Saver
 
 
 			Schema.AnimationClip.StartAnimationClip(builder);
+			Schema.AnimationClip.AddFrameRate(builder,clip.frameRate);
+			Schema.AnimationClip.AddWrapMode(builder,(Schema.WrapMode)clip.wrapMode);
 			Schema.AnimationClip.AddBindings(builder,vecCurveBindings);
             Offset<Schema.AnimationClip> offClip = Schema.AnimationClip.EndAnimationClip(builder);
 

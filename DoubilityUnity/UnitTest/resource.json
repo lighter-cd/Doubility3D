@@ -1,0 +1,11 @@
+{
+	"copyMap": [
+		"Character/Suit_Metal_Dragon_Male/armor@Suit_Metal_Dragon_Male.doub",
+		"Character/Suit_Metal_Dragon_Male/dm_knockdown.doub",
+		"Character/Suit_Metal_Dragon_Male/skeleton.doub",
+		"Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male.doub",
+		"Character/Suit_Metal_Dragon_Male/materials/suit_metal_dragon_male.windows.texture",
+		"Character/Suit_Metal_Dragon_Male/materials/suit_metal_dragon_male.android.texture",
+		"Character/Suit_Metal_Dragon_Male/materials/suit_metal_dragon_male.ios.texture"
+	]
+}

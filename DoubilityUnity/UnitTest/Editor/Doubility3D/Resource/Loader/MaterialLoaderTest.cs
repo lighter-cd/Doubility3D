@@ -26,7 +26,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
         {
             return Shader.Find(name);
         }
-        Texture GetTexture(string nameTexture, string nameProperty)
+		UnityEngine.Texture GetTexture(string nameTexture, string nameProperty)
         {
             dictTextureName.Add(nameProperty, nameTexture);
             return null;

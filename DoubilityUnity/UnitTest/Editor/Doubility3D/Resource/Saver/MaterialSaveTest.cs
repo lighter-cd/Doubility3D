@@ -18,14 +18,16 @@ namespace UnitTest.Doubility3D.Resource.Saver
     [TestFixture]
     public class MaterialSaveTest
     {
-        AssetBundle ab;
+		AssetBundle abTexture;
+		AssetBundle ab;
         UnityEngine.Material originMaterial;
         Schema.Material material;
 
         [SetUp]
         public void Init()
         {
-            ab = TestData.LoadBundle("materialtest.bundle");
+			abTexture = TestData.LoadBundle("texturetest.bundle");
+			ab = TestData.LoadBundle("materialtest.bundle");
             originMaterial = TestData.LoadFirstAsset<UnityEngine.Material>(ab);
             Assert.IsNotNull(originMaterial);
 
@@ -37,6 +39,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
         public void Cleanup()
         {
             ab.Unload(true);
+			abTexture.Unload(true);
             originMaterial = null;
             ab = null;
             material = null;
