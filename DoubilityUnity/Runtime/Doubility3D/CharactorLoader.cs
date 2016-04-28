@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 using Doubility3D.Resource.Loader;
 using Doubility3D.Resource.Schema;
@@ -22,6 +23,15 @@ public class CharactorLoader : MonoBehaviour
     public string animationResource = "Character/Suit_Metal_Dragon_Male/dm_daiji.doub";
 
     string[] joints = null;
+	string home;
+
+	void Awake(){
+		home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME",EnvironmentVariableTarget.Machine);
+		if (string.IsNullOrEmpty (home)) {
+			home = Application.streamingAssetsPath;
+		}
+		home = home.Replace ('\\', '/');
+	}
 
     // Use this for initialization
     void Start()
@@ -69,8 +79,8 @@ public class CharactorLoader : MonoBehaviour
 
     UnityEngine.Object LoadFromFile(string resource)
     {
-        UnityEngine.Object result = null;
-        string file = Application.streamingAssetsPath + "/.root/" + resource;
+		UnityEngine.Object result = null;
+        string file = home + "/.root/" + resource;
         Schema.Context context = Context.Unknown;
         ByteBuffer bb = FileLoader.LoadFromFile(file, out context);
         switch (context)

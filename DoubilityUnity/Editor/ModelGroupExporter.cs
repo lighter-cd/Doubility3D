@@ -7,13 +7,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using Doubility3D.Util;
+
 namespace Doubility3D
 {
 	public class ModelGroupExporter : EditorWindow
 	{
-		const string targetFolder = "Assets/StreamingAssets/.root";
-		const string sourceFolder = "Assets/ArtWork";
-
 		ConfigData configData;
 		private GUIStyle textFieldStyles;
 
@@ -138,6 +137,7 @@ namespace Doubility3D
 					dictFiles [key].Add (file);
 				}
 
+				string targetFolder = Application.streamingAssetsPath + "/.root";
 				foreach (var pair in dictFiles) {
 					string targetDir = targetFolder + "/" + pair.Key;
 					if (!System.IO.Directory.Exists (targetDir)) {
@@ -153,7 +153,7 @@ namespace Doubility3D
 						}
 
 						// todo:转换文件 
-						UnityModelConvert.Convert (sourceFolder + "/" + file, targetDir);
+						UnityModelConvert.Convert (ArtWork.path + file, targetDir);
 					}
 				}
 				Debug.Log ("全部转换完毕");

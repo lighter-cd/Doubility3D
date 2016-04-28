@@ -7,6 +7,7 @@ using FlatBuffers;
 using Doubility3D.Resource;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
+using Doubility3D.Util;
 
 namespace Doubility3D.Resource.Saver
 {
@@ -68,7 +69,7 @@ namespace Doubility3D.Resource.Saver
 							if(string.IsNullOrEmpty(textureName)){
 								textureName = t.name;
 							}else{
-								textureName = textureName.Substring("Assets/ArtWork/".Length);
+								textureName = textureName.Substring(ArtWork.path.Length);
 								textureName = System.IO.Path.GetDirectoryName(textureName) + "/" + System.IO.Path.GetFileNameWithoutExtension(textureName);
 							}
                         }
