@@ -24,6 +24,8 @@ public class CharactorLoader : MonoBehaviour
 
     string[] joints = null;
 	string home;
+	AssetBundle ab;
+	Shader shader;
 
 	void Awake(){
 		home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME",EnvironmentVariableTarget.Machine);
@@ -31,6 +33,12 @@ public class CharactorLoader : MonoBehaviour
 			home = Application.streamingAssetsPath;
 		}
 		home = home.Replace ('\\', '/');
+
+		string coreDataBundle = home + "/.coreData/" + PlatformPath.GetPath(Application.platform) + "/coreData.bundle";
+		ab = AssetBundle.LoadFromFile(coreDataBundle);
+		if(ab != null){
+			shader = ab.LoadAsset<Shader>("Assets/Doubility3D/CoreData/Shaders/Charactor/Charactor-BumpSpec.shader");
+		}
 	}
 
     // Use this for initialization
@@ -108,19 +116,15 @@ public class CharactorLoader : MonoBehaviour
     }
     Shader GetShader(string name)
     {
-        return Shader.Find(name);
+		return shader;
+		//return Shader.Find(name);
     }
     UnityEngine.Texture GetTexture(string nameTexture, string nameProperty)
     {
-		string platform = "";
-		#if UNITY_EDITOR
-		platform = PlatformPath.GetPath(Application.platform).ToLower();
-		#else
-		platform = "ios";
-		#endif
+		string platform = PlatformPath.GetPath(Application.platform).ToLower();
+		string path = home + "/.root/" + nameTexture + "." + platform +".texture";
 
-		string path = Application.streamingAssetsPath + "/.root/" + 
-			nameTexture + "." + platform +".texture";
+		UnityEngine.Debug.Log(path);
 
 		Schema.Context context = Context.Unknown;
 		ByteBuffer bb = FileLoader.LoadFromFile(path,out context);

@@ -18,7 +18,7 @@ namespace Doubility3D.Resource.Loader
 			Schema.Texture _texture = Schema.Texture.GetRootAsTexture(bb);
 
 			UnityEngine.Texture2D texture = new Texture2D(_texture.Width,_texture.Height,(UnityEngine.TextureFormat)_texture.Format,_texture.MipmapCount>1);
-			texture.alphaIsTransparency = _texture.AlphaIsTransparency;
+			//texture.alphaIsTransparency = _texture.AlphaIsTransparency;
 			texture.anisoLevel = _texture.AnisoLevel;
 			texture.filterMode = (UnityEngine.FilterMode)_texture.FilterMode;
 			texture.mipMapBias = _texture.MipMapBias;
