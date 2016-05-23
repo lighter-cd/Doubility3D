@@ -3,7 +3,7 @@ using UnityEditor;
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Loader;
+using Doubility3D.Resource.Serializer;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
@@ -40,7 +40,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.IsNotNull(bb);
             Assert.AreNotEqual(context, Context.Unknown);
 
-            resultMaterial = MaterialLoader.Load(bb, GetShader, GetTexture);
+            resultMaterial = MaterialSerializer.Load(bb, GetShader, GetTexture);
             material = Schema.Material.GetRootAsMaterial(bb);
         }
 

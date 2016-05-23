@@ -2,7 +2,7 @@
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Loader;
+using Doubility3D.Resource.Serializer;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
@@ -27,7 +27,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
 			Assert.IsNotNull (bb);
 			Assert.AreNotEqual (context, Context.Unknown);
 			skeletons = Schema.Skeletons.GetRootAsSkeletons (bb);
-			GameObject goSkeleton = SkeletonLoader.Load (bb);
+			GameObject goSkeleton = SkeletonSerializer.Load (bb);
 			go = new GameObject ("Skeleton");
 			goSkeleton.transform.parent = go.transform;
 		}

@@ -9,11 +9,11 @@ using Schema = Doubility3D.Resource.Schema;
 
 //using Doubility3D.Util;
 
-namespace Doubility3D.Resource.Loader
+namespace Doubility3D.Resource.Serializer
 {
-	static public class TextureLoader
+	public class TextureSerializer : ISerializer
 	{
-		static public UnityEngine.Texture2D Load (ByteBuffer bb)
+		public UnityEngine.Object Parse (ByteBuffer bb,out String[] dependences)
 		{
 			Schema.Texture _texture = Schema.Texture.GetRootAsTexture(bb);
 
@@ -30,6 +30,7 @@ namespace Doubility3D.Resource.Loader
 			texture.LoadRawTextureData(rawData);
 			texture.Apply(true,true);
 
+			dependences = null;
 			return texture;
 		}
 	}

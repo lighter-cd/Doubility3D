@@ -2,7 +2,7 @@
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Loader;
+using Doubility3D.Resource.Serializer;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
@@ -29,7 +29,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.AreNotEqual(context, Context.Unknown);
             mesh = Schema.Mesh.GetRootAsMesh(bb);
 
-            _mesh = MeshLoader.Load(bb, out _joints);
+            _mesh = MeshSerializer.Load(bb, out _joints);
         }
 
         [TearDown]

@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-using Doubility3D.Resource.Loader;
+using Doubility3D.Resource.Serializer;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
@@ -90,28 +90,15 @@ public class CharactorLoader : MonoBehaviour
 		UnityEngine.Object result = null;
         string file = home + "/.root/" + resource;
         Schema.Context context = Context.Unknown;
-        ByteBuffer bb = FileLoader.LoadFromFile(file, out context);
-        switch (context)
-        {
-            case Context.Skeletons:
-                result = SkeletonLoader.Load(bb);
-                break;
-            case Context.Mesh:
-                {
-                    result = MeshLoader.Load(bb, out joints);
-                }
-                break;
-            case Context.Material:
-                {
-                    result = MaterialLoader.Load(bb, GetShader, GetTexture);
-                }
-                break;
-            case Context.AnimationClip:
-                {
-                    result = AnimationClipLoader.Load(bb);
-                }
-                break;
-        }
+        ByteBuffer bb = FileSerializer.LoadFromFile(file, out context);
+		ISerializer serializer = SerializerFactory.Instance.Create (context);
+		if (serializer != null) {
+			String[] dependences = null;
+			result = serializer.Parse(bb,out dependences);
+			for (int i = 0; i < dependences.Length; i++) {
+			}
+			serializer = null;
+		}
         return result;
     }
     Shader GetShader(string name)
@@ -127,9 +114,9 @@ public class CharactorLoader : MonoBehaviour
 		UnityEngine.Debug.Log(path);
 
 		Schema.Context context = Context.Unknown;
-		ByteBuffer bb = FileLoader.LoadFromFile(path,out context);
+		ByteBuffer bb = FileSerializer.LoadFromFile(path,out context);
 		if(context == Context.Texture && (bb != null)){
-			return TextureLoader.Load(bb);
+			//return TextureSerializer.Load(bb);
 		}
 		return null;
     }

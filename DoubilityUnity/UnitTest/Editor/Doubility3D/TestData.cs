@@ -54,7 +54,7 @@ namespace UnitTest.Doubility3D
         }
         static public ByteBuffer LoadResource(string resourceName,out Context context)
         {
-            return FileLoader.LoadFromFile(testResource_path + resourceName, out context);
+            return FileSerialize.LoadFromFile(testResource_path + resourceName, out context);
         }
     }
 }
