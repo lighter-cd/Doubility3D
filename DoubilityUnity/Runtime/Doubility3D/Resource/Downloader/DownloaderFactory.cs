@@ -1,6 +1,7 @@
 ﻿using System;
+using Doubility3D.Resource.Manager;
 
-namespace Doubility3D.Resource.Manager
+namespace Doubility3D.Resource.Downloader
 {
 	public class DownloaderFactory
 	{
@@ -21,7 +22,7 @@ namespace Doubility3D.Resource.Manager
 
 		static public ResourceMode resourceMode = ResourceMode.FromPacket;
 
-		public IDownloader Create(string path){
+		public IDownloader Create(){
 			return null;
 		}
 	}

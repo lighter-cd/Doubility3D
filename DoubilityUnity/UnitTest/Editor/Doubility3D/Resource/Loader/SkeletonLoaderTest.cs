@@ -2,8 +2,9 @@
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
 
@@ -16,8 +17,9 @@ namespace UnitTest.Doubility3D.Resource.Saver
 	[TestFixture]
 	public class SkeletonLoaderTest
 	{
-		Schema.Skeletons skeletons;
 		GameObject go;
+		Schema.Skeletons skeletons;
+		ResourceObjectSingle skeletonObj;
 
 		[SetUp]
 		public void Init ()
@@ -27,14 +29,18 @@ namespace UnitTest.Doubility3D.Resource.Saver
 			Assert.IsNotNull (bb);
 			Assert.AreNotEqual (context, Context.Unknown);
 			skeletons = Schema.Skeletons.GetRootAsSkeletons (bb);
-			GameObject goSkeleton = SkeletonSerializer.Load (bb);
+
+			SkeletonUnserializer unserializer = UnserializerFactory.Instance.Create (context) as SkeletonUnserializer;
+
+			skeletonObj = unserializer.Parse(bb) as ResourceObjectSingle;
 			go = new GameObject ("Skeleton");
-			goSkeleton.transform.parent = go.transform;
+			(skeletonObj.Unity3dObject as GameObject).transform.parent = go.transform;
 		}
 
 		[TearDown]
 		public void Cleanup ()
 		{
+			skeletonObj.Dispose ();
 			UnityEngine.Object.DestroyImmediate (go);
 			go = null;
 			skeletons = null;

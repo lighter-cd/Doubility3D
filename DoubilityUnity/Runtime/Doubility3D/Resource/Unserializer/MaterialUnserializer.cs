@@ -5,25 +5,25 @@ using UnityEngine;
 
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 
-//using Doubility3D.Util;
-
-namespace Doubility3D.Resource.Serializer
+namespace Doubility3D.Resource.Unserializing
 {
-    static public class MaterialSerializer
+	public class MaterialUnserializer : IUnserializer
     {
         static Schema.ShaderPropertyFloat fObj = new ShaderPropertyFloat();
         static Schema.ShaderPropertyTexture tObj = new ShaderPropertyTexture();
         static Schema.ShaderPropertyColor cObj = new ShaderPropertyColor();
         static Schema.ShaderPropertyVector vObj = new ShaderPropertyVector();
 
-        public static UnityEngine.Material Load(ByteBuffer bb,Func<string,Shader> funcShader,Func<string,string,UnityEngine.Texture> funcTexture)
+		public ResourceObject Parse (ByteBuffer bb)
         {
             Schema.Material _material = Schema.Material.GetRootAsMaterial(bb);
 
-            UnityEngine.Material material = new UnityEngine.Material(funcShader(_material.Shader));
-            material.name = _material.Name;
+			ResourceObjectMaterial result = new ResourceObjectMaterial (_material.Shader);
+			UnityEngine.Material material = result.Unity3dObject as UnityEngine.Material;
+			material.name = _material.Name;
             
             for (int i = 0; i < _material.PropertiesLength; i++)
             {
@@ -52,16 +52,15 @@ namespace Doubility3D.Resource.Serializer
                     case ShaderPropertyType.TexEnv:
                         {
                             Schema.ShaderPropertyTexture t = p.GetValue<Schema.ShaderPropertyTexture>(tObj);
-							UnityEngine.Texture texture = funcTexture(t.Name,p.Names);
-                            material.SetTexture(p.Names, texture);
                             material.SetTextureOffset(p.Names, new Vector2(t.Offset.X, t.Offset.Y));
                             material.SetTextureScale(p.Names, new Vector2(t.Scale.X, t.Scale.Y));
+							result.AddTexture (t.Name, p.Names);
                         }
                         break;
                 }
             }
 
-            return material;
+			return result;
         }
     }
 }

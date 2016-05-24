@@ -3,8 +3,9 @@ using UnityEditor;
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
 
@@ -18,7 +19,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
 	[TestFixture]
 	public class TextureLoaderTest
 	{
-		UnityEngine.Texture2D resultTexture;
+		ResourceObjectSingle result;
 		Schema.Texture texture;
 
 		[SetUp]
@@ -29,22 +30,25 @@ namespace UnitTest.Doubility3D.Resource.Saver
 			Assert.IsNotNull(bb);
 			Assert.AreNotEqual(context, Context.Unknown);
 
-			resultTexture = TextureSerializer.Load(bb);
-			Assert.IsNotNull(resultTexture);
+			TextureUnserializer unserializer = UnserializerFactory.Instance.Create (context) as TextureUnserializer;
+			result = unserializer.Parse(bb) as ResourceObjectSingle;
+			Assert.IsNotNull(result);
 			texture = Schema.Texture.GetRootAsTexture(bb);
 		}
 
 		[TearDown]
 		public void Cleanup()
 		{
-			UnityEngine.Object.DestroyImmediate(resultTexture);
-			resultTexture = null;
+			result.Dispose();
+			result = null;
 			texture = null;
 		}
 
 		[Test]
 		public void EqualSource()
 		{
+			UnityEngine.Texture2D resultTexture = result.Unity3dObject as Texture2D;
+
 			Assert.AreEqual(texture.Cube,false);
 			Assert.AreEqual(texture.Format,(Schema.TextureFormat)resultTexture.format);
 			Assert.AreEqual(texture.MipmapCount,resultTexture.mipmapCount);

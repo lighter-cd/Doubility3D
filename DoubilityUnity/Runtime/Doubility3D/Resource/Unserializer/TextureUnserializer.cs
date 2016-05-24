@@ -6,14 +6,15 @@ using UnityEngine;
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 
 //using Doubility3D.Util;
 
-namespace Doubility3D.Resource.Serializer
+namespace Doubility3D.Resource.Unserializing
 {
-	public class TextureSerializer : ISerializer
+	public class TextureUnserializer : IUnserializer
 	{
-		public UnityEngine.Object Parse (ByteBuffer bb,out String[] dependences)
+		public ResourceObject Parse (ByteBuffer bb)
 		{
 			Schema.Texture _texture = Schema.Texture.GetRootAsTexture(bb);
 
@@ -30,8 +31,7 @@ namespace Doubility3D.Resource.Serializer
 			texture.LoadRawTextureData(rawData);
 			texture.Apply(true,true);
 
-			dependences = null;
-			return texture;
+			return new ResourceObjectSingle(texture);
 		}
 	}
 }

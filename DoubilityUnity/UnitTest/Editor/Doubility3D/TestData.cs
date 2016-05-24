@@ -5,6 +5,7 @@ using UnityEditor;
 using Doubility3D.Util;
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.Unserializing;
 using Schema = Doubility3D.Resource.Schema;
 
 
@@ -54,7 +55,7 @@ namespace UnitTest.Doubility3D
         }
         static public ByteBuffer LoadResource(string resourceName,out Context context)
         {
-            return FileSerialize.LoadFromFile(testResource_path + resourceName, out context);
+			return FileUnserializer.LoadFromFile(testResource_path + resourceName, out context);
         }
     }
 }

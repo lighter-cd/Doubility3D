@@ -6,14 +6,15 @@ using UnityEngine;
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 
 //using Doubility3D.Util;
 
-namespace Doubility3D.Resource.Serializer
+namespace Doubility3D.Resource.Unserializing
 {
-    public static class MeshSerializer
+	public class MeshUnserializer : IUnserializer
     {
-        static public UnityEngine.Mesh Load(ByteBuffer bb,out string[] joints)
+		public ResourceObject Parse(ByteBuffer bb)
         {
             Schema.Mesh fbMesh = Schema.Mesh.GetRootAsMesh(bb);
 
@@ -190,13 +191,13 @@ namespace Doubility3D.Resource.Serializer
             Bounds b = new Bounds(min, max);
             mesh.bounds = b;
 
-            joints = new string[fbMesh.JointsLength];
+			string[] joints = new string[fbMesh.JointsLength];
             for (int i = 0; i < fbMesh.JointsLength; i++)
             {
                 joints[i] = fbMesh.GetJoints(i);
             }
 
-            return mesh;
+			return new ResourceObjectMesh(mesh,joints);
         }
     }
 }

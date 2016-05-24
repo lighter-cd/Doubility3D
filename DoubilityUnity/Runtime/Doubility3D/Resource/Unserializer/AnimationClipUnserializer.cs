@@ -7,15 +7,16 @@ using UnityEngine;
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 
 //using Doubility3D.Util;
 
-namespace Doubility3D.Resource.Serializer
+namespace Doubility3D.Resource.Unserializing
 {
-	public class AnimationClipSerializer : ISerializer
+	public class AnimationClipUnserializer : IUnserializer
     {
-		public UnityEngine.Object Parse(ByteBuffer bb,out String[] dependences)
-        {
+		public ResourceObject Parse(ByteBuffer bb)
+		{
             UnityEngine.AnimationClip clip = new UnityEngine.AnimationClip();
 
             Schema.AnimationClip _clip = Schema.AnimationClip.GetRootAsAnimationClip(bb);
@@ -42,8 +43,7 @@ namespace Doubility3D.Resource.Serializer
                 Type type = assembly.GetType(bind.Type);
                 clip.SetCurve(bind.Path, type, bind.PropertyName, curve);
             }
-			dependences = null;
-            return clip;
+			return new ResourceObjectSingle(clip);
         }
     }
 }

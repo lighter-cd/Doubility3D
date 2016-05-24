@@ -3,13 +3,13 @@ using System.Collections;
 using FlatBuffers;
 
 using Doubility3D.Resource;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 
-namespace Doubility3D.Resource.Serializer
+namespace Doubility3D.Resource.Unserializing
 {
-	static public class FileSerializer
+	static public class FileUnserializer
 	{
 		static public ByteBuffer Load (byte[] bytes, out Context context)
 		{

@@ -5,15 +5,16 @@ using UnityEngine;
 
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 
 //using Doubility3D.Util;
 
-namespace Doubility3D.Resource.Serializer
+namespace Doubility3D.Resource.Unserializing
 {
-    public static class SkeletonSerializer
+	public class SkeletonUnserializer : IUnserializer
     {
-        static public GameObject Load(ByteBuffer bb)
+		public ResourceObject Parse(ByteBuffer bb)
         {
             Schema.Skeletons skeleton = Schema.Skeletons.GetRootAsSkeletons(bb);
             GameObject[] goes = new GameObject[skeleton.JointsLength];
@@ -39,7 +40,7 @@ namespace Doubility3D.Resource.Serializer
 
                 goes[i] = go;
             }
-            return goes[0];
+			return new ResourceObjectSingle(goes[0]);
         }
     }
 }

@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Doubility3D.Resource.Downloader;
 
 namespace Doubility3D.Resource.Manager
 {
 	public class ResourceEventArgs : EventArgs
 	{
-		Resource resource;
+		ResourceRef resource;
 
-		public ResourceEventArgs(Resource _resource)
+		public ResourceEventArgs(ResourceRef _resource)
 		{
 			resource = _resource;
 		}
 
-		public Resource Resources { get { return resource; } }
+		public ResourceRef Resources { get { return resource; } }
 	}
 	public class ObjectEventArgs : EventArgs
 	{
@@ -24,9 +25,9 @@ namespace Doubility3D.Resource.Manager
 		public int Zone{get;set;}
 	}
 
-	public class ResourceComparer : Comparer<Resource>
+	public class ResourceComparer : Comparer<ResourceRef>
 	{
-		public override int Compare(Resource x, Resource y)
+		public override int Compare(ResourceRef x, ResourceRef y)
 		{
 			return x.Priority - y.Priority;
 		}
@@ -59,19 +60,19 @@ namespace Doubility3D.Resource.Manager
 		}
 
 		bool needRemoveUnused = false;
-		Resource current = null;
-		PriorityQueue<Resource> queueResource = new PriorityQueue<Resource>(new ResourceComparer());
-		Dictionary<string, Resource> dictResources = new Dictionary<string, Resource>();
+		ResourceRef current = null;
+		PriorityQueue<ResourceRef> queueResource = new PriorityQueue<ResourceRef>(new ResourceComparer());
+		Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef>();
 		public event EventHandler<ResourceEventArgs> resourceEvent;
 
-		public Resource addResource(string url, int priority, bool bAsync)
+		public ResourceRef addResource(string url, int priority, bool bAsync)
 		{
-			Resource resource = null;
+			ResourceRef resource = null;
 			Debug.Assert(url != null, "addResource url 不能为 null");
 			Debug.Assert(url != string.Empty, "addResource url 不能为 string.Empty");
 			if (!dictResources.ContainsKey(url))
 			{
-				resource = new Resource(url);
+				resource = new ResourceRef(url);
 				resource.Priority = priority;
 				resource.Async = bAsync;
 				dictResources[url] = resource;
@@ -91,19 +92,15 @@ namespace Doubility3D.Resource.Manager
 			Debug.Assert(dictResources.ContainsKey(url), "资源 url = " + url + "不存在");
 			if (dictResources.ContainsKey(url))
 			{
-				Resource resource = dictResources[url];
+				ResourceRef resource = dictResources[url];
 				resource.DelRefs();
 
 				if (resource.Refs == 0)
 				{
-					if (resource.Unity3dObject != null)
+					if (resource.resourceObject != null)
 					{
-						#if !UNITY_EDITOR
-						UnityEngine.Object.Destroy(resource.Unity3dObject); //释放资源
-						#else
-						UnityEngine.Object.DestroyImmediate(resource.Unity3dObject,true);
-						#endif
-						resource.Unity3dObject = null;
+						resource.resourceObject.Dispose ();
+						resource.resourceObject = null;
 						needRemoveUnused = true;
 					}
 					//Debug.Log("资源 url = " + url + "计数器为0被删除");
@@ -111,7 +108,7 @@ namespace Doubility3D.Resource.Manager
 				}
 			}
 		}
-		public Resource getResource(string url)
+		public ResourceRef getResource(string url)
 		{
 			if (dictResources.ContainsKey(url))
 			{
@@ -120,7 +117,7 @@ namespace Doubility3D.Resource.Manager
 			return null;
 		}
 
-		private void DispatchResourceEvent(Resource resource)
+		private void DispatchResourceEvent(ResourceRef resource)
 		{
 			//Debug.Log("资源 " + resource.Path + " 装载完毕");
 			if (resource.Async)
@@ -130,9 +127,10 @@ namespace Doubility3D.Resource.Manager
 
 			if (resource.Refs == 0)
 			{
-				if (resource.Unity3dObject != null)
+				if (resource.resourceObject != null)
 				{
-					resource.Unity3dObject = null;
+					resource.resourceObject.Dispose ();
+					resource.resourceObject = null;
 					needRemoveUnused = true;
 				}
 				//Debug.Log("资源 url = " + resource.Path + "计数器已经为0装载完毕即被删除");
@@ -156,7 +154,7 @@ namespace Doubility3D.Resource.Manager
 			{
 				while (queueResource.Count > 0)
 				{
-					Resource resource = queueResource.Pop();
+					ResourceRef resource = queueResource.Pop();
 
 					// 尝试取到一个引用计数不为0的资源
 					while (resource.Refs == 0 && queueResource.Count > 0)

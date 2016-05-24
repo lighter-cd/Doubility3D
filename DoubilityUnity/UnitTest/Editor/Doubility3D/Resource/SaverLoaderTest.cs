@@ -3,7 +3,7 @@ using UnityEditor;
 using NUnit.Framework;
 using FlatBuffers;
 using Doubility3D.Resource.Saver;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
 using Schema = Doubility3D.Resource.Schema;
 using UnitTest.Doubility3D;
@@ -38,7 +38,7 @@ namespace UnitTest.Doubility3D.Resource
 			FileSaver.Save (bb, context, filePath);
 
 			Schema.Context out_context = Context.Unknown;
-			ByteBuffer bbOut = FileSerializer.LoadFromFile (filePath, out out_context);
+			ByteBuffer bbOut = FileUnserializer.LoadFromFile (filePath, out out_context);
 
 			Assert.AreEqual (context, out_context);
 			Assert.AreEqual (dataLength, bbOut.Length - bbOut.Position);

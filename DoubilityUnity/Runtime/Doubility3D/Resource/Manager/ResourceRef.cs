@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using FlatBuffers;
 using Doubility3D.Resource.Schema;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
+using Doubility3D.Resource.ResourceObj;
+using Doubility3D.Resource.Downloader;
 
 namespace Doubility3D.Resource.Manager
 {
@@ -20,13 +22,14 @@ namespace Doubility3D.Resource.Manager
 		Error,
 	}
 
-	public class Resource
+	public class ResourceRef
 	{
 		string path;
 		int refs;
-		Resource[] dependences;
+		ResourceRef[] dependences;
+		Action<ResourceRef> action;
 
-		public Resource(string _path)
+		public ResourceRef(string _path)
 		{
 			path = _path;
 			State = ResourceState.WaitingInQueue;
@@ -37,50 +40,55 @@ namespace Doubility3D.Resource.Manager
 
 		public string Path { get { return path; } }
 
-		public UnityEngine.Object Unity3dObject { get; set; }
-		public UnityEngine.Object[] Unity3dObjects { get; set; }
+		public ResourceObject resourceObject { get; set; }
 		public ResourceState State { get; set; }
 		public int Priority { get; set; }
 		public bool Async { get; set; }
+		public bool IsDone { get { return State == ResourceState.Complated; } }
 
-		public void Start(Action<Resource> action)
+		public void Start(Action<ResourceRef> _action)
 		{
 			State = ResourceState.Started;
 
-			new Task(ResourceTask(action));
+			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			if (downloader != null) {
+				string resource_path = "Assets/ResData/" + path;
+				State = ResourceState.Loading;
+				new Task (downloader.ResourceTask (resource_path,OnDownloadComplate));
+			}
+			action = _action;
 		}
-		IEnumerator ResourceTask(Action<Resource> action)
+
+		private void OnDownloadComplate(Byte[] bytes,string error){
+			if (string.IsNullOrEmpty (error) ) {
+				State = ResourceState.Parsing;
+				new Task (ResourceTask (bytes));
+			} else {
+				State = ResourceState.Error; 
+				action(this);
+			}
+		}
+
+		IEnumerator ResourceTask(Byte[] bytes)
 		{
-			string resource_path = "Assets/ResData/" + path;
-			State = ResourceState.Loading;
-			Byte[] bytes = null;
-
-			// 装载数据
-			IDownloader downloader = DownloaderFactory.Instance.Create (resource_path);
-			yield return downloader.ResourceTask(out bytes);
-
-			// 装载完毕
-			downloader.Dispose ();
-			downloader = null;
-
 			// 开始解析
 			Schema.Context context = Context.Unknown;
-			ByteBuffer bb = FileSerializer.Load(bytes, out context);
-			ISerializer serializer = SerializerFactory.Instance.Create (context);
+			ByteBuffer bb = FileUnserializer.Load(bytes, out context);
+			IUnserializer serializer = UnserializerFactory.Instance.Create (context);
 			if (serializer != null) {
-				String[] dependencePathes = null;
-				Unity3dObject = serializer.Parse (bb, out dependencePathes);
+				resourceObject = serializer.Parse (bb);
 				serializer = null;
 
-				if (Unity3dObject == null) {
+				if (resourceObject == null) {
 					State = ResourceState.Error;
 				} else {
-					if (dependencePathes != null && dependencePathes.Length>0) {
+					if (resourceObject.dependencePathes>0) {
 						State = ResourceState.Depending;
 						ResourceManager.Instance.resourceEvent += OnResourceComplateEvent;
-						dependences = new Resource[dependencePathes.Length];
-						for (int i = 0; i < dependencePathes.Length; i++) {
-							dependences [i] = ResourceManager.Instance.addResource (dependencePathes [i], Priority, Async); 	
+
+						dependences = new ResourceRef[resourceObject.dependencePathes];
+						for (int i = 0; i < resourceObject.dependencePathes; i++) {
+							dependences [i] = ResourceManager.Instance.addResource (resourceObject.GetDependencePath(i), Priority, Async); 	
 						}
 						if (State != ResourceState.Complated && State != ResourceState.Error) {
 							yield return null;							
@@ -98,10 +106,10 @@ namespace Doubility3D.Resource.Manager
 
 		private void OnResourceComplateEvent(object sender, ResourceEventArgs e)
 		{
-			Resource resource = e.Resources;
+			ResourceRef resource = e.Resources;
 			if (resource.State != ResourceState.Error)
 			{
-				int index = Array.IndexOf<Resource> (dependences, resource);
+				int index = Array.IndexOf<ResourceRef> (dependences, resource);
 				if (index >= 0) {
 					bool ended = true;
 					for (int i = 0; i < dependences.Length; i++) {
@@ -111,6 +119,7 @@ namespace Doubility3D.Resource.Manager
 						}
 					}
 					if (ended) {
+						resourceObject.OnDependencesFinished ();
 						State = ResourceState.Complated;
 					}
 				}

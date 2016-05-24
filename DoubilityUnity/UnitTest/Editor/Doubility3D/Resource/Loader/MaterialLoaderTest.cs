@@ -3,8 +3,9 @@ using UnityEditor;
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
 
@@ -18,7 +19,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
 
     public class MaterialLoaderTest
     {
-        UnityEngine.Material resultMaterial;
+		ResourceObjectMaterial resultMaterial;
         Schema.Material material;
         Dictionary<string, string> dictTextureName = new Dictionary<string, string>();
 
@@ -40,14 +41,15 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.IsNotNull(bb);
             Assert.AreNotEqual(context, Context.Unknown);
 
-            resultMaterial = MaterialSerializer.Load(bb, GetShader, GetTexture);
+			MaterialUnserializer unserializer = UnserializerFactory.Instance.Create (context) as MaterialUnserializer;
+			resultMaterial = unserializer.Parse(bb) as ResourceObjectMaterial;
             material = Schema.Material.GetRootAsMaterial(bb);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            UnityEngine.Object.DestroyImmediate(resultMaterial);
+			resultMaterial.Dispose ();
             resultMaterial = null;
             material = null;
             dictTextureName.Clear();
@@ -56,13 +58,15 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [Test]
         public void EqualSource()
         {
-            Assert.AreEqual(material.Name, resultMaterial.name);
-            Assert.AreEqual(material.Shader, resultMaterial.shader.name);
+			UnityEngine.Material realMaterial = resultMaterial.Unity3dObject as UnityEngine.Material;
+
+			Assert.AreEqual(material.Name, realMaterial.name);
+            Assert.AreEqual(material.Shader, realMaterial.shader.name);
             for (int i = 0; i < material.PropertiesLength; i++)
             {
                 Schema.ShaderProperty p = material.GetProperties(i);
 
-                Assert.IsTrue(resultMaterial.HasProperty(p.Names));
+                Assert.IsTrue(realMaterial.HasProperty(p.Names));
 
                 switch (p.Type)
                 {
@@ -71,7 +75,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
                         {
                             Assert.AreEqual(p.ValueType, ShaderPropertyValue.ShaderPropertyFloat);
 
-                            float originValue = resultMaterial.GetFloat(p.Names);
+                            float originValue = realMaterial.GetFloat(p.Names);
                             ShaderPropertyFloat f = p.GetValue<ShaderPropertyFloat>(new ShaderPropertyFloat());
                             Assert.AreEqual(f.Value, originValue);
                         }
@@ -80,7 +84,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
                         {
                             Assert.AreEqual(p.ValueType, ShaderPropertyValue.ShaderPropertyColor);
 
-                            UnityEngine.Color originValue = resultMaterial.GetColor(p.Names);
+                            UnityEngine.Color originValue = realMaterial.GetColor(p.Names);
                             ShaderPropertyColor c = p.GetValue<ShaderPropertyColor>(new ShaderPropertyColor());
                             Assert.AreEqual(originValue.a, c.Color.A);
                             Assert.AreEqual(originValue.g, c.Color.G);
@@ -92,7 +96,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
                         {
                             Assert.AreEqual(p.ValueType, ShaderPropertyValue.ShaderPropertyVector);
 
-                            UnityEngine.Vector4 originValue = resultMaterial.GetVector(p.Names);
+                            UnityEngine.Vector4 originValue = realMaterial.GetVector(p.Names);
                             ShaderPropertyVector v = p.GetValue<ShaderPropertyVector>(new ShaderPropertyVector());
                             Assert.AreEqual(originValue.x, v.Vector.X);
                             Assert.AreEqual(originValue.y, v.Vector.Y);
@@ -103,9 +107,9 @@ namespace UnitTest.Doubility3D.Resource.Saver
                     case ShaderPropertyType.TexEnv:
                         {
                             Assert.AreEqual(p.ValueType, ShaderPropertyValue.ShaderPropertyTexture);
-                            //UnityEngine.Texture texture = resultMaterial.GetTexture(p.Names);
-                            Vector2 offset = resultMaterial.GetTextureOffset(p.Names);
-                            Vector2 scale = resultMaterial.GetTextureScale(p.Names);
+                            //UnityEngine.Texture texture = realMaterial.GetTexture(p.Names);
+                            Vector2 offset = realMaterial.GetTextureOffset(p.Names);
+                            Vector2 scale = realMaterial.GetTextureScale(p.Names);
 
                             //这个测试用例不真正装载 texture.
                             //Assert.IsFalse(texture == null);
@@ -125,7 +129,8 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [Test]
         public void AllPropertiesExist()
         {
-            Dictionary<string, Schema.ShaderProperty> dictProperties = new Dictionary<string, ShaderProperty>();
+			UnityEngine.Material realMaterial = resultMaterial.Unity3dObject as UnityEngine.Material;
+			Dictionary<string, Schema.ShaderProperty> dictProperties = new Dictionary<string, ShaderProperty>();
             for (int i = 0; i < material.PropertiesLength; i++)
             {
                 Schema.ShaderProperty p = material.GetProperties(i);
@@ -133,13 +138,13 @@ namespace UnitTest.Doubility3D.Resource.Saver
             }
 
 
-            int count = ShaderUtil.GetPropertyCount(resultMaterial.shader);
+			int count = ShaderUtil.GetPropertyCount(realMaterial.shader);
             Assert.AreEqual(count, material.PropertiesLength);
 
 
             for (int i = 0; i < count; i++)
             {
-                string name = ShaderUtil.GetPropertyName(resultMaterial.shader, i);
+				string name = ShaderUtil.GetPropertyName(realMaterial.shader, i);
                 Assert.IsTrue(dictProperties.ContainsKey(name));
             }
         }

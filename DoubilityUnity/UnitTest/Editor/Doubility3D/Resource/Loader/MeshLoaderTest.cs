@@ -2,8 +2,9 @@
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
 
@@ -17,7 +18,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
     public class MeshLoaderTest
     {
         Schema.Mesh mesh;
-        UnityEngine.Mesh _mesh;
+		ResourceObjectMesh _resultMesh;
         string[] _joints;
 
         [SetUp]
@@ -29,14 +30,15 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.AreNotEqual(context, Context.Unknown);
             mesh = Schema.Mesh.GetRootAsMesh(bb);
 
-            _mesh = MeshSerializer.Load(bb, out _joints);
+			MeshUnserializer unserializer = UnserializerFactory.Instance.Create (context) as MeshUnserializer;
+			_resultMesh = unserializer.Parse(bb) as ResourceObjectMesh;
         }
 
         [TearDown]
         public void Cleanup()
         {
-            UnityEngine.Object.DestroyImmediate(_mesh);
-            _mesh = null;
+			_resultMesh.Dispose();
+			_resultMesh = null;
             _joints = null;
             mesh = null;
         }
@@ -44,7 +46,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [Test]
         public void VertexComponents()
         {
-            UnityEngine.Mesh resultMesh = _mesh;
+			UnityEngine.Mesh resultMesh = _resultMesh.Unity3dObject as UnityEngine.Mesh;
 
             Assert.IsTrue(mesh.VerticesLength == resultMesh.vertexCount);
 
@@ -174,7 +176,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [Test]
         public void Submesh()
         {
-            UnityEngine.Mesh resultMesh = _mesh;
+			UnityEngine.Mesh resultMesh = _resultMesh.Unity3dObject as UnityEngine.Mesh;
 
             Assert.IsTrue(mesh.SubmeshesLength == resultMesh.subMeshCount);
             for (int i = 0; i < mesh.SubmeshesLength; i++)
@@ -206,7 +208,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
         [Test]
         public void BindPoses()
         {
-            UnityEngine.Mesh resultMesh = _mesh;
+			UnityEngine.Mesh resultMesh = _resultMesh.Unity3dObject as UnityEngine.Mesh;
             Assert.AreEqual(resultMesh.bindposes.Length, mesh.BindposesLength);
             for (int i = 0; i < mesh.BindposesLength; i++)
             {

@@ -3,8 +3,9 @@ using UnityEditor;
 using NUnit.Framework;
 
 using FlatBuffers;
-using Doubility3D.Resource.Serializer;
+using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
+using Doubility3D.Resource.ResourceObj;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
 
@@ -17,7 +18,7 @@ namespace UnitTest.Doubility3D.Resource.Saver
     [TestFixture]
     public class ClipLoaderTest
     {
-        UnityEngine.AnimationClip originClip;
+        ResourceObjectSingle result;
         Schema.AnimationClip clip;
 
         [SetUp]
@@ -28,21 +29,24 @@ namespace UnitTest.Doubility3D.Resource.Saver
             Assert.IsNotNull(bb);
             Assert.AreNotEqual(context, Context.Unknown);
 
-            originClip = AnimationClipSerializer.Load(bb);
+			AnimationClipUnserializer unserializer = UnserializerFactory.Instance.Create (context) as AnimationClipUnserializer;
+			result = unserializer.Parse(bb) as ResourceObjectSingle;
             clip = Schema.AnimationClip.GetRootAsAnimationClip(bb);
         }
 
         [TearDown]
         public void Cleanup()
         {
-            UnityEngine.Object.DestroyImmediate(originClip);
-            originClip = null;
+			result.Dispose ();
+			result = null;
             clip = null;
         }
 
         [Test]
         public void EqualSource()
         {
+			UnityEngine.AnimationClip originClip = result.Unity3dObject as UnityEngine.AnimationClip;
+
 			Assert.AreEqual(originClip.frameRate,clip.FrameRate);
 			Assert.AreEqual(originClip.wrapMode,(UnityEngine.WrapMode)clip.WrapMode);
 
