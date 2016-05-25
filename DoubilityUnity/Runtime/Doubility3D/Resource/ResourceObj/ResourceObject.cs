@@ -9,7 +9,7 @@ namespace Doubility3D.Resource.ResourceObj
 
 		public UnityEngine.Object Unity3dObject { get{ return unity3dObject;} }
 		virtual public int dependencePathes  { get { return 0; }}
-		virtual public string GetDependencePath(int index)  {  return null; }
+		virtual public string[] DependencePathes  {  get { return null; } }
 		virtual public void OnDependencesFinished(){}
 		/// <summary>
 		/// Releases all resource used by the <see cref="Doubility3D.Resource.ResourceObj.ResourceObject"/> object.

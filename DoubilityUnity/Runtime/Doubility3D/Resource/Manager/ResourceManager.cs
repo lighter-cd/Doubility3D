@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using RSG;
@@ -47,7 +48,7 @@ namespace Doubility3D.Resource.Manager
 		PriorityQueue<ResourceRef> queueResource = new PriorityQueue<ResourceRef>(new ResourceComparer());
 		Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef>();
 
-		public Promise<ResourceRef> addResource(string url, int priority, bool bAsync)
+		private IPromise<ResourceRef> _addResource(string url, int priority, bool bAsync)
 		{
 			ResourceRef resource = null;
 			Debug.Assert(url != null, "addResource url 不能为 null");
@@ -72,12 +73,42 @@ namespace Doubility3D.Resource.Manager
 
 			} else {
 				resource.Action = (refs)=>{
-					promise.Resolve (refs);
+					if(refs.State != ResourceState.Error){
+						promise.Resolve (refs);
+					}else{
+						promise.Reject(new Exception(refs.Path + " Load Error."));
+					}
+					refs.Action = null;
 					OnResourceComplate(refs);
 				};
 			}
+
 			return promise;
 		}
+
+		public ResourceRef addResource(string url, int priority, bool bAsync,Action<ResourceRef> actComplate,Action<Exception> actError){
+			_addResource(url,priority,bAsync).Catch(actError).Then(actComplate).Done();
+			return getResource(url);
+		}
+
+		public ResourceRef[] addResources(string[] urls, int[] priorities, bool bAsync,Action<ResourceRef[]> actComplate,Action<Exception> actError)
+		{
+			IPromise<ResourceRef>[] promises = new IPromise<ResourceRef>[urls.Length];
+			ResourceRef[] refs = new ResourceRef[urls.Length];
+			for (int i = 0; i < urls.Length; i++) {
+				int priority = (priorities!=null)?(priorities.Length>=urls.Length?priorities[i]:priorities[0]):0;
+				promises[i] = _addResource (urls[i], priority, bAsync);
+				refs[i] = getResource(urls[i]);
+			}
+
+			Func<IEnumerable<ResourceRef>,IEnumerable<IPromise<ResourceRef>>> funcResolved = resources=>{
+				actComplate (resources.ToArray());
+				return promises;
+			};
+			Promise<ResourceRef>.All(promises).Catch(actError).ThenAll(funcResolved).Done();
+			return refs;
+		}
+
 		public void delResource(string url)
 		{
 			Debug.Assert(url != null, "delResource url 不能为 null");
@@ -101,6 +132,14 @@ namespace Doubility3D.Resource.Manager
 				}
 			}
 		}
+
+		public void delResources(string[] urls)
+		{
+			for (int i = 0; i < urls.Length; i++) {
+				delResource(urls[i]);
+			}
+		}
+
 		public ResourceRef getResource(string url)
 		{
 			if (dictResources.ContainsKey(url))

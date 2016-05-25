@@ -8,12 +8,12 @@ ok.LoaderFactory的配置：放在Resource中？
 		WWW	: URL
 		Packet
 
-ResourceManager的Promise机制
+ok.ResourceManager的Promise机制
+	允许加入多个resources
+		ThenAll必须知道原始数组
+	多个Promises就需要 Reject机制
 	
 ResourceManager的堆栈机制
-	事件加在ResourceRef上
-	调用者去监听，收到后移除。
-	单资源加载不会有问题
 	
 		
 
@@ -37,6 +37,11 @@ ResourceManager的堆栈机制
 	.上载svn
 	.发布时可以用参数控制，是否打包数据。
 .http方式的服务器。下载可以启用ftp方式。
+	1.管理api:更新到指定版本
+	2.更新api:版本差异列表
+		如果已经存在,直接使用缓存,如果不存在,调用svn
+	3.	
+
 .windows版本直接使用DOUBILITY_HOME环境变量。
 	也保存当前版本号。只是不下载。
 	也生成目录树，

@@ -63,14 +63,14 @@ namespace Doubility3D.Resource.Manager
 		private void OnDownloadComplate(Byte[] bytes,string error){
 			if (string.IsNullOrEmpty (error) ) {
 				State = ResourceState.Parsing;
-				new Task (ResourceTask (bytes));
+				Parse (bytes);
 			} else {
 				State = ResourceState.Error; 
 				Action(this);
 			}
 		}
 
-		IEnumerator ResourceTask(Byte[] bytes)
+		void Parse(Byte[] bytes)
 		{
 			// 开始解析
 			Schema.Context context = Context.Unknown;
@@ -82,53 +82,35 @@ namespace Doubility3D.Resource.Manager
 
 				if (resourceObject == null) {
 					State = ResourceState.Error;
+					Action(this);
 				} else {
 					if (resourceObject.dependencePathes>0) {
 						State = ResourceState.Depending;
 
-						Action<ResourceRef> actDependResolved = OnDependResolved;
-						dependences = new ResourceRef[resourceObject.dependencePathes];
-						for (int i = 0; i < resourceObject.dependencePathes; i++) {
-							ResourceManager.Instance.addResource (resourceObject.GetDependencePath(i), Priority, Async).Then(actDependResolved).Done(); 	
-						}
-						if (State != ResourceState.Complated && State != ResourceState.Error) {
-							yield return null;							
-						}
+						int[] priorities = {Priority};
+						ResourceManager.Instance.addResources(resourceObject.DependencePathes,priorities,Async,OnDependResolved,OnDependError);
+
 					} else {
-						State = ResourceState.Complated;	
+						State = ResourceState.Complated;
+						Action(this);
 					}
 				}
 			} else {
-				State = ResourceState.Error; 	
+				State = ResourceState.Error;
+				Action(this);
 			}
-
-			Action(this);
 		}
 
-		private void OnDependResolved(ResourceRef resource)
+		private void OnDependResolved(ResourceRef[] resources)
 		{
-			if (resource.State != ResourceState.Error)
-			{
-				int index = Array.IndexOf<ResourceRef> (dependences, resource);
-				if (index >= 0) {
-					bool ended = true;
-					for (int i = 0; i < dependences.Length; i++) {
-						if (dependences [i].State != ResourceState.Complated) {
-							ended = false;
-							break;
-						}
-					}
-					if (ended) {
-						resourceObject.OnDependencesFinished ();
-						State = ResourceState.Complated;
-					}
-				}
-			}
-			else
-			{
-				UnityEngine.Debug.LogWarning("资源 " + resource.Path + "装载出错");
-				State = ResourceState.Error;
-			}
+			resourceObject.OnDependencesFinished ();
+			State = ResourceState.Complated;
+			Action(this);
+		}
+		private void OnDependError(Exception e){
+			UnityEngine.Debug.LogError(e.Message);
+			State = ResourceState.Error;
+			Action(this);
 		}
 	}
 }
