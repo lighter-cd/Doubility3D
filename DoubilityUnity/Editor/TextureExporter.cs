@@ -28,7 +28,7 @@ public class TextureExporter {
 
 			string path = names[i].Substring(ArtWork.path.Length);
 			path = System.IO.Path.GetDirectoryName(path) + "/" + System.IO.Path.GetFileNameWithoutExtension(path);
-			path = Application.streamingAssetsPath + "/.root/" + path + "." + TargetPath.GetPath(EditorUserBuildSettings.activeBuildTarget).ToLower() + ".texture";
+			path = TargetPath.GetHome() + "/.root/" + path + "." + TargetPath.GetPath(EditorUserBuildSettings.activeBuildTarget).ToLower() + ".texture";
 
 			string folder = System.IO.Path.GetDirectoryName(path);
 			if(!System.IO.Directory.Exists(folder)){

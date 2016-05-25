@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
+
+using RSG;
 
 using Doubility3D.Resource.Manager;
 using Doubility3D.Resource.ResourceObj;
@@ -20,22 +23,12 @@ public class CharactorLoader : MonoBehaviour
     public string materialResouce = "Character/Suit_Metal_Dragon_Male/Suit_Metal_Dragon_Male.doub";
     public string animationResource = "Character/Suit_Metal_Dragon_Male/dm_daiji.doub";
 
-	ResourceRef skeletonRef;
-	ResourceRef[] meshRef = new ResourceRef[4];
-	ResourceRef materialRef;
-	ResourceRef animationRef;
+	Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef> ();
 
     // Use this for initialization
     void Start()
     {
-		ResourceManager.Instance.resourceEvent += OnResourceComplateEvent;
-
-		skeletonRef = ResourceManager.Instance.addResource (skeletonResource, 0, true);
-		for (int i = 0; i < meshResources.Length; i++) {
-			meshRef[i] = ResourceManager.Instance.addResource (meshResources[i], 0, true);
-		}
-		materialRef = ResourceManager.Instance.addResource (materialResouce, 0, true);
-		animationRef = ResourceManager.Instance.addResource (animationResource, 0, true);
+		ShaderManager.Instance.LoadAssetBundle (OnShaderManagerComplate);
 	}
 
     // Update is called once per frame
@@ -45,6 +38,13 @@ public class CharactorLoader : MonoBehaviour
 
 	void OnDestroy()
 	{
+		dictResources.Add (skeletonResource, null);
+		for (int i = 0; i < meshResources.Length; i++) {
+			dictResources.Add (meshResources[i], null);
+		}
+		dictResources.Add (materialResouce, null);
+		dictResources.Add (animationResource, null);
+
 		ResourceManager.Instance.delResource (skeletonResource);
 		for (int i = 0; i < meshResources.Length; i++) {
 			ResourceManager.Instance.delResource (meshResources[i]);
@@ -53,15 +53,27 @@ public class CharactorLoader : MonoBehaviour
 		ResourceManager.Instance.delResource (animationResource);
 	}
 
-	private void OnResourceComplateEvent(object sender, ResourceEventArgs e)
+
+	private void OnShaderManagerComplate(string error)
 	{
-		ResourceRef resource = e.Resources;
+		Action<ResourceRef> actResolved = OnResolved;
+		ResourceManager.Instance.addResource (skeletonResource, 0, true).Then (actResolved).Done();
+		for (int i = 0; i < meshResources.Length; i++) {
+			ResourceManager.Instance.addResource (meshResources[i], 0, true).Then (actResolved).Done();
+		}
+		ResourceManager.Instance.addResource (materialResouce, 0, true).Then (actResolved).Done();
+		ResourceManager.Instance.addResource (animationResource, 0, true).Then (actResolved).Done();
+	}
+
+	void OnResolved(ResourceRef resource){
 		if (resource.State != ResourceState.Error)
 		{
-			bool bEnd = skeletonRef.IsDone && materialRef.IsDone && animationRef.IsDone;
+			dictResources [resource.Path] = resource;
+			bool bEnd = false;
 			if (bEnd) {
-				for (int i = 0; i < meshResources.Length; i++) {
-					if (!meshRef [i].IsDone) {
+				Dictionary<string, ResourceRef>.Enumerator e = dictResources.GetEnumerator ();
+				while(e.MoveNext()){
+					if (e.Current.Value == null) {
 						bEnd = false;
 						break;
 					}
@@ -79,17 +91,17 @@ public class CharactorLoader : MonoBehaviour
 
 
 	void OnComplate(){
-		GameObject go = skeletonRef.resourceObject.Unity3dObject as GameObject;
+		GameObject go = dictResources[skeletonResource].resourceObject.Unity3dObject as GameObject;
 		go.transform.parent = gameObject.transform;
 
-		UnityEngine.Material material = materialRef.resourceObject.Unity3dObject as UnityEngine.Material;
+		UnityEngine.Material material = dictResources[materialResouce].resourceObject.Unity3dObject as UnityEngine.Material;
 
 		for (int i = 0; i < meshResources.Length; i++)
 		{
 			GameObject goMesh = new GameObject();
 			SkinnedMeshRenderer smr = goMesh.AddComponent<SkinnedMeshRenderer>();
 
-			ResourceObjectMesh mesh = meshRef [i].resourceObject as ResourceObjectMesh;
+			ResourceObjectMesh mesh = dictResources[meshResources[i]].resourceObject as ResourceObjectMesh;
 			smr.sharedMesh = mesh.Unity3dObject as UnityEngine.Mesh;
 
 			UnityEngine.Transform[] bones = new UnityEngine.Transform[mesh.joints.Length];
@@ -106,7 +118,7 @@ public class CharactorLoader : MonoBehaviour
 			goMesh.transform.parent = gameObject.transform;
 		}
 
-		UnityEngine.AnimationClip clip1 = animationRef.resourceObject.Unity3dObject as UnityEngine.AnimationClip;
+		UnityEngine.AnimationClip clip1 = dictResources[animationResource].resourceObject.Unity3dObject as UnityEngine.AnimationClip;
 		clip1.wrapMode = UnityEngine.WrapMode.Loop;
 
 		Animation animation = gameObject.AddComponent<Animation>();

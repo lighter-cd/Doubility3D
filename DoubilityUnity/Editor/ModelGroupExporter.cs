@@ -137,7 +137,7 @@ namespace Doubility3D
 					dictFiles [key].Add (file);
 				}
 
-				string targetFolder = Application.streamingAssetsPath + "/.root";
+				string targetFolder = TargetPath.GetHome() + "/.root";
 				foreach (var pair in dictFiles) {
 					string targetDir = targetFolder + "/" + pair.Key;
 					if (!System.IO.Directory.Exists (targetDir)) {

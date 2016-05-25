@@ -27,12 +27,12 @@ namespace Doubility3D.Resource.Manager
 		string path;
 		int refs;
 		ResourceRef[] dependences;
-		Action<ResourceRef> action;
 
 		public ResourceRef(string _path)
 		{
 			path = _path;
 			State = ResourceState.WaitingInQueue;
+			refs = 1;
 		}
 		public int Refs { get { return refs; } }
 		public void AddRefs() { refs++; }
@@ -46,7 +46,9 @@ namespace Doubility3D.Resource.Manager
 		public bool Async { get; set; }
 		public bool IsDone { get { return State == ResourceState.Complated; } }
 
-		public void Start(Action<ResourceRef> _action)
+		public Action<ResourceRef> Action { get; set;}
+
+		public void Start()
 		{
 			State = ResourceState.Started;
 
@@ -56,7 +58,6 @@ namespace Doubility3D.Resource.Manager
 				State = ResourceState.Loading;
 				new Task (downloader.ResourceTask (resource_path,OnDownloadComplate));
 			}
-			action = _action;
 		}
 
 		private void OnDownloadComplate(Byte[] bytes,string error){
@@ -65,7 +66,7 @@ namespace Doubility3D.Resource.Manager
 				new Task (ResourceTask (bytes));
 			} else {
 				State = ResourceState.Error; 
-				action(this);
+				Action(this);
 			}
 		}
 
@@ -84,11 +85,11 @@ namespace Doubility3D.Resource.Manager
 				} else {
 					if (resourceObject.dependencePathes>0) {
 						State = ResourceState.Depending;
-						ResourceManager.Instance.resourceEvent += OnResourceComplateEvent;
 
+						Action<ResourceRef> actDependResolved = OnDependResolved;
 						dependences = new ResourceRef[resourceObject.dependencePathes];
 						for (int i = 0; i < resourceObject.dependencePathes; i++) {
-							dependences [i] = ResourceManager.Instance.addResource (resourceObject.GetDependencePath(i), Priority, Async); 	
+							ResourceManager.Instance.addResource (resourceObject.GetDependencePath(i), Priority, Async).Then(actDependResolved).Done(); 	
 						}
 						if (State != ResourceState.Complated && State != ResourceState.Error) {
 							yield return null;							
@@ -101,12 +102,11 @@ namespace Doubility3D.Resource.Manager
 				State = ResourceState.Error; 	
 			}
 
-			action(this);
+			Action(this);
 		}
 
-		private void OnResourceComplateEvent(object sender, ResourceEventArgs e)
+		private void OnDependResolved(ResourceRef resource)
 		{
-			ResourceRef resource = e.Resources;
 			if (resource.State != ResourceState.Error)
 			{
 				int index = Array.IndexOf<ResourceRef> (dependences, resource);

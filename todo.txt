@@ -1,3 +1,22 @@
+ok.输出工具都指向 Home 目录
+ok.Shader名与文件名的对照表
+	生成并打包
+ok.Shader manager的ab装载
+ok.LoaderFactory的配置：放在Resource中？
+	类型
+		File : Home
+		WWW	: URL
+		Packet
+
+ResourceManager的Promise机制
+	
+ResourceManager的堆栈机制
+	事件加在ResourceRef上
+	调用者去监听，收到后移除。
+	单资源加载不会有问题
+	
+		
+
 依赖资源的装载
 	一次只装载一个资源的情况下，
 		依赖资源总是在父资源等待的状态下

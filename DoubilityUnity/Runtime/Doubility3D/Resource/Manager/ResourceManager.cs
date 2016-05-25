@@ -1,30 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using RSG;
 using UnityEngine;
 using Doubility3D.Resource.Downloader;
 
 namespace Doubility3D.Resource.Manager
 {
-	public class ResourceEventArgs : EventArgs
-	{
-		ResourceRef resource;
-
-		public ResourceEventArgs(ResourceRef _resource)
-		{
-			resource = _resource;
-		}
-
-		public ResourceRef Resources { get { return resource; } }
-	}
-	public class ObjectEventArgs : EventArgs
-	{
-		public ObjectEventArgs(){
-
-		}
-		public UnityEngine.Object Target { get; set; }
-		public int Zone{get;set;}
-	}
-
 	public class ResourceComparer : Comparer<ResourceRef>
 	{
 		public override int Compare(ResourceRef x, ResourceRef y)
@@ -44,6 +26,7 @@ namespace Doubility3D.Resource.Manager
 	{
 		private ResourceManager ()
 		{
+			new Task (Update());
 		}
 
 		static private ResourceManager _instance = null;
@@ -55,7 +38,7 @@ namespace Doubility3D.Resource.Manager
 					DownloaderFactory.resourceMode = resourceMode;
 					_instance = new ResourceManager ();
 				}
-				return Instance;
+				return _instance;
 			}
 		}
 
@@ -63,9 +46,8 @@ namespace Doubility3D.Resource.Manager
 		ResourceRef current = null;
 		PriorityQueue<ResourceRef> queueResource = new PriorityQueue<ResourceRef>(new ResourceComparer());
 		Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef>();
-		public event EventHandler<ResourceEventArgs> resourceEvent;
 
-		public ResourceRef addResource(string url, int priority, bool bAsync)
+		public Promise<ResourceRef> addResource(string url, int priority, bool bAsync)
 		{
 			ResourceRef resource = null;
 			Debug.Assert(url != null, "addResource url 不能为 null");
@@ -81,9 +63,20 @@ namespace Doubility3D.Resource.Manager
 			else
 			{
 				resource = dictResources[url];
+				resource.AddRefs();
 			}
-			resource.AddRefs();
-			return resource;
+
+			Promise<ResourceRef> promise = new Promise<ResourceRef> ();
+			if (resource.IsDone) {
+				promise.Resolve (resource);
+
+			} else {
+				resource.Action = (refs)=>{
+					promise.Resolve (refs);
+					OnResourceComplate(refs);
+				};
+			}
+			return promise;
 		}
 		public void delResource(string url)
 		{
@@ -117,37 +110,7 @@ namespace Doubility3D.Resource.Manager
 			return null;
 		}
 
-		private void DispatchResourceEvent(ResourceRef resource)
-		{
-			//Debug.Log("资源 " + resource.Path + " 装载完毕");
-			if (resource.Async)
-			{
-				current = null;
-			}
-
-			if (resource.Refs == 0)
-			{
-				if (resource.resourceObject != null)
-				{
-					resource.resourceObject.Dispose ();
-					resource.resourceObject = null;
-					needRemoveUnused = true;
-				}
-				//Debug.Log("资源 url = " + resource.Path + "计数器已经为0装载完毕即被删除");
-				return;
-			}
-
-			//复制一个委托的引用到临时字段temp，这样确保线程安全
-			EventHandler<ResourceEventArgs> temp = this.resourceEvent;
-
-			//任何注册到事件里面的方法，通知它们
-			if (temp != null)
-			{
-				temp(this, new ResourceEventArgs(resource));
-			}
-		}
-
-		public void Update()
+		private IEnumerator Update()
 		{
 			// 一次只装载一个资源
 			if (current == null || current.State == ResourceState.Depending)
@@ -165,7 +128,7 @@ namespace Doubility3D.Resource.Manager
 					// 取到了一个引用计数不为0的资源
 					if (resource.Refs > 0)
 					{
-						resource.Start(DispatchResourceEvent);
+						resource.Start();
 						//Debug.Log("资源 "+resource.Path+ " 开始装载");
 
 						// 异步资源一帧只加载一个。同步资源加载完为止。
@@ -195,6 +158,27 @@ namespace Doubility3D.Resource.Manager
 				needRemoveUnused = false;
 				//Debug.Log("释放一下无用资源");
 			}
+
+			yield return null;
+		}
+		void OnResourceComplate(ResourceRef resource){
+			//Debug.Log("资源 " + resource.Path + " 装载完毕");
+			if (resource.Async)
+			{
+				current = null;
+			}
+
+			if (resource.Refs == 0)
+			{
+				if (resource.resourceObject != null)
+				{
+					resource.resourceObject.Dispose ();
+					resource.resourceObject = null;
+					needRemoveUnused = true;
+				}
+				//Debug.Log("资源 url = " + resource.Path + "计数器已经为0装载完毕即被删除");
+				return;
+			}			
 		}
 	}
 }

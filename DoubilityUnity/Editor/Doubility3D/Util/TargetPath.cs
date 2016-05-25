@@ -19,6 +19,14 @@ namespace Doubility3D.Util
 			}
 			return "Unknown";
 		}
+		static public string GetHome(){
+			string home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.Machine);
+			if (string.IsNullOrEmpty (home)) {
+				home = Application.streamingAssetsPath;
+			}
+			home = home.Replace ('\\', '/');
+			return home;
+		}
 	}
 }
 

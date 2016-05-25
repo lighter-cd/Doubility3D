@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LitJson;
 using Doubility3D.Util;
 using Doubility3D.Resource.Downloader;
 
@@ -25,7 +26,7 @@ namespace Doubility3D.Resource.Manager
 				if (_instance == null) {
 					_instance = new ShaderManager ();
 				}
-				return Instance;
+				return _instance;
 			}
 		}
 
@@ -91,11 +92,37 @@ namespace Doubility3D.Resource.Manager
 		{
 			AssetBundleCreateRequest abcq = AssetBundle.LoadFromMemoryAsync (bytes);
 			yield return abcq;
+
+			string error = null;
 			if (abcq.isDone)
 			{
-				ab = abcq.assetBundle;
+				if (abcq.assetBundle != null) {
+					ab = abcq.assetBundle;
+					AssetBundleRequest abr = ab.LoadAssetAsync (ShaderDictionary.Path);
+					yield return abr;
+
+					if (abr.isDone) {
+						if (abr.asset != null && abr.asset is TextAsset) {
+							TextAsset asset = abr.asset as TextAsset;
+							BuildDictName2Path (asset);
+						} else {
+							error = "ShaderManager:Cannot load Name2Path Dictionary:" + ShaderDictionary.Path;
+						}
+					}
+				} else {
+					error = "ShaderManager:AssetBundle.LoadFromMemoryAsync error";
+				}
 			}
-			actOnComplate (null);
+			actOnComplate (error);
+		}
+		private void BuildDictName2Path(TextAsset asset){
+			JsonData data = JsonMapper.ToObject (asset.text);
+			IEnumerator e = data.Keys.GetEnumerator ();
+			while (e.MoveNext()) {
+				string key = e.Current as string;
+				string value = (string)data[key];
+				dictName2Path.Add (key, value);
+			}
 		}
 	}
 }

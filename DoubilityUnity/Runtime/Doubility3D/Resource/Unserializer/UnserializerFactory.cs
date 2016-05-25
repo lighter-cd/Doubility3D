@@ -19,7 +19,7 @@ namespace Doubility3D.Resource.Unserializing
 				if (_instance == null) {
 					_instance = new UnserializerFactory ();
 				}
-				return Instance;
+				return _instance;
 			}
 		}
 
