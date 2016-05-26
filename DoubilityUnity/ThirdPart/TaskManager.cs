@@ -100,9 +100,11 @@ public class Task
     }
 
     /// Begins execution of the coroutine
-    public void Start()
+	/// modified by lighter
+	/// 需要返回值作为其他 corutine 的 yield return 值
+	public Coroutine Start()
     {
-        task.Start();
+        return task.Start();
     }
 
     /// Discontinues execution of the coroutine at its next yield.
@@ -174,10 +176,12 @@ class TaskManager : MonoBehaviour
             paused = false;
         }
 
-        public void Start()
+		/// modified by lighter
+		/// 需要返回值作为其他 corutine 的 yield return 值
+		public Coroutine Start()
         {
             running = true;
-            singleton.StartCoroutine(CallWrapper());
+            return singleton.StartCoroutine(CallWrapper());
         }
 
         public void Stop()

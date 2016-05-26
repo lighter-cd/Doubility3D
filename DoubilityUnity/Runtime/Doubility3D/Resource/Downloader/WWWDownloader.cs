@@ -12,17 +12,21 @@ namespace Doubility3D.Resource.Downloader
 		{
 			home = _home;
 		}
-		public IEnumerator ResourceTask (string path,Action<Byte[],string> actOnComplate)
+
+		public IEnumerator ResourceTask (string path, Action<Byte[],string> actOnComplate)
 		{
 			Byte[] _bytes = null;
 			string _error = null;
 
-			WWW www = new WWW (WWW.EscapeURL (home + path));
+			string uri = Uri.EscapeUriString (home + path);
+			WWW www = new WWW (home + path);
 			yield return www;
 			if (www.isDone) {
-				_bytes = www.bytes;
-			} else {
-				_error = www.error;
+				if (string.IsNullOrEmpty (www.error)) {
+					_bytes = www.bytes;
+				} else {
+					_error = www.error;
+				}
 			}
 			actOnComplate (_bytes, _error);
 		}

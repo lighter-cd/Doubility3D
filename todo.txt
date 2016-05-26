@@ -1,3 +1,34 @@
+低耦合，高内聚
+避免相似的代码重复出现
+一旦觉得需要写注释，就说明需要写成新函数了。
+
+
+.平台无关资源输出
+.平台相关资源 纹理，shader 输出
+	windows平台
+	android&ios
+.资源管理
+.分离文件和WWW模式运行	
+.虚拟文件系统
+.资源管理和加载机制	
+.加入粒子资源
+.modelGroup机制
+.角色查看器
+.动态场景
+	.地形	
+	.组件信息
+		transform
+		renderer
+		collider
+		Camera
+		Light
+		Sound
+		terrain
+.界面	
+	
+	
+.?逻辑数据直接客户端模块读取？	
+
 ok.输出工具都指向 Home 目录
 ok.Shader名与文件名的对照表
 	生成并打包
@@ -13,16 +44,47 @@ ok.ResourceManager的Promise机制
 		ThenAll必须知道原始数组
 	多个Promises就需要 Reject机制
 	
-ResourceManager的堆栈机制
+ok ResourceManager的依赖装载机制
+	ok 修改 TaskManager
+	ok ResourceRef 的装载和解析 协程化
+	no 无法使用协程堆栈机制
+	ok 是等待者的堆栈，不是依赖项的堆栈。
+		单协程机制，
+		多协程机制
+	ok 测试
+ok ResourceManager 文件方式读测试
+ok ResourceManager WWW方式读测试
+ResourceManager多协程控制(异步)
+	ok 优先级队列
+		如果两次资源传入优先级不同，强制为优先级高的。
+		如果两次资源传入同步异步参数不同，强制为同步资源。
+		一旦参数改变，重新排序
+暂停功能，开始写测试用例。
 	
-		
 
-依赖资源的装载
-	一次只装载一个资源的情况下，
-		依赖资源总是在父资源等待的状态下
-依赖资源的设置方案
-	1.parse也做成协程，装载成为协程的一个片段
-	2.资源类包装，抽象，加依赖。Asset
+读文件和解析文件放入多线程
+数据打包机制读文件
+	读取zip中的文件(原生库)
+	读取assetstreaming目录中的zip包(安卓)
+ResourceManager WWW方式更新机制 Cache刷新问题
+	缓存中是当时的 hashcode
+	如果有一份新的 hashcode,有了差异就产生了不同的url.
+	
+	如何让提交文件时自动产生hashcode
+	根据版本差异传送被改变过的hashcode列表
+	客户端保存所有文件的hashcode列表
+	
+	全部扫描一遍生成所有文件的hashcode,并记录版本号（单独的工具）
+	如果有新版本请求比记录的版本号新，则更新svn,并更新hashcode记录和版本号记录
+	向请求端发送
+数据打包方式的更新机制
+
+Updater 是单独的场景。这个场景中的数据直接打包在内。
+	FileModeUpdater
+	WWWModeUpdater
+	PacketModeUpdater
+	
+
 
 .可写目录 or DOUBILITY_HOME 路径 下的分立文件目录 .root
 .streamingAssets中的压缩包。
@@ -175,28 +237,7 @@ zip部分使用原生代码还是c#代码
 .所有与"Assets/ArtWork" ".root"	相关的路径都放到一个工具类.
 	
 	
-.纹理，shader输出的单元测试
-	windows平台
-	android&ios
-.加入粒子资源
-.modelGroup机制
-.虚拟文件系统
-.资源管理和加载机制	
-.角色查看器
-.动态场景
-	.地形	
-	.组件信息
-		transform
-		renderer
-		collider
-		Camera
-		Light
-		Sound
-		terrain
-.界面	
-	
-	
-.?逻辑数据直接客户端模块读取？	
+
 
 
 

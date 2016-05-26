@@ -19,7 +19,6 @@ namespace Doubility3D.Resource.ResourceObj
 		}
 		private List<TextureParam> lstTextureParams = new List<TextureParam> (8);
 		private List<string> dependencesPath = new List<string>(8);
-		private ResourceObject[] dependences;
 
 		static private string platform;
 		static ResourceObjectMaterial(){
@@ -37,10 +36,8 @@ namespace Doubility3D.Resource.ResourceObj
 			lstTextureParams.Add (new TextureParam (path + "." + platform +".texture",propertyName));
 			dependencesPath.Add(path + "." + platform +".texture");
 		}
-		override public int dependencePathes  { get { return lstTextureParams.Count; }}
 		override public string[] DependencePathes {	get{return dependencesPath.ToArray();}}
 		override public void OnDependencesFinished(){
-			dependences = new ResourceObject[lstTextureParams.Count];
 			Material material = unity3dObject as Material;
 			for (int i = 0; i < lstTextureParams.Count; i++) {
 				ResourceRef res = ResourceManager.Instance.getResource (lstTextureParams [i].path);
@@ -55,9 +52,7 @@ namespace Doubility3D.Resource.ResourceObj
 				if (res != null) {
 					ResourceManager.Instance.delResource (lstTextureParams [i].path);
 				}
-				dependences [i] = null;
 			}
-			dependences = null;
 
 			Material material = unity3dObject as Material;
 			ShaderManager.Instance.DelShader (material.shader);

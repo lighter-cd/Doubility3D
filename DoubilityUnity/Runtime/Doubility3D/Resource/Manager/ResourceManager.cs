@@ -12,6 +12,10 @@ namespace Doubility3D.Resource.Manager
 	{
 		public override int Compare(ResourceRef x, ResourceRef y)
 		{
+			// 同步的排在前面
+			if (x.Async != y.Async) {
+				
+			}
 			return x.Priority - y.Priority;
 		}
 	}
@@ -45,7 +49,8 @@ namespace Doubility3D.Resource.Manager
 
 		bool needRemoveUnused = false;
 		ResourceRef current = null;
-		PriorityQueue<ResourceRef> queueResource = new PriorityQueue<ResourceRef>(new ResourceComparer());
+		Stack<ResourceRef> stackWaiter = new Stack<ResourceRef> ();
+		PriorityQueue<ResourceRef> queueResources = new PriorityQueue<ResourceRef>(new ResourceComparer());
 		Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef>();
 
 		private IPromise<ResourceRef> _addResource(string url, int priority, bool bAsync)
@@ -59,12 +64,19 @@ namespace Doubility3D.Resource.Manager
 				resource.Priority = priority;
 				resource.Async = bAsync;
 				dictResources[url] = resource;
-				queueResource.Push(resource);
+				queueResources.Push(resource);
 			}
 			else
 			{
 				resource = dictResources[url];
+				int oldPriority = resource.Priority;
+				bool oldAsync = resource.Async;
+				resource.Priority = Math.Max (priority, resource.Priority);
+				resource.Async = resource.Async && bAsync;	// 一直传异步参数才能保持资源异步，一旦传入过同步参数，就一直是同步的了。
 				resource.AddRefs();
+				if((oldPriority != resource.Priority) || (oldAsync != resource.Async)){
+					queueResources.ReSort ();
+				}
 			}
 
 			Promise<ResourceRef> promise = new Promise<ResourceRef> ();
@@ -121,12 +133,7 @@ namespace Doubility3D.Resource.Manager
 
 				if (resource.Refs == 0)
 				{
-					if (resource.resourceObject != null)
-					{
-						resource.resourceObject.Dispose ();
-						resource.resourceObject = null;
-						needRemoveUnused = true;
-					}
+					ReleaseResource (resource);
 					//Debug.Log("资源 url = " + url + "计数器为0被删除");
 					dictResources.Remove(url);
 				}
@@ -151,73 +158,77 @@ namespace Doubility3D.Resource.Manager
 
 		private IEnumerator Update()
 		{
-			// 一次只装载一个资源
-			if (current == null || current.State == ResourceState.Depending)
-			{
-				while (queueResource.Count > 0)
-				{
-					ResourceRef resource = queueResource.Pop();
+			while (true) {
+				// 一次只装载一个资源
+				if (current == null) {
+					while (queueResources.Count > 0) {
+						ResourceRef resource = queueResources.Pop ();
 
-					// 尝试取到一个引用计数不为0的资源
-					while (resource.Refs == 0 && queueResource.Count > 0)
-					{
-						resource = queueResource.Pop();
-					}
+						// 尝试取到一个引用计数不为0的资源
+						while (resource.Refs == 0 && queueResources.Count > 0) {
+							resource = queueResources.Pop ();
+						}
 
-					// 取到了一个引用计数不为0的资源
-					if (resource.Refs > 0)
-					{
-						resource.Start();
-						//Debug.Log("资源 "+resource.Path+ " 开始装载");
+						// 取到了一个引用计数不为0的资源
+						if (resource.Refs > 0) {
+							resource.Start ();
+							//Debug.Log("资源 "+resource.Path+ " 开始装载");
 
-						// 异步资源一帧只加载一个。同步资源加载完为止。
-						if (resource.Async)
-						{
-							current = resource;
-							break;
+							// 异步资源一帧只加载一个。同步资源加载完为止。
+							if (resource.Async) {
+								current = resource;
+								break;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				// 如果资源出错了，就把当前的资源放过。
-				if (current.State == ResourceState.Error) {
-					current = null;
-				} 
 
-				if (current.Refs == 0 && current.State == ResourceState.WaitingInQueue)
-				{
-					Debug.LogError("无法处理的当前资源？");
+
+				if (stackWaiter.Count > 0) {
+					ResourceRef top = stackWaiter.Peek ();
+					if (top.IsDone) {
+						stackWaiter.Pop ();
+					}
 				}
-			}
-			if (needRemoveUnused)
-			{
-				Resources.UnloadUnusedAssets();
-				needRemoveUnused = false;
-				//Debug.Log("释放一下无用资源");
-			}
 
-			yield return null;
+				if (needRemoveUnused) {
+					Resources.UnloadUnusedAssets ();
+					needRemoveUnused = false;
+					//Debug.Log("释放一下无用资源");
+				}
+
+				yield return null;
+			}
 		}
 		void OnResourceComplate(ResourceRef resource){
 			//Debug.Log("资源 " + resource.Path + " 装载完毕");
-			if (resource.Async)
+			if (resource.Async && (resource == current))
 			{
 				current = null;
 			}
 
 			if (resource.Refs == 0)
 			{
-				if (resource.resourceObject != null)
-				{
-					resource.resourceObject.Dispose ();
-					resource.resourceObject = null;
-					needRemoveUnused = true;
-				}
+				ReleaseResource (resource);
 				//Debug.Log("资源 url = " + resource.Path + "计数器已经为0装载完毕即被删除");
 				return;
 			}			
+		}
+
+		public void RegisterDependWaiter(ResourceRef refs){
+			if (refs == current) {
+				current = null;
+			}
+			stackWaiter.Push (refs);
+		}
+
+		private void ReleaseResource(ResourceRef resource){
+			if (resource.IsDone && resource.resourceObject != null)
+			{
+				resource.resourceObject.Dispose ();
+				resource.resourceObject = null;
+				needRemoveUnused = true;
+			}
 		}
 	}
 }

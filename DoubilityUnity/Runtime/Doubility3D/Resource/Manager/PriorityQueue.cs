@@ -61,5 +61,13 @@ namespace Doubility3D.Resource.Manager
             }
             heap[n] = v;
         }
+
+		/// <summary>
+		/// Res the sort.
+		/// Add by Lighter:参数改变后，重新排序
+		/// </summary>
+		public void ReSort(){
+			Array.Sort<T> (heap, comparer);
+		}
     }
 }
