@@ -49,6 +49,7 @@ namespace Doubility3D.Resource.Manager
 		public string Error { get; set; }
 
 		public Action<ResourceRef> Action { get; set;}
+		public int Processor { get; set;}
 
 		public void Start()
 		{

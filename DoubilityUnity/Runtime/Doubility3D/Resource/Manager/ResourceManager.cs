@@ -14,44 +14,43 @@ namespace Doubility3D.Resource.Manager
 		{
 			// 同步的排在前面
 			if (x.Async != y.Async) {
-				
+				if (!x.Async && y.Async) {
+					return 1;
+				} else if (x.Async && !y.Async) {
+					return -1;
+				}
 			}
 			return x.Priority - y.Priority;
 		}
 	}
 
-	public enum ResourceMode
-	{
-		FromPacket,
-		FromFile,
-		FromWWW,
-	}
-
 	public class ResourceManager
 	{
-		private ResourceManager ()
-		{
-			new Task (Update());
-		}
-
 		static private ResourceManager _instance = null;
-		static public ResourceMode resourceMode = ResourceMode.FromPacket;
+		static public int NumberOfProcessor = 4;
 
 		static public ResourceManager Instance{
 			get{ 
 				if (_instance == null) {
-					DownloaderFactory.resourceMode = resourceMode;
 					_instance = new ResourceManager ();
 				}
 				return _instance;
 			}
 		}
 
+		IResourceScheduler syncProcessor;	// for sync ResourceRef
+		IResourceScheduler asyncProcessor;	// for async ResourceRef
 		bool needRemoveUnused = false;
-		ResourceRef current = null;
-		Stack<ResourceRef> stackWaiter = new Stack<ResourceRef> ();
 		PriorityQueue<ResourceRef> queueResources = new PriorityQueue<ResourceRef>(new ResourceComparer());
 		Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef>();
+
+		private ResourceManager ()
+		{
+			new Task (Update());
+			syncProcessor = new ResourceSchedulerLimitless ();
+			asyncProcessor = new ResourceSchedulerLimited (NumberOfProcessor);
+		}
+
 
 		private IPromise<ResourceRef> _addResource(string url, int priority, bool bAsync)
 		{
@@ -69,13 +68,16 @@ namespace Doubility3D.Resource.Manager
 			else
 			{
 				resource = dictResources[url];
-				int oldPriority = resource.Priority;
-				bool oldAsync = resource.Async;
-				resource.Priority = Math.Max (priority, resource.Priority);
-				resource.Async = resource.Async && bAsync;	// 一直传异步参数才能保持资源异步，一旦传入过同步参数，就一直是同步的了。
 				resource.AddRefs();
-				if((oldPriority != resource.Priority) || (oldAsync != resource.Async)){
-					queueResources.ReSort ();
+
+				if (resource.State == ResourceState.WaitingInQueue) {
+					int oldPriority = resource.Priority;
+					bool oldAsync = resource.Async;
+					resource.Priority = Math.Max (priority, resource.Priority);
+					resource.Async = resource.Async && bAsync;	// 一直传异步参数才能保持资源异步，一旦传入过同步参数，就一直是同步的了。
+					if ((oldPriority != resource.Priority) || (oldAsync != resource.Async)) {
+						queueResources.ReSort ();
+					}
 				}
 			}
 
@@ -159,67 +161,39 @@ namespace Doubility3D.Resource.Manager
 		private IEnumerator Update()
 		{
 			while (true) {
-				// 一次只装载一个资源
-				if (current == null) {
-					while (queueResources.Count > 0) {
-						ResourceRef resource = queueResources.Pop ();
-
-						// 尝试取到一个引用计数不为0的资源
-						while (resource.Refs == 0 && queueResources.Count > 0) {
-							resource = queueResources.Pop ();
-						}
-
-						// 取到了一个引用计数不为0的资源
-						if (resource.Refs > 0) {
-							resource.Start ();
-							//Debug.Log("资源 "+resource.Path+ " 开始装载");
-
-							// 异步资源一帧只加载一个。同步资源加载完为止。
-							if (resource.Async) {
-								current = resource;
-								break;
-							}
-						}
-					}
-				}
-
-
-				if (stackWaiter.Count > 0) {
-					ResourceRef top = stackWaiter.Peek ();
-					if (top.IsDone) {
-						stackWaiter.Pop ();
-					}
-				}
+				syncProcessor.ProcessQueue (queueResources);
+				asyncProcessor.ProcessQueue (queueResources);
+				syncProcessor.ProcessDependWaiter ();
+				asyncProcessor.ProcessDependWaiter ();
 
 				if (needRemoveUnused) {
-					Resources.UnloadUnusedAssets ();
+					Resources.UnloadUnusedAssets ();	//释放一下无用资源
 					needRemoveUnused = false;
-					//Debug.Log("释放一下无用资源");
 				}
 
 				yield return null;
 			}
 		}
 		void OnResourceComplate(ResourceRef resource){
-			//Debug.Log("资源 " + resource.Path + " 装载完毕");
-			if (resource.Async && (resource == current))
-			{
-				current = null;
+			if (resource.Async) {
+				asyncProcessor.OnResourceComplate (resource);
+			} else {
+				syncProcessor.OnResourceComplate (resource);
 			}
 
 			if (resource.Refs == 0)
 			{
 				ReleaseResource (resource);
-				//Debug.Log("资源 url = " + resource.Path + "计数器已经为0装载完毕即被删除");
 				return;
 			}			
 		}
 
-		public void RegisterDependWaiter(ResourceRef refs){
-			if (refs == current) {
-				current = null;
+		public void RegisterDependWaiter(ResourceRef resource){
+			if (resource.Async) {
+				asyncProcessor.RegisterDependWaiter (resource);
+			} else {
+				syncProcessor.RegisterDependWaiter (resource);
 			}
-			stackWaiter.Push (refs);
 		}
 
 		private void ReleaseResource(ResourceRef resource){

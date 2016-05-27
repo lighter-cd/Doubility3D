@@ -24,6 +24,7 @@
 		Light
 		Sound
 		terrain
+	.尝试把区域作为场景，用多场景渲染Lightmap	
 .界面	
 	
 	
@@ -54,12 +55,32 @@ ok ResourceManager的依赖装载机制
 	ok 测试
 ok ResourceManager 文件方式读测试
 ok ResourceManager WWW方式读测试
-ResourceManager多协程控制(异步)
+ok ResourceManager多协程控制(异步)
 	ok 优先级队列
 		如果两次资源传入优先级不同，强制为优先级高的。
 		如果两次资源传入同步异步参数不同，强制为同步资源。
 		一旦参数改变，重新排序
+	ok 异步、同步分成不同的处理器	
+		异步协程数量需要指定
+		同步协程数量不受限制
+		
+资源同步装载和异步装载，是否应该属于资源管理器的功能，	资源管理器在两种状态之间切换。
+	改名为 LimitedScheduler 和 UnlimitedScheduler
+	
+	
+	
 暂停功能，开始写测试用例。
+	下载工厂
+	File下载
+	WWW下载
+	
+	
+	反序列化工厂	
+	反序列化类
+	
+	shader管理器
+	资源ref
+	资源管理器
 	
 
 读文件和解析文件放入多线程

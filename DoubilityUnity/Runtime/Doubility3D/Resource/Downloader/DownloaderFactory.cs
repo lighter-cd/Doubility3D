@@ -39,8 +39,6 @@ namespace Doubility3D.Resource.Downloader
 			}
 		}
 
-		static public ResourceMode resourceMode = ResourceMode.FromPacket;
-
 		public IDownloader Create(){
 			switch (config.FileMode) {
 			case DownloadMode.File:
