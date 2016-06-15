@@ -1,4 +1,5 @@
 ﻿git config --global credential.helper store
+did we done it?
 
 低耦合，高内聚
 避免相似的代码重复出现
