@@ -1,4 +1,6 @@
-﻿低耦合，高内聚
+﻿git config --global credential.helper store
+
+低耦合，高内聚
 避免相似的代码重复出现
 一旦觉得需要写注释，就说明需要写成新函数了。
 
