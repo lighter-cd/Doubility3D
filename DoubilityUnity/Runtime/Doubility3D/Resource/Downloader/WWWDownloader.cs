@@ -18,7 +18,6 @@ namespace Doubility3D.Resource.Downloader
 			Byte[] _bytes = null;
 			string _error = null;
 
-			string uri = Uri.EscapeUriString (home + path);
 			WWW www = new WWW (home + path);
 			yield return www;
 			if (www.isDone) {

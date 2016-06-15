@@ -14,7 +14,7 @@ using System;
 
 using UnitTest.Doubility3D;
 
-namespace UnitTest.Doubility3D.Resource.Saver
+namespace UnitTest.Doubility3D.Resource.Unserializing
 {
 	[TestFixture]
 	public class TextureLoaderTest

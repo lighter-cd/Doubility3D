@@ -1,22 +1,22 @@
-����ϣ����ھ�
-�������ƵĴ����ظ�����
-һ��������Ҫдע�ͣ���˵����Ҫд���º����ˡ�
+﻿低耦合，高内聚
+避免相似的代码重复出现
+一旦觉得需要写注释，就说明需要写成新函数了。
 
 
-.ƽ̨�޹���Դ���
-.ƽ̨�����Դ ������shader ���
-	windowsƽ̨
+.平台无关资源输出
+.平台相关资源 纹理，shader 输出
+	windows平台
 	android&ios
-.��Դ����
-.�����ļ���WWWģʽ����	
-.�����ļ�ϵͳ
-.��Դ�����ͼ��ػ���	
-.����������Դ
-.modelGroup����
-.��ɫ�鿴��
-.��̬����
-	.����	
-	.�����Ϣ
+.资源管理
+.分离文件和WWW模式运行	
+.虚拟文件系统
+.资源管理和加载机制	
+.加入粒子资源
+.modelGroup机制
+.角色查看器
+.动态场景
+	.地形	
+	.组件信息
 		transform
 		renderer
 		collider
@@ -24,238 +24,240 @@
 		Light
 		Sound
 		terrain
-	.���԰�������Ϊ�������öೡ����ȾLightmap	
-.����	
+	.尝试把区域作为场景，用多场景渲染Lightmap	
+.界面	
 	
 	
-.?�߼�����ֱ�ӿͻ���ģ���ȡ��	
+.?逻辑数据直接客户端模块读取？	
 
-ok.������߶�ָ�� Home Ŀ¼
-ok.Shader�����ļ����Ķ��ձ�
-	���ɲ����
-ok.Shader manager��abװ��
-ok.LoaderFactory�����ã�����Resource�У�
-	����
+ok.输出工具都指向 Home 目录
+ok.Shader名与文件名的对照表
+	生成并打包
+ok.Shader manager的ab装载
+ok.LoaderFactory的配置：放在Resource中？
+	类型
 		File : Home
 		WWW	: URL
 		Packet
 
-ok.ResourceManager��Promise����
-	����������resources
-		ThenAll����֪��ԭʼ����
-	���Promises����Ҫ Reject����
+ok.ResourceManager的Promise机制
+	允许加入多个resources
+		ThenAll必须知道原始数组
+	多个Promises就需要 Reject机制
 	
-ok ResourceManager������װ�ػ���
-	ok �޸� TaskManager
-	ok ResourceRef ��װ�غͽ��� Э�̻�
-	no �޷�ʹ��Э�̶�ջ����
-	ok �ǵȴ��ߵĶ�ջ������������Ķ�ջ��
-		��Э�̻��ƣ�
-		��Э�̻���
-	ok ����
-ok ResourceManager �ļ���ʽ������
-ok ResourceManager WWW��ʽ������
-ok ResourceManager��Э�̿���(�첽)
-	ok ���ȼ�����
-		���������Դ�������ȼ���ͬ��ǿ��Ϊ���ȼ��ߵġ�
-		���������Դ����ͬ���첽������ͬ��ǿ��Ϊͬ����Դ��
-		һ�������ı䣬��������
-	ok �첽��ͬ���ֳɲ�ͬ�Ĵ�����	
-		�첽Э��������Ҫָ��
-		ͬ��Э��������������
+ok ResourceManager的依赖装载机制
+	ok 修改 TaskManager
+	ok ResourceRef 的装载和解析 协程化
+	no 无法使用协程堆栈机制
+	ok 是等待者的堆栈，不是依赖项的堆栈。
+		单协程机制，
+		多协程机制
+	ok 测试
+ok ResourceManager 文件方式读测试
+ok ResourceManager WWW方式读测试
+ok ResourceManager多协程控制(异步)
+	ok 优先级队列
+		如果两次资源传入优先级不同，强制为优先级高的。
+		如果两次资源传入同步异步参数不同，强制为同步资源。
+		一旦参数改变，重新排序
+	ok 异步、同步分成不同的处理器	
+		异步协程数量需要指定
+		同步协程数量不受限制
 		
-��Դͬ��װ�غ��첽װ�أ��Ƿ�Ӧ��������Դ�������Ĺ��ܣ�	��Դ������������״̬֮���л���
-	����Ϊ LimitedScheduler �� UnlimitedScheduler
+no 资源同步装载和异步装载，是否应该属于资源管理器的功能，	资源管理器在两种状态之间切换。
+	ok 改名为 LimitedScheduler 和 UnlimitedScheduler
+	no 无法在两个 scheduler 之间切换
 	
 	
+暂停功能，开始写测试用例。
+	下载工厂
+		从 Resources 中读取，文件名要能设置。便于使用测试文件
+		单例模式，需要一个释放。便于测试不同情形下的初始化。
+	File下载
+	WWW下载
 	
-��ͣ���ܣ���ʼд����������
-	���ع���
-	File����
-	WWW����
 	
+	反序列化工厂	
+	反序列化类
 	
-	�����л�����	
-	�����л���
-	
-	shader������
-	��Դref
-	��Դ������
+	shader管理器
+	资源ref
+	资源管理器
 	
 
-���ļ��ͽ����ļ�������߳�
-���ݴ�����ƶ��ļ�
-	��ȡzip�е��ļ�(ԭ����)
-	��ȡassetstreamingĿ¼�е�zip��(��׿)
-ResourceManager WWW��ʽ���»��� Cacheˢ������
-	�������ǵ�ʱ�� hashcode
-	�����һ���µ� hashcode,���˲���Ͳ����˲�ͬ��url.
+读文件和解析文件放入多线程
+数据打包机制读文件
+	读取zip中的文件(原生库)
+	读取assetstreaming目录中的zip包(安卓)
+ResourceManager WWW方式更新机制 Cache刷新问题
+	缓存中是当时的 hashcode
+	如果有一份新的 hashcode,有了差异就产生了不同的url.
 	
-	������ύ�ļ�ʱ�Զ�����hashcode
-	���ݰ汾���촫�ͱ��ı����hashcode�б�
-	�ͻ��˱��������ļ���hashcode�б�
+	如何让提交文件时自动产生hashcode
+	根据版本差异传送被改变过的hashcode列表
+	客户端保存所有文件的hashcode列表
 	
-	ȫ��ɨ��һ�����������ļ���hashcode,����¼�汾�ţ������Ĺ��ߣ�
-	������°汾����ȼ�¼�İ汾���£������svn,������hashcode��¼�Ͱ汾�ż�¼
-	������˷���
-���ݴ����ʽ�ĸ��»���
+	全部扫描一遍生成所有文件的hashcode,并记录版本号（单独的工具）
+	如果有新版本请求比记录的版本号新，则更新svn,并更新hashcode记录和版本号记录
+	向请求端发送
+数据打包方式的更新机制
 
-Updater �ǵ����ĳ�������������е�����ֱ�Ӵ�����ڡ�
+Updater 是单独的场景。这个场景中的数据直接打包在内。
 	FileModeUpdater
 	WWWModeUpdater
 	PacketModeUpdater
 	
 
 
-.��дĿ¼ or DOUBILITY_HOME ·�� �µķ����ļ�Ŀ¼ .root
-.streamingAssets�е�ѹ������
-.��дĿ¼�µ����ݰ�.
+.可写目录 or DOUBILITY_HOME 路径 下的分立文件目录 .root
+.streamingAssets中的压缩包。
+.可写目录下的数据包.
 
-.unity�����з�ʽ
-	.��������������ִ������,
-		����ģ������
-		������������
-		�����������
-		���������е�shader,��Ҫһ��shader�����ļ����Ķ��ձ�.
-	.����svn
-	.����ʱ�����ò������ƣ��Ƿ������ݡ�
-.http��ʽ�ķ����������ؿ�������ftp��ʽ��
-	1.����api:���µ�ָ���汾
-	2.����api:�汾�����б�
-		����Ѿ�����,ֱ��ʹ�û���,���������,����svn
+.unity命令行方式
+	.从美术数据生成执行数据,
+		生成模型数据
+		生成纹理数据
+		打包核心数据
+		核心数据中的shader,需要一个shader名与文件名的对照表.
+	.上载svn
+	.发布时可以用参数控制，是否打包数据。
+.http方式的服务器。下载可以启用ftp方式。
+	1.管理api:更新到指定版本
+	2.更新api:版本差异列表
+		如果已经存在,直接使用缓存,如果不存在,调用svn
 	3.	
 
-.windows�汾ֱ��ʹ��DOUBILITY_HOME����������
-	Ҳ���浱ǰ�汾�š�ֻ�ǲ����ء�
-	Ҳ����Ŀ¼����
-.android,ios���ļ���������
-	���浱ǰ�汾�ţ���Զ�˵ݽ���ǰ�汾�ŵõ����µķ������б����Լ��µİ汾��
-	�����������Ŀ¼��
-.�����ļ�ϵͳ
+.windows版本直接使用DOUBILITY_HOME环境变量。
+	也保存当前版本号。只是不下载。
+	也生成目录树，
+.android,ios版文件下载器，
+	保存当前版本号，向远端递交当前版本号得到更新的服务器列表。以及新的版本号
+	下载完后即生成目录树
+.虚拟文件系统
 	WriteFile()	new/updates
 	DeleteFile()
 	ReadFile()
-	1.android ��ֱ�Ӷ�ȡapk
+	1.android 下直接读取apk
 	2.libzip
 	
-����
-����
-����
-����
-����
-	��ͨ����
+动作
+网格
+骨骼
+材质
+纹理
+	普通纹理
 	Normap
 	Lightmap
 	Sprite(2D&UI)
 Shader
 
 
-unity ������ʱ�ĵ�Ԫ����
-	������Ԫ���Գ���
-		ר�ŵĵ�Ԫ���԰汾��
-unsafe������il2cppģʽ��
-flatbuffers��ȡ�ṹ�����Ч��:����ģʽ�£���ʵƽ̨�ϣ���ֱ�ӵ���unity3d��assetbundle����Ч��ͳ��		
+unity 在运行时的单元测试
+	创建单元测试场景
+		专门的单元测试版本。
+unsafe代码在il2cpp模式下
+flatbuffers读取结构数组的效率:两种模式下，真实平台上，与直接调用unity3d的assetbundle运行效率统计		
 	mono2x:
 	il2cpp:
 
-ok.?�ļ��ĸ�ʽ
-	ok �ļ�ͷ��д��������
-	no �������İ汾������
-ok.�����ƹ��ܻ�����д����	��д����
+ok.?文件的格式
+	ok 文件头的写法、读法
+	no 可升级的版本方案？
+ok.先完善功能还是先写测试	先写测试
 
 
-ok �����������	
-	ok ��������Ϊģ�����пɸ����Ĳ�����MeshPart�У���Ҫָ������������������������Դ�С�
-		ͨ�õ� ������������ɫ��������
-		���������� + ��������ɫ + �������ʣ��ɶ�����
-	ok �����ļ��б����㹻����Ϣ��Transform,Material,Collider
-	ok ��Դ�ļ�ֻ������һ��Դ
-	ok ʵ�����ʺ�ģ�����	
-		����Ĳ����޸ģ��ͳ�Ϊ��������ʡ�������ɫ���������������� 1��3
-		����shader ͬ��
-	ok �������ʱ�����ԭ��Դ�а���������������ļ���ʹ�� ������@��Դ��.db3d ��ʽ
+ok 逗逼引擎规则。	
+	ok 材质名作为模型组中可更换的参数。MeshPart中，需要指明材质名。不包含在网格资源中。
+		通用的 主纹理和主颜色参数设置
+		更换主纹理 + 更换主颜色 + 更换材质（可动画）
+	ok 场景文件中保存足够的信息。Transform,Material,Collider
+	ok 资源文件只包含单一资源
+	ok 实例材质和模版材质	
+		特殊的参数修改，就成为了特殊材质。（换颜色，换纹理）倾向于 1，3
+		更换shader 同上
+	ok 输出网格时，如果原资源中包含多网格，输出后文件名使用 网格名@资源名.db3d 形式
 
-ok.��Դ����ĵ�Ԫ����
-	ok.��Ԫ���Ե���Դ��ô�죿
-		ok ���� 
-			��.��ͷ����ԴĿ¼
-			��assetBundle��ʽ������
-			������ߣ���ȡ����б�
-		no unity�Ĵ�����бȽϵ�.
+ok.资源输出的单元测试
+	ok.单元测试的资源怎么办？
+		ok 方案 
+			以.开头的资源目录
+			以assetBundle方式工作。
+			打包工具，读取打包列表
+		no unity的打包是有比较的.
 		
 		
 		
-	ok ����ʹ��̷ֿ�	�����ڵ�Ԫ���ԣ��������ò��ԡ�
-	ok ���������������
-		��������û���ظ��Ĺ�����
-		ÿ��ԭ������������ˣ������ƣ�
-		ÿ��������Ĺ���������ԭ������
-			����Ĺ������ǲ���renderer�ġ�
-			ÿ��������Ĺ����ĸ��ڵ㶼����ȷ��
-			ÿ�������ľֲ���������Ӧ�ġ�
-	ok ���������������
-		����ɷ�
-			ÿ������ɷֶ��������
-			ÿ������Ķ���ɷֶ�������ԭ�ɷ�
-			ÿ���ɷֵ��������붥�������
-			ÿ���ɷֵ���ֵ����ԭ�������
-		�������б�
+	ok 输出和存盘分开	得益于单元测试，这样更好测试。
+	ok 骨骼输出测试用例
+		输出结果中没有重复的骨骼。
+		每个原骨骼都被输出了（按名称）
+		每个被输出的骨骼都存在原骨骼。
+			输出的骨骼都是不带renderer的。
+			每个被输出的骨骼的父节点都是正确的
+			每个骨骼的局部矩阵都是相应的。
+	ok 网格输出测试用例
+		顶点成分
+			每个顶点成分都被输出了
+			每个输出的顶点成分都存在着原成分
+			每个成分的数量都与顶点数相等
+			每个成分的数值都与原数据相等
+		三角面列表
 		submeshes:[SubMesh];
 		joints:[string];
 		bindposes:[Matrix16];
-	ok ���������������
-		����е�������Դ���ʶ���ȡ�
-		Դ���ʵ����Զ�������ˡ�
+	ok 材质输出测试用例
+		结果中的属性与源材质都相等。
+		源材质的属性都被输出了。
 			
-	ok ���������������
+	ok 动作输出测试用例
 		
-	ok �ݹ��ռ�����������������.
-	ok ��Ԫ����װ��assetbundle���ܵ�����������
+	ok 递归收集骨骼独立出工具类.
+	ok 单元测试装载assetbundle功能单独出工具类
 	
 	
-ok.��Դ���빦��
-	�������� offset �� scale
+ok.资源读入功能
+	纹理加入 offset 和 scale
 
-ok.��Դ����ĵ�Ԫ����
-	Ԥ��д���ļ���
-		�����ļ���ΪԴ����
-		���ɵ�ģ����Ϊ�Ƚ�Ŀ��
-ok.��ʾ���Խ�ɫ
+ok.资源读入的单元测试
+	预先写入文件，
+		读入文件作为源数据
+		生成的模型作为比较目标
+ok.显示测试角色
 
-ok.������shader���
-	ok �����������
-	ok �Ӱ��ж�ȡԭʼ��������
-		����Ҫ��ȫд����ȷ��ʽ,ֻ��Ҫ��¼�㹻��Ϣ����.
+ok.纹理，shader输出
+	ok 纹理打包工具
+	ok 从包中读取原始纹理数据
+		不需要完全写成正确格式,只需要记录足够信息即可.
 	
-	ok ������,��Editor����������ƽ̨ʱ,rawData����ȷ��
-		���������,1�ǽ�assetBundle�� 2���Լ�������ת������.
+	ok 看运气,在Editor中运行其他平台时,rawData的正确性
+		如果无运气,1是解assetBundle包 2是自己做纹理转换工具.
 		
-	ok ����ʱ����Ҫ�л�ƽ̨.
-		���Է�Ϊƽ̨��غ�ƽ̨�޹�������.�ֿ�����.
-			ƽ̨��ز���ֻ���Ե�ǰƽ̨.Ҫ�л�ƽ̨�ٽ��в���.
+	ok 测试时还需要切换平台.
+		测试分为平台相关和平台无关两部分.分开进行.
+			平台相关测试只测试当前平台.要切换平台再进行测试.
 		
-ok.shader�������
+ok.shader打包工具
 
 
-streamingAssetsĿ¼�������ǲ������.
-	���ļ�
-	��λ��
-zip����ʹ��ԭ�����뻹��c#����	
+streamingAssets目录本来就是不打包的.
+	打开文件
+	定位读
+zip部分使用原生代码还是c#代码	
 	
 	
 
-.��Դ�ļ���д����
-	ok д���ļ� �����ļ� д��֮ǰ�Ͷ���֮�����Ƚϡ�
-	todo:������Ӧ��Ҫ����
-		д���ļ��п���ʧ��?
-.���Ʋ������������ݣ��Ը������еķ�֧�����	
-.�ļ�Ԥ�����Ĺ���
-	�����淶,wrapMode������.
-	��������������
-	���ʵ�shader��Ӧ����,������ָ������.
+.资源文件读写测试
+	ok 写入文件 读出文件 写入之前和读出之后做比较。
+	todo:读不到应该要报错
+		写入文件有可能失败?
+.完善测试用例的数据，以覆盖所有的分支情况。	
+.文件预处理的规则
+	动画规范,wrapMode的配置.
+	纹理的命名规则
+	材质的shader对应规则,纹理的指定规则.
 	
 	
-.������"Assets/ArtWork" ".root"	��ص�·�����ŵ�һ��������.
+.所有与"Assets/ArtWork" ".root"	相关的路径都放到一个工具类.
 	
 	
 
@@ -263,24 +265,24 @@ zip����ʹ��ԭ�����뻹��c#����
 
 
 
-1.��Դ����Ԥ����	Ҫ��֤��Դ����ʱ����ȷ������.��ʡ�˹�.
-	�������δ���?
-		һ��renderer�µĶ����
-		�ӽڵ�Ķ����
+1.资源输入预处理	要保证资源输入时被正确处理过.节省人工.
+	多材质如何处理?
+		一个renderer下的多材质
+		子节点的多材质
 	
-2.����ת����Դ
-	ģ�������. ��ʱ����һ����ʹ��ģ�������õİ汾.
-		����@�����������Դ
-		��@�����������Դ
-		������Դ��������Դ����һ��
+2.批量转换资源
+	模型组输出. 暂时先做一个不使用模型组配置的版本.
+		不带@的输出网格资源
+		带@的输出动作资源
+		材质资源与网格资源存在一起
 		
-		ok ��α���material����������
-		ok �����ļ�
-		������/��ԭ�����ļ�
-		��λ�ԭtexture������
+		ok 如何遍历material的所有属性
+		ok 遍历文件
+		如何输出/还原动画文件
+		如何还原texture的类型
 
 
-	�������Ǻ�shader���㷨��ء�ʵ����Ϊ��shader�㷨�����Ѿ��ı���normalmap�����ݡ�
+	这样做是和shader的算法相关。实际上为了shader算法，是已经改变了normalmap的内容。
 	it seems when you import a normal map to unity, it intenally has the setup of RGB = y normal, A = x normal.
 			
 	loadedTexture = www.texture;
@@ -315,19 +317,19 @@ zip����ʹ��ԭ�����뻹��c#����
          return normalTexture;
      }
 		
-	����ģ�����������
-	�������	
+	按照模型组配置输出
+	场景输出	
 
 
-�����淶
-	������ͼ��׺ _NRM
-	�߹���ͼ��׺ _SPC
+纹理规范
+	法线贴图后缀 _NRM
+	高光贴图后缀 _SPC
 
-	max�в�����Ӧ����shader���Ӧ?
+	max中材质名应该与shader相对应?
 
-��ɫ�淶
-	��������@��Ϊ�˲��ظ���������.
-	���� wrapMode Ӧ���� max ��ָ��.
+角色规范
+	动作命名@是为了不重复生成纹理.
+	动作 wrapMode 应该在 max 中指定.
 
 
 Doubility3D_Tools
@@ -335,66 +337,66 @@ Doubility3D_Engine
 Doubility3D_Client
 
 
-����ڵ���ʱֱ�Ӱ�shaderָ������Ҫ�ġ�
-StreamingAssets ֻ����һ��zip����Ϊ����ʱ���ݡ�
-	����.data�ж�ȡ�����û������
-	���������ֱ��zip��������������Ҳֻ�ڵ�һ������ʱ��Ҫһ�ο�����
-	��β�����Ӧƽ̨
-		������
-			������assetBundle���
+如何在导入时直接把shader指定成想要的。
+StreamingAssets 只保存一个zip包作为运行时数据。
+	先在.data中读取，如果没有则在
+	问题变成如何直读zip包。（最差情况，也只在第一次运行时需要一次拷贝）
+	如何产生相应平台
+		纹理。
+			可利用assetBundle打包
 			Texture2D.GetRawTextureData
 			Texture2D.LoadRawTextureData
 		Shader
-			����ΨһҪ����assetBundle�Ĳ��֡�	
+			这是唯一要做成assetBundle的部分。	
 
-��U3D�Ϳͻ����߼�֮�䴫����Ϣ ��flatbufferΪ�ֶ�
+在U3D和客户端逻辑之间传送消息 以flatbuffer为手段
 	U->N	
-		�����߼������ Transform
-		������������¼�
-		�ǽ������
-		�������
+		所有逻辑物体的 Transform
+		动画播放完毕事件
+		非界面操作
+		界面操作
 	N->U
-		װ�ص�ͼ
-		����ָ���������߼�����
-		��GameObject����ָ��
-		ˢ�½�������
+		装载地图
+		创建指定参数的逻辑物体
+		向GameObject发出指令
+		刷新界面数据
 		
-	������<->�߼��ͻ���<->ͼ�β�	
+	服务器<->逻辑客户端<->图形层	
 	
-	����Ч��ֵ�õ��ģ�
+	传输效率值得担心！
 		
 
-�߼��ͻ���ʹ�� golang.
-	go 1.5���Ա���Ϊ�������Ķ�̬���ӿ�
-	go mobile ���Ա���Ϊ android ios �Ŀ�
-		����ios����Ҫ�� mac �����Ͻ��С�
+逻辑客户端使用 golang.
+	go 1.5可以编译为桌面程序的动态链接库
+	go mobile 可以编译为 android ios 的库
+		编译ios库需要在 mac 机器上进行。
 		
-0.��Դ׼��
-	��ɫ����+����
-	��ɫ��Ч
-	��������+ֲ��������
-	��������+����+��Ч
-1.��������
-	��Դ���
-		����
-			���������¼ϸ��
-				��Ϊ�����ǳ���ԭ��ʽ�Ѿ������á�
-		���� �Բ��ʺ�shader������
-		���� ������������
-		����
-		����
+0.资源准备
+	角色网格+动作
+	角色特效
+	场景地形+植被、摆设
+	场景网格+动画+特效
+1.美术工具
+	资源输出
+		场景
+			场景物体记录细化
+				因为场景非常大，原方式已经不适用。
+		网格 对材质和shader的引用
+		材质 对纹理的引用
+		纹理
+		动画
 		shader
-		����
-		��Ч
-		����
-2.ͼ�β�
-	��Դ������
-	��ɫ��ʾ
-	������ʾ
-	�Զ�����Դ��
-	��Ϸ�Ӿ�Э�� flatbuffer C#
-	2Dģ��ͼ�β�
-3.�߼��ͻ���
-	��ͼ�β�Э�� flatbuffer Go
-	����golangģ��
+		界面
+		音效
+		音乐
+2.图形层
+	资源管理器
+	角色显示
+	场景显示
+	自定义资源包
+	游戏视觉协议 flatbuffer C#
+	2D模拟图形层
+3.逻辑客户端
+	与图形层协议 flatbuffer Go
+	编译golang模块
 	

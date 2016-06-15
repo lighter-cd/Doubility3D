@@ -46,7 +46,7 @@ namespace Doubility3D.Resource.Downloader
 			case DownloadMode.WWW:
 				return new WWWDownloader (config.URL);
 			case DownloadMode.Packet:
-				return null;
+				return new PacketDownloader();
 			}
 			return null;
 		}
