@@ -18,9 +18,11 @@ namespace Doubility3D.Resource.Downloader
 	public class DownloaderFactory
 	{
 		DownloadConfig config;
+		static public string configFile = "file_mode";
+
 		private DownloaderFactory ()
 		{
-			TextAsset asset = Resources.Load<TextAsset> ("file_mode");
+			TextAsset asset = Resources.Load<TextAsset> (configFile);
 			if (asset != null) {
 				config = JsonMapper.ToObject<DownloadConfig> (asset.text);
 			} else {
@@ -37,6 +39,10 @@ namespace Doubility3D.Resource.Downloader
 				}
 				return _instance;
 			}
+		}
+
+		static public void Dispose(){
+			_instance = null;
 		}
 
 		public IDownloader Create(){
