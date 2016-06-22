@@ -16,7 +16,7 @@ namespace Doubility3D.Resource.Downloader
 			home = home.Replace ('\\', '/');
 		}
 
-		public FileDownloader ()
+		internal FileDownloader ()
 		{
 			
 		}
@@ -30,6 +30,8 @@ namespace Doubility3D.Resource.Downloader
 				actOnComplate(null,e.Message);
 			}
 		}
+
+		public string Home { get { return home;} }
 	}
 }
 

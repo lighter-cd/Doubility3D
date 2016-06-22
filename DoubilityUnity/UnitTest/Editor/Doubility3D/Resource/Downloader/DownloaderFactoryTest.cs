@@ -73,22 +73,22 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		[Test]
 		public void WWWMode ()
 		{
-			DownloaderFactory.configFile = "file_mode_www";
+			DownloaderFactory.configFile = "file_mode_www.json";
 			IDownloader downloader = DownloaderFactory.Instance.Create ();
 			Assert.IsInstanceOf<WWWDownloader> (downloader);
-			Assert.AreEqual ((downloader as WWWDownloader).Home, "file_mode_www_home");
+			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://file_mode_www_home");
 		}
 		[Test]
 		public void FileMode ()
 		{
-			DownloaderFactory.configFile = "file_mode_file";
+			DownloaderFactory.configFile = "file_mode_file.json";
 			IDownloader downloader = DownloaderFactory.Instance.Create ();
 			Assert.IsInstanceOf<FileDownloader> (downloader);
 		}
 		[Test]
 		public void PacketMode ()
 		{
-			DownloaderFactory.configFile = "file_mode_packet";
+			DownloaderFactory.configFile = "file_mode_packet.json";
 			IDownloader downloader = DownloaderFactory.Instance.Create ();
 			Assert.IsInstanceOf<PacketDownloader> (downloader);
 		}

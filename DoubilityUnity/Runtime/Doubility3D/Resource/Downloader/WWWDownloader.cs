@@ -8,7 +8,7 @@ namespace Doubility3D.Resource.Downloader
 	{
 		private string home;
 
-		public WWWDownloader (string _home)
+		internal WWWDownloader (string _home)
 		{
 			home = _home;
 		}

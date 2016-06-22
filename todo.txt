@@ -1,4 +1,4 @@
-﻿git config --global credential.helper store
+﻿git config --global credential.helper wincred
 did we done it?
 
 低耦合，高内聚
@@ -73,17 +73,16 @@ no 资源同步装载和异步装载，是否应该属于资源管理器的功�
 	
 	
 暂停功能，开始写测试用例。
-	下载工厂
+	ok 下载工厂
 		从 Resources 中读取，文件名要能设置。便于使用测试文件
 		单例模式，需要一个释放。便于测试不同情形下的初始化。
 		
+	ok 反序列化类
+	ok 反序列化工厂	
+	
 	File下载
 	WWW下载
-	
-	
-	反序列化工厂	
-	反序列化类
-	
+
 	shader管理器
 	资源ref
 	资源管理器

@@ -5,7 +5,7 @@ namespace Doubility3D.Resource.Downloader
 {
 	public class PacketDownloader : IDownloader
 	{
-		public PacketDownloader ()
+		internal PacketDownloader ()
 		{
 		}
 		public IEnumerator ResourceTask (string path, Action<Byte[],string> actOnComplate)
