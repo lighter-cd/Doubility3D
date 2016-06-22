@@ -25,6 +25,10 @@ namespace UnitTest.Doubility3D
         /// 测试所需要的逗逼文件格式的数据目录
         /// </summary>
         public const string testResource_path = testData_path + "Resource/";
+		/// <summary>
+		/// 测试所需要的逗逼文件格式的配置文件目录
+		/// </summary>
+		public const string testConfig_path = "Assets/Doubility3D/UnitTest/Editor/Config/";
         /// <summary>
         /// 生成测试所需要的 asset bundle 的配置文件路径
         /// </summary>

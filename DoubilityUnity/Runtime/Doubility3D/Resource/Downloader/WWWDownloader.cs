@@ -29,6 +29,8 @@ namespace Doubility3D.Resource.Downloader
 			}
 			actOnComplate (_bytes, _error);
 		}
+
+		public string Home { get { return home;} }
 	}
 }
 

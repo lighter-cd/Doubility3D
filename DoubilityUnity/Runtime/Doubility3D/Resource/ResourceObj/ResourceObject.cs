@@ -19,7 +19,7 @@ namespace Doubility3D.Resource.ResourceObj
 		virtual public void Dispose(){
 			// 删除资源物体
 			#if !UNITY_EDITOR
-			UnityEngine.Object.Destroy(resource.Unity3dObject); 
+			UnityEngine.Object.Destroy(unity3dObject); 
 			#else
 			UnityEngine.Object.DestroyImmediate(unity3dObject,true);// 这里绝不关联到
 			#endif

@@ -15,18 +15,39 @@ namespace Doubility3D.Resource.Downloader
 		public string URL;
 	}
 
+	public enum ConfigError {
+		NoError,
+		NotExist,
+		EmptyFile,
+		ErrorJson,
+		ValidMode,
+	}
+
 	public class DownloaderFactory
 	{
 		DownloadConfig config;
 		static public string configFile = "file_mode";
+		static public Func<string,TextAsset> funcTextAssetReader = Resources.Load<TextAsset>;
+
+		ConfigError error = ConfigError.NoError;
+		string errorMsg;
 
 		private DownloaderFactory ()
 		{
-			TextAsset asset = Resources.Load<TextAsset> (configFile);
+			TextAsset asset = funcTextAssetReader (configFile);
 			if (asset != null) {
-				config = JsonMapper.ToObject<DownloadConfig> (asset.text);
+				if (!string.IsNullOrEmpty (asset.text)) {
+					try{
+						config = JsonMapper.ToObject<DownloadConfig> (asset.text);
+					}catch(Exception e){
+						error = ConfigError.ErrorJson;
+						errorMsg = e.Message;
+					}
+				} else {
+					error = ConfigError.EmptyFile;
+				}
 			} else {
-				throw new Exception ("Cannot load file_mode.json from Resources folder.");
+				error = ConfigError.NotExist;
 			}
 		}
 
@@ -46,15 +67,19 @@ namespace Doubility3D.Resource.Downloader
 		}
 
 		public IDownloader Create(){
-			switch (config.FileMode) {
-			case DownloadMode.File:
-				return new FileDownloader ();
-			case DownloadMode.WWW:
-				return new WWWDownloader (config.URL);
-			case DownloadMode.Packet:
-				return new PacketDownloader();
+			if (config != null) {
+				switch (config.FileMode) {
+				case DownloadMode.File:
+					return new FileDownloader ();
+				case DownloadMode.WWW:
+					return new WWWDownloader (config.URL);
+				case DownloadMode.Packet:
+					return new PacketDownloader ();
+				default:
+					return new NullDownloader(ConfigError.ValidMode,configFile,config.FileMode.ToString());
+				}
 			}
-			return null;
+			return new NullDownloader(error,configFile,errorMsg);
 		}
 	}
 }
