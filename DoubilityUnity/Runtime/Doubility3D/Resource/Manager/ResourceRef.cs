@@ -68,7 +68,7 @@ namespace Doubility3D.Resource.Manager
 			}
 
 			State = ResourceState.Loading;
-			string resource_path = "/.root/" + path;
+			string resource_path = ".root/" + path;
 			Task downloadTask = new Task (downloader.ResourceTask (resource_path, OnDownloadComplate), false);
 			yield return downloadTask.Start ();
 

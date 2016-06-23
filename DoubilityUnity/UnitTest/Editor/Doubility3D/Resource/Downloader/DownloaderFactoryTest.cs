@@ -76,7 +76,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			DownloaderFactory.configFile = "file_mode_www.json";
 			IDownloader downloader = DownloaderFactory.Instance.Create ();
 			Assert.IsInstanceOf<WWWDownloader> (downloader);
-			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://file_mode_www_home");
+			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://127.0.0.1");
 		}
 		[Test]
 		public void FileMode ()

@@ -17,7 +17,7 @@ namespace Doubility3D.Resource.Manager
 		private string coreDataBundle;
 		private ShaderManager ()
 		{
-			coreDataBundle = "/.coreData/" + PlatformPath.GetPath(Application.platform) + "/coreData.bundle";
+			coreDataBundle = ".coreData/" + PlatformPath.GetPath(Application.platform) + "/coreData.bundle";
 		}
 		static private ShaderManager _instance = null;
 

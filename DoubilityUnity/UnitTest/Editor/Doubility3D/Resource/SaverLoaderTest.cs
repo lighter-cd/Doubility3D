@@ -17,16 +17,10 @@ namespace UnitTest.Doubility3D.Resource
 		[Test]
 		public void SaveToFileAndReadBack ()
 		{
-			System.Random random = new System.Random (System.Environment.TickCount);
-
-			int dataLength = 2048 + random.Next (0, 512);
-			byte[] bytes = new byte[dataLength];
-			for (int i = 0; i < dataLength; i++) {
-				random.NextBytes (bytes);
-			}
+			byte[] bytes = RandomData.Build (1024, 512);
 
 			// todo:应该使用反射，取得枚举的最大可能值。
-			Schema.Context context = (Schema.Context)random.Next ((int)Schema.Context.Skeletons, (int)Schema.Context.AnimationClip);
+			Schema.Context context = (Schema.Context)RandomData.Random.Next ((int)Schema.Context.Skeletons, (int)Schema.Context.AnimationClip);
 
 			const string filePath = TestData.testData_path + "TestFile.doub";
 
@@ -41,8 +35,8 @@ namespace UnitTest.Doubility3D.Resource
 			ByteBuffer bbOut = FileUnserializer.LoadFromFile (filePath, out out_context);
 
 			Assert.AreEqual (context, out_context);
-			Assert.AreEqual (dataLength, bbOut.Length - bbOut.Position);
-			for (int i = 0; i < dataLength; i++) {
+			Assert.AreEqual (bytes.Length, bbOut.Length - bbOut.Position);
+			for (int i = 0; i < bytes.Length; i++) {
 				Assert.AreEqual (bytes [i], bbOut.Data [bbOut.Position + i]);
 			}
 

@@ -1,7 +1,4 @@
-﻿git config --global credential.helper wincred
-did we done it?
-
-低耦合，高内聚
+﻿低耦合，高内聚
 避免相似的代码重复出现
 一旦觉得需要写注释，就说明需要写成新函数了。
 
@@ -79,11 +76,18 @@ no 资源同步装载和异步装载，是否应该属于资源管理器的功�
 		
 	ok 反序列化类
 	ok 反序列化工厂	
-	
-	File下载
+	ok Nunit中使用协程的测试
+	ok File下载
+		Home中如果最后不是/则增加之！
 	WWW下载
+		File协议简单测测 vs http服务器
+		
+		http服务器
+		1.测试文件找不到真实返回值
+		2.		
 
 	shader管理器
+		如何测试内部调用了协程的函数？
 	资源ref
 	资源管理器
 	
@@ -112,9 +116,6 @@ Updater 是单独的场景。这个场景中的数据直接打包在内。
 	
 
 
-.可写目录 or DOUBILITY_HOME 路径 下的分立文件目录 .root
-.streamingAssets中的压缩包。
-.可写目录下的数据包.
 
 .unity命令行方式
 	.从美术数据生成执行数据,
@@ -124,18 +125,6 @@ Updater 是单独的场景。这个场景中的数据直接打包在内。
 		核心数据中的shader,需要一个shader名与文件名的对照表.
 	.上载svn
 	.发布时可以用参数控制，是否打包数据。
-.http方式的服务器。下载可以启用ftp方式。
-	1.管理api:更新到指定版本
-	2.更新api:版本差异列表
-		如果已经存在,直接使用缓存,如果不存在,调用svn
-	3.	
-
-.windows版本直接使用DOUBILITY_HOME环境变量。
-	也保存当前版本号。只是不下载。
-	也生成目录树，
-.android,ios版文件下载器，
-	保存当前版本号，向远端递交当前版本号得到更新的服务器列表。以及新的版本号
-	下载完后即生成目录树
 .虚拟文件系统
 	WriteFile()	new/updates
 	DeleteFile()

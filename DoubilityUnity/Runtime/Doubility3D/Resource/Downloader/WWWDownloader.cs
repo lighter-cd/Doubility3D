@@ -11,6 +11,9 @@ namespace Doubility3D.Resource.Downloader
 		internal WWWDownloader (string _home)
 		{
 			home = _home;
+			if (home [home.Length - 1] != '/') {
+				home += "/";
+			}
 		}
 
 		public IEnumerator ResourceTask (string path, Action<Byte[],string> actOnComplate)

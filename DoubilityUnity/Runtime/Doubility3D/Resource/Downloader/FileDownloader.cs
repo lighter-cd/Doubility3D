@@ -14,6 +14,10 @@ namespace Doubility3D.Resource.Downloader
 				home = Application.streamingAssetsPath;
 			}
 			home = home.Replace ('\\', '/');
+
+			if (home [home.Length - 1] != '/') {
+				home += "/";
+			}
 		}
 
 		internal FileDownloader ()
