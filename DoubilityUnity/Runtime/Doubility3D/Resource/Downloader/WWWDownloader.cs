@@ -19,18 +19,15 @@ namespace Doubility3D.Resource.Downloader
 		public IEnumerator ResourceTask (string path, Action<Byte[],string> actOnComplate)
 		{
 			Byte[] _bytes = null;
-			string _error = null;
 
 			WWW www = new WWW (home + path);
 			yield return www;
 			if (www.isDone) {
 				if (string.IsNullOrEmpty (www.error)) {
 					_bytes = www.bytes;
-				} else {
-					_error = www.error;
-				}
+				} 
+				actOnComplate (_bytes, www.error);
 			}
-			actOnComplate (_bytes, _error);
 		}
 
 		public string Home { get { return home;} }

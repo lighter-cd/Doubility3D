@@ -5,17 +5,21 @@ using Doubility3D.Resource.Manager;
 
 namespace Doubility3D.Resource.Downloader
 {
-	public enum DownloadMode {
+	public enum DownloadMode
+	{
 		File = 0,
 		WWW,
 		Packet
 	}
-	public class DownloadConfig {
+
+	public class DownloadConfig
+	{
 		public DownloadMode FileMode;
 		public string URL;
 	}
 
-	public enum ConfigError {
+	public enum ConfigError
+	{
 		NoError,
 		NotExist,
 		EmptyFile,
@@ -37,9 +41,9 @@ namespace Doubility3D.Resource.Downloader
 			TextAsset asset = funcTextAssetReader (configFile);
 			if (asset != null) {
 				if (!string.IsNullOrEmpty (asset.text)) {
-					try{
+					try {
 						config = JsonMapper.ToObject<DownloadConfig> (asset.text);
-					}catch(Exception e){
+					} catch (Exception e) {
 						error = ConfigError.ErrorJson;
 						errorMsg = e.Message;
 					}
@@ -53,8 +57,8 @@ namespace Doubility3D.Resource.Downloader
 
 		static private DownloaderFactory _instance = null;
 
-		static public DownloaderFactory Instance{
-			get{ 
+		static public DownloaderFactory Instance {
+			get { 
 				if (_instance == null) {
 					_instance = new DownloaderFactory ();
 				}
@@ -62,11 +66,13 @@ namespace Doubility3D.Resource.Downloader
 			}
 		}
 
-		static public void Dispose(){
+		static public void Dispose ()
+		{
 			_instance = null;
 		}
 
-		public IDownloader Create(){
+		public IDownloader Create ()
+		{
 			if (config != null) {
 				switch (config.FileMode) {
 				case DownloadMode.File:
@@ -74,12 +80,21 @@ namespace Doubility3D.Resource.Downloader
 				case DownloadMode.WWW:
 					return new WWWDownloader (config.URL);
 				case DownloadMode.Packet:
-					return new PacketDownloader ();
+					return new PacketDownloader (config.URL);
 				default:
-					return new NullDownloader(ConfigError.ValidMode,configFile,config.FileMode.ToString());
+					return new NullDownloader (ConfigError.ValidMode, configFile, config.FileMode.ToString ());
 				}
 			}
-			return new NullDownloader(error,configFile,errorMsg);
+			return new NullDownloader (error, configFile, errorMsg);
+		}
+
+		static public IDownloader CreateWWWDownloader (string url)
+		{
+			return new WWWDownloader (url);
+		}
+		static public IDownloader CreatePacketDownloader (string name)
+		{
+			return new PacketDownloader (name);
 		}
 	}
 }

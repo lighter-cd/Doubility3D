@@ -36,12 +36,12 @@ public class CharactorLoader : MonoBehaviour
 	}
 
 
-	private void OnShaderManagerComplate(string error)
+	private void OnShaderManagerComplate(ShaderLoadResult result, string error)
 	{
-		if(string.IsNullOrEmpty(error)){
+		if(result == ShaderLoadResult.Ok){
 			ResourceManager.Instance.addResources(urls,null,true,OnComplate,OnError);
 		}else{
-			UnityEngine.Debug.LogError(error);	
+			UnityEngine.Debug.LogError("ShaderLoadResult = " + result.ToString() + " info = " + error);	
 		}
 	}
 

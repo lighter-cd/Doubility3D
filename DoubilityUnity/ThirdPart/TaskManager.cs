@@ -55,6 +55,7 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /// A Task object represents a coroutine.  Tasks can be started, paused, and stopped.
 /// It is an error to attempt to start a task that has been stopped or which has
@@ -153,6 +154,14 @@ class TaskManager : MonoBehaviour
             }
         }
 
+		public IEnumerator Coroutine
+		{
+			get 
+			{
+				return coroutine;
+			}
+		}
+
         public delegate void FinishedHandler(bool manual);
         public event FinishedHandler Finished;
 
@@ -164,6 +173,9 @@ class TaskManager : MonoBehaviour
         public TaskState(IEnumerator c)
         {
             coroutine = c;
+			if(TaskManagerTest.run){
+				TaskManagerTest.Instance.AddTask(this);
+			}
         }
 
         public void Pause()
@@ -228,4 +240,40 @@ class TaskManager : MonoBehaviour
         }
         return new TaskState(coroutine);
     }
+}
+
+public class TaskManagerTest {
+	List<TaskManager.TaskState> lstTasks = new List<TaskManager.TaskState>();
+
+	public void Run(){
+		while (lstTasks.Count > 0) {
+			List<TaskManager.TaskState>.Enumerator e = lstTasks.GetEnumerator ();
+			if (e.MoveNext ()) {
+				TaskManager.TaskState t = e.Current;
+				if (t.Running) {
+					if (t.Coroutine.MoveNext ()) {
+						var instruction = e.Current; //the yielded object
+					} else {
+						lstTasks.Remove (t);
+					}
+				}
+			}
+		}
+	}
+
+	internal void AddTask(TaskManager.TaskState t)
+	{
+		lstTasks.Add (t);
+	}
+
+	static TaskManagerTest instance;
+	static public bool run = false;
+	static public TaskManagerTest Instance {
+		get {
+			if (instance == null) {
+				instance = new TaskManagerTest ();
+			}
+			return instance;
+		}
+	}
 }
