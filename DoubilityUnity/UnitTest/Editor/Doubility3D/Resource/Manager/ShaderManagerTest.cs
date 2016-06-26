@@ -19,27 +19,27 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		string oldHome;
 
 		string fullPath;
-		IDownloader downloader;
 
 		[TestFixtureSetUp]
 		public void Init ()
 		{
-			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.Machine);
+			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
 			oldConfigFile = DownloaderFactory.configFile;
 			oldFuncTextAssetReader = DownloaderFactory.funcTextAssetReader;
 			DownloaderFactory.funcTextAssetReader = ReadTestConfig;			
 			DownloaderFactory.configFile = "file_mode_file.json";
 
-			fullPath = System.IO.Path.GetFullPath (TestData.testResource_path);
+			fullPath = System.IO.Path.GetFullPath (TestData.testBundle_path);
 
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.Machine);
-			downloader = DownloaderFactory.Instance.Create ();
+			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
+			TaskManagerTest.run = true;
 		}
 
 		[TestFixtureTearDown]
 		public void Clear ()
 		{
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.Machine);
+			TaskManagerTest.run = false;
+			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.User);
 			DownloaderFactory.configFile = oldConfigFile;
 			DownloaderFactory.funcTextAssetReader = oldFuncTextAssetReader;
 			DownloaderFactory.Dispose ();
@@ -48,23 +48,29 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		[Test]
 		public void DownloadError ()
 		{
+			bool bRunned = false;
 			ShaderManager.Instance.LoadAssetBundle (
 				(result, error) => {
 					Assert.IsTrue(result == ShaderLoadResult.BundleDownloadError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
-				}, TestData.testBundle_path + "ShaderNotExist.assetbundle");
+					bRunned = true;
+				}, "ShaderNotExist.assetbundle");
 			TaskManagerTest.Instance.Run ();
+			Assert.IsTrue (bRunned);
 		}
 
 		[Test]
 		public void BundleLoadError ()
 		{
+			bool bRunned = false;
 			ShaderManager.Instance.LoadAssetBundle (
 				(result, error) => {
 					Assert.IsTrue(result == ShaderLoadResult.BundleLoadError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
-				}, TestData.testBundle_path + "ShaderErrorBundle.assetbundle");
+					bRunned = true;
+				}, "ShaderErrorBundle.assetbundle");
 			TaskManagerTest.Instance.Run ();
+			Assert.IsTrue (bRunned);
 		}
 
 		[Test]
@@ -74,7 +80,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				(result, error) => {
 					Assert.IsTrue(result == ShaderLoadResult.DictionaryLoadError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
-				}, TestData.testBundle_path + "ShaderNoDict.assetbundle");
+				}, "ShaderNoDict.assetbundle");
 			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 		}
@@ -86,7 +92,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				(result, error) => {
 					Assert.IsTrue(result == ShaderLoadResult.DictionaryJsonError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
-				}, TestData.testBundle_path + "ShaderDictError.assetbundle");
+				}, "ShaderDictError.assetbundle");
 			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 		}
@@ -98,7 +104,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				(result, error) => {
 					Assert.IsTrue(result == ShaderLoadResult.ContentCheckError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
-				}, TestData.testBundle_path + "ShaderContentError.assetbundle");
+				}, "ShaderContentError.assetbundle");
 			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 		}
@@ -106,13 +112,16 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		[Test]
 		public void AddAndDelete ()
 		{
+			bool bRunned = false;
 			ShaderManager.Instance.LoadAssetBundle (
 				(result, error) => {
 					Assert.IsTrue(result == ShaderLoadResult.Ok);
 					RunAddAndDelete();
-				}, TestData.testBundle_path + "ShaderOK.assetbundle");
+					bRunned = true;
+				}, "ShaderOK.bundle");
 			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
+			Assert.IsTrue (bRunned);
 		}
 		void RunAddAndDelete(){
 			string[] lst = ShaderManager.Instance.GetShaderList ();

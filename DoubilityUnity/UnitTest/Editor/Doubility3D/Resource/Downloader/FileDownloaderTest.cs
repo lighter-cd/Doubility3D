@@ -25,22 +25,25 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		[TestFixtureSetUp]
 		public void Init ()
 		{
-			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.Machine);
+			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
 			oldConfigFile = DownloaderFactory.configFile;
 			oldFuncTextAssetReader = DownloaderFactory.funcTextAssetReader;
 			DownloaderFactory.funcTextAssetReader = ReadTestConfig;			
 			DownloaderFactory.configFile = "file_mode_file.json";
 
 			fullPath = System.IO.Path.GetFullPath (TestData.testResource_path);
-
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.Machine);
+			try{
+				Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
+			}catch(Exception e){
+				Debug.LogError (e.Message);
+			}
 			downloader = DownloaderFactory.Instance.Create ();
 		}
 
 		[TestFixtureTearDown]
 		public void Clear ()
 		{
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.Machine);
+			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.User);
 			DownloaderFactory.configFile = oldConfigFile;
 			DownloaderFactory.funcTextAssetReader = oldFuncTextAssetReader;
 			DownloaderFactory.Dispose ();
@@ -64,10 +67,13 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			FileDownloader fd = downloader as FileDownloader;
 			Assert.IsNotNull (fd);
 
+			bool runned = false;
 			CoroutineTest.Run (fd.ResourceTask ("NotExistFile.Dat", (bytes, error) => {
 				Assert.IsNull (bytes);
 				Assert.IsFalse (string.IsNullOrEmpty (error));
+				runned = true;
 			}));
+			Assert.IsTrue (runned);
 		}
 
 		[Test]		
@@ -84,6 +90,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 
 			FileDownloader fd = downloader as FileDownloader;
 			Assert.IsNotNull (fd);
+			bool runned = false;
 			CoroutineTest.Run (
 				fd.ResourceTask (targetPath, (results, error) => {
 					Assert.IsNotNull (results);
@@ -95,8 +102,10 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 
 					// 删除文件
 					System.IO.File.Delete (TestData.testResource_path + targetPath);
+					runned = true;
 				})
 			);
+			Assert.IsTrue (runned);
 		}
 	}
 }

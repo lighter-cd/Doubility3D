@@ -9,7 +9,7 @@ namespace Doubility3D.Resource.Downloader
 		private static string home;
 
 		static FileDownloader(){
-			home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME",EnvironmentVariableTarget.Machine);
+			home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME",EnvironmentVariableTarget.User);
 			if (string.IsNullOrEmpty (home)) {
 				home = Application.streamingAssetsPath;
 			}

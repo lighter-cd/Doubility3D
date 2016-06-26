@@ -20,7 +20,7 @@ namespace Doubility3D.Util
 			return "Unknown";
 		}
 		static public string GetHome(){
-			string home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.Machine);
+			string home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
 			if (string.IsNullOrEmpty (home)) {
 				home = Application.streamingAssetsPath;
 			}

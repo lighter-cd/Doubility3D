@@ -56,6 +56,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 /// A Task object represents a coroutine.  Tasks can be started, paused, and stopped.
 /// It is an error to attempt to start a task that has been stopped or which has
@@ -252,7 +253,12 @@ public class TaskManagerTest {
 				TaskManager.TaskState t = e.Current;
 				if (t.Running) {
 					if (t.Coroutine.MoveNext ()) {
-						var instruction = e.Current; //the yielded object
+						var instruction = t.Coroutine.Current; //the yielded object
+						if (instruction is AsyncOperation) {
+							while (!((AsyncOperation)instruction).isDone) {
+								
+							}
+						}
 					} else {
 						lstTasks.Remove (t);
 					}

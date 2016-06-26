@@ -131,11 +131,12 @@ namespace Doubility3D.Resource.Manager
 
 		IEnumerator AssetBundleTask (Byte[] bytes)
 		{
+			ShaderLoadResult error = ShaderLoadResult.Ok;
+			string info = "";
+
 			AssetBundleCreateRequest abcq = AssetBundle.LoadFromMemoryAsync (bytes);
 			yield return abcq;
 
-			ShaderLoadResult error = ShaderLoadResult.Ok;
-			string info = "";
 			if (abcq.isDone) {
 				if (abcq.assetBundle != null) {
 					ab = abcq.assetBundle;
@@ -145,7 +146,7 @@ namespace Doubility3D.Resource.Manager
 					if (abr.isDone) {
 						if (abr.asset != null && abr.asset is TextAsset) {
 							TextAsset asset = abr.asset as TextAsset;
-							if (!BuildDictName2Path (asset)){
+							if (!BuildDictName2Path (asset)) {
 								error = ShaderLoadResult.ContentCheckError;
 							}
 						} else {
@@ -157,6 +158,9 @@ namespace Doubility3D.Resource.Manager
 					error = ShaderLoadResult.BundleLoadError;
 					info = coreDataBundle;
 				}
+			} else {
+				error = ShaderLoadResult.BundleLoadError;
+				info = coreDataBundle;
 			}
 			actOnComplate (error,info);
 		}
@@ -171,7 +175,7 @@ namespace Doubility3D.Resource.Manager
 				string key = e.Current as string;
 				string value = (string)data [key];
 
-				int index = Array.IndexOf<string> (names, value);
+				int index = Array.IndexOf<string> (names, value.ToLower());
 				if (index < 0) {
 					return false;
 				}
