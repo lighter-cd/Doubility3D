@@ -8,14 +8,90 @@ namespace LeapMotionWebsocket
         public string serviceVersion = "";
         public int version = 0;
     }
+
+
     class Event
     {
-
+		public class State{
+			public bool attached;
+			public string id;
+			public bool streaming;
+			public string type;	
+		}
+		public State state;
+		public string type;
     }
+
+	public class HandleJson
+	{
+		public long id;
+		public string type; // one of "right", "left"
+		public float timeVisible;
+
+		public float[][] r;
+		public float s;
+		public float[] t;
+
+		public float[][] armBasis;
+		public float armWidth;
+		public float confidence;
+		public float[] direction;
+		public float[] elbow;
+		public float grabStrength;
+		public float[] palmNormal;
+		public float[] palmPosition;
+		public float[] palmVelocity;
+		public float pinchStrength;
+		public float[] sphereCenter;
+		public float sphereRadius;
+		public float[] stabilizedPalmPosition;
+		public float[] wrist;
+	}
+
+	public class InteractionBoxJson{
+		public float[] center;
+		public float[] size;
+	}
+
+	public class Pointable{
+		public long id;
+		public long handId;
+		public long type; // 0 is thumb; 4 is pinky
+		public float timeVisible;
+
+		public float length;
+		public float width;
+
+		public bool extended;
+		public bool tool;
+
+		public float[][] bases; // the 3 basis vectors for each bone, in index order, wrist to tip, (array of vectors).
+		public float[] btipPosition; // the position of the tip of the distal phalanx as an array of 3 floats.
+		public float[] carpPosition; // the position of the base of metacarpal bone as an array of 3 floats.
+		public float[] dipPosition; // the position of the base of the distal phalanx as an array of 3 floats.
+		public float[] direction;
+		public float[] mcpPosition; // a position vector as an array of 3 floating point numbers
+		public float[] pipPosition; // a position vector as an array of 3 floating point numbers
+		public float[] stabilizedTipPosition;
+		public float[] tipPosition;
+		public float[] tipVelocity;
+		public float touchDistance;
+		public string touchZone; // one of "none", "hovering", "touching"
+	}
 
     public class FrameJson
     {
+		public float currentFrameRate;
+		public long id;
+		public long timestamp;
+		public float[][] r;
+		public float s;
+		public float[] t;
+		// devices[]
 
+		public HandleJson[] handles;
+		public InteractionBoxJson interactionBox;
+		public Pointable pointbles;
     }
 
     internal class Protocol
