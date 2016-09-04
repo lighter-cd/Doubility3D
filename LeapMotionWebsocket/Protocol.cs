@@ -22,7 +22,7 @@ namespace LeapMotionWebsocket
 		public string type;
     }
 
-	public class HandleJson
+	public class HandJson
 	{
 		public long id;
 		public string type; // one of "right", "left"
@@ -53,7 +53,7 @@ namespace LeapMotionWebsocket
 		public float[] size;
 	}
 
-	public class Pointable{
+	public class PointableJson{
 		public long id;
 		public long handId;
 		public long type; // 0 is thumb; 4 is pinky
@@ -65,7 +65,7 @@ namespace LeapMotionWebsocket
 		public bool extended;
 		public bool tool;
 
-		public float[][] bases; // the 3 basis vectors for each bone, in index order, wrist to tip, (array of vectors).
+		public float[][][] bases; // the 3 basis vectors for each bone, in index order, wrist to tip, (array of vectors).
 		public float[] btipPosition; // the position of the tip of the distal phalanx as an array of 3 floats.
 		public float[] carpPosition; // the position of the base of metacarpal bone as an array of 3 floats.
 		public float[] dipPosition; // the position of the base of the distal phalanx as an array of 3 floats.
@@ -89,9 +89,9 @@ namespace LeapMotionWebsocket
 		public float[] t;
 		// devices[]
 
-		public HandleJson[] handles;
+		public HandJson[] hands;
 		public InteractionBoxJson interactionBox;
-		public Pointable pointbles;
+		public PointableJson[] pointbles;
     }
 
     internal class Protocol

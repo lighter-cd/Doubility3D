@@ -240,9 +240,9 @@ namespace LeapMotionWebsocket
 			if (!connected || focused == focuse)
 				return;
 			focused = focuse;
-			focuseEvent (this.focused);
+			focuseEvent (this,focused);
 			if (ws != null && ws.State == WebSocketState.Open) {
-				ws.Send (Protocol.EncodeFocused ());
+				ws.Send (Protocol.EncodeFocused (focused));
 			}
 		}
 	}
