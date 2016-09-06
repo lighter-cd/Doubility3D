@@ -134,7 +134,7 @@ namespace LeapMotionWebsocket
 			object obj = null;
 			if (protocol == null) {
 				protocol = Protocol.ChooseProtocol (e.Message);
-				obj = protocol.Header;
+				obj = protocol;
 				protocolVersionVerified = true;
 				ready (this, null);
 			} else {
@@ -245,6 +245,8 @@ namespace LeapMotionWebsocket
 				ws.Send (Protocol.EncodeFocused (focused));
 			}
 		}
+
+		public Protocol Protocol {get{return protocol;}}
 	}
 }
 

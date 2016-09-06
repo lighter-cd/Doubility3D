@@ -26,7 +26,9 @@ namespace LeapMotionWebsocket
 
 		public InteractionBox interactionBox;
 
-
+		public Frame(){
+			valid = false;
+		}
         public Frame(FrameJson data)
         {
 			valid = true;
