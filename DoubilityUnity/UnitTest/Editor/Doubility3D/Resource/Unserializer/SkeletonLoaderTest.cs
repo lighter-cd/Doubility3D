@@ -32,7 +32,7 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
 
 			SkeletonUnserializer unserializer = UnserializerFactory.Instance.Create (context) as SkeletonUnserializer;
 
-			skeletonObj = unserializer.Parse(bb) as ResourceObjectSingle;
+			skeletonObj = unserializer.Parse (bb) as ResourceObjectSingle;
 			go = new GameObject ("Skeleton");
 			(skeletonObj.Unity3dObject as GameObject).transform.parent = go.transform;
 		}
@@ -69,18 +69,18 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
 				string parentJointName = (j.Parent >= 0) ? skeletons.GetJoints (j.Parent).Names : null;
 				Assert.AreEqual (parentGoName, parentJointName);
 
-				Assert.AreEqual (tf.localPosition.x, j.Transform.Pos.X);
-				Assert.AreEqual (tf.localPosition.y, j.Transform.Pos.Y);
-				Assert.AreEqual (tf.localPosition.z, j.Transform.Pos.Z);
+				Assert.Less (Mathf.Abs (tf.localPosition.x - j.Transform.Pos.X), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localPosition.y - j.Transform.Pos.Y), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localPosition.z - j.Transform.Pos.Z), 0.0001f);
 
-				Assert.AreEqual (tf.localRotation.x, j.Transform.Rot.X);
-				Assert.AreEqual (tf.localRotation.y, j.Transform.Rot.Y);
-				Assert.AreEqual (tf.localRotation.z, j.Transform.Rot.Z);
-				Assert.AreEqual (tf.localRotation.w, j.Transform.Rot.W);
+				Assert.Less (Mathf.Abs (tf.localRotation.x - j.Transform.Rot.X), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localRotation.y - j.Transform.Rot.Y), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localRotation.z - j.Transform.Rot.Z), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localRotation.w - j.Transform.Rot.W), 0.0001f);
 
-				Assert.AreEqual (tf.localScale.x, j.Transform.Scl.X);
-				Assert.AreEqual (tf.localScale.y, j.Transform.Scl.Y);
-				Assert.AreEqual (tf.localScale.z, j.Transform.Scl.Z);
+				Assert.Less (Mathf.Abs (tf.localScale.x - j.Transform.Scl.X), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localScale.y - j.Transform.Scl.Y), 0.0001f);
+				Assert.Less (Mathf.Abs (tf.localScale.z - j.Transform.Scl.Z), 0.0001f);
 			}
 		}
 

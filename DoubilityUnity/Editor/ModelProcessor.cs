@@ -62,7 +62,7 @@ namespace Doubility3D
 				TextureImporter textureImporter = (TextureImporter)assetImporter;
 				if (assetPath.Contains ("_NRM")) {
 					textureImporter.textureType = TextureImporterType.Bump;
-					textureImporter.convertToNormalmap = true;
+					textureImporter.convertToNormalmap = false;
 				} else if (System.IO.Path.GetExtension (assetPath) == ".exr") {
 					textureImporter.textureType = TextureImporterType.Lightmap;
 				}

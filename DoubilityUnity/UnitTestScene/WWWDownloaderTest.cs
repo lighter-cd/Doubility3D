@@ -1,15 +1,15 @@
 ﻿using System;
 using UnityEngine;
-using UnityEditor;
-using NUnit.Framework;
 using Doubility3D.Resource.Downloader;
 
 namespace UnitTest.Doubility3D.Resource.Downloader
 {
-	[TestFixture]
-	public class WWWDownloaderTest
+	public class WWWDownloaderTest : MonoBehaviour
 	{
-		TextAsset ReadTestConfig (string file)
+		void Awake(){
+			
+		}
+		/*TextAsset ReadTestConfig (string file)
 		{
 			return AssetDatabase.LoadAssetAtPath<TextAsset> (TestData.testConfig_path + file);
 		}
@@ -17,7 +17,6 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		string url;
 		IDownloader downloader;
 
-		[TestFixtureSetUp]
 		public void Init ()
 		{
 			url = System.IO.Path.GetFullPath (TestData.testResource_path);
@@ -25,13 +24,11 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			downloader = DownloaderFactory.CreateWWWDownloader (url);
 		}
 
-		[TestFixtureTearDown]
 		public void Clear ()
 		{
 			downloader = null;
 		}
 
-		[Test]		
 		public void HomeVar ()
 		{
 			Assert.IsInstanceOf<WWWDownloader> (downloader);
@@ -68,6 +65,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 
 			WWWDownloader fd = downloader as WWWDownloader;
 			Assert.IsNotNull (fd);
+			bool runned = false;
 			CoroutineTest.Run (
 				fd.ResourceTask (targetPath + "?" + System.Environment.TickCount.ToString(), (results, error) => {
 					Assert.IsNotNull (results);
@@ -79,8 +77,10 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 
 					// 删除文件
 					System.IO.File.Delete (TestData.testResource_path + targetPath);
+					runned = true;
 				})
 			);
-		}
+			Assert.IsTrue (runned);
+		}*/
 	}
 }

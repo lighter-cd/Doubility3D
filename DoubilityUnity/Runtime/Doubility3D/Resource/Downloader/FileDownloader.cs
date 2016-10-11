@@ -6,9 +6,10 @@ namespace Doubility3D.Resource.Downloader
 {
 	public class FileDownloader : IDownloader
 	{
-		private static string home;
+		private string home;
 
-		static FileDownloader(){
+		internal FileDownloader ()
+		{
 			home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME",EnvironmentVariableTarget.User);
 			if (string.IsNullOrEmpty (home)) {
 				home = Application.streamingAssetsPath;
@@ -17,12 +18,7 @@ namespace Doubility3D.Resource.Downloader
 
 			if (home [home.Length - 1] != '/') {
 				home += "/";
-			}
-		}
-
-		internal FileDownloader ()
-		{
-			
+			}			
 		}
 		public IEnumerator ResourceTask (string path,Action<Byte[],string> actOnComplate)
 		{
