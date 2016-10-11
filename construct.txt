@@ -1,0 +1,384 @@
+
+LICENSE SYSTEM [20161010 13:59:28] Next license update check is after 2026-09-14T00:00:00
+
+Built from '5.4/release' branch; Version is '5.4.0f3 (a6d8d714de6f) revision 10934487'; Using compiler version '160040219'
+OS: 'Windows 10  (10.0.0) 64bit' Language: 'zh' Physical Memory: 16257 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+Initialize mono
+Mono path[0] = 'D:/dev/Unity/Editor/Data/Managed'
+Mono path[1] = 'D:/dev/Unity/Editor/Data/Mono/lib/mono/2.0'
+Mono path[2] = 'D:/dev/Unity/Editor/Data/UnityScript'
+Mono config path = 'D:/dev/Unity/Editor/Data/Mono/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56976
+
+ BATCHMODE ARGUMENTS:
+
+D:\dev\Unity\Editor\Unity.exe
+-quit
+-batchmode
+-nographics
+-createProject
+D:\Work\Doubility3D_Runtime
+-logFile
+construct.txt
+D:/Work/Doubility3D_Runtime
+Audio: FMOD Profiler initialized on port 54900
+Loading GUID <-> Path mappings...0.000143 seconds
+Loading Asset Database...0.000075 seconds
+AssetDatabase consistency checks...0.000155 seconds
+Initialize engine version: 5.4.0f3 (a6d8d714de6f)
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Forcing GfxDevice: Null
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEngine.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEditor.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.Locator.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\I18N.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\I18N.CJK.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.DataContract.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Core.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.IvyParser.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Xml.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Configuration.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll (this message is harmless)
+Initializing Unity.PackageManager (PackageManager) v5.4.0 for Unity v5.4.0f3
+Setting StandaloneWindows v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport
+Setting Advertisements v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements
+  UnityEngine.Advertisements.dll (Extension) GUID: 739bbd9f364b4268874f9fd86ab3beef
+  Editor/UnityEditor.Advertisements.dll (Extension) GUID: 97decbdab0634cdd991f8d23ddf0dead
+Setting EditorTestsRunner v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner
+  Editor/nunit.framework.dll (Extension) GUID: 7cbab2be89b54486bbd23a6fe637d30e
+  Editor/UnityEditor.EditorTestsRunner.dll (Extension) GUID: 3c0ad459c1534645b5d603b7cc258f97
+Setting GUISystem v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem
+  UnityEngine.UI.dll (Extension) GUID: f5f67c52d1564df4a8936ccd202a3bd8
+  Editor/UnityEditor.UI.dll (Extension) GUID: 80a3616ca19596e4da0f10f14d241e9f
+Setting UNetHLAPI v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking
+  UnityEngine.Networking.dll (Extension) GUID: 870353891bb340e2b2a9c8707e7419ba
+  Editor/UnityEditor.Networking.dll (Extension) GUID: 5f32cd94baa94578a686d4b9d6b660f7
+Setting TreeEditor v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor
+  Editor/UnityEditor.TreeEditor.dll (Extension) GUID: adebbd281f1a4ef3a30be7f21937e02f
+Setting UnityAnalytics v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\UnityAnalytics
+  UnityEngine.Analytics.dll (Extension) GUID: 852E56802EB941638ACBB491814497B0
+Setting UnityPurchasing v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\UnityPurchasing
+  UnityEngine.Purchasing.dll (Extension) GUID: 8E0CD8ED44D4412CBE0642067ABC9E44
+Registering custom dll's ...
+Register platform support module: D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.021415 seconds.
+Platform assembly: D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements\Editor\UnityEditor.Advertisements.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements\Editor\UnityEditor.Advertisements.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\nunit.framework.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\nunit.framework.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\UnityEditor.EditorTestsRunner.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\UnityEditor.EditorTestsRunner.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\UnityEngine.UI.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\UnityEngine.UI.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\Editor\UnityEditor.UI.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\Editor\UnityEditor.UI.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\Editor\UnityEditor.Networking.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\Editor\UnityEditor.Networking.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor\Editor\UnityEditor.TreeEditor.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor\Editor\UnityEditor.TreeEditor.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\UnityEditor.WindowsStandalone.Extensions.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\UnityEditor.WindowsStandalone.Extensions.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\nunit.core.interfaces.dll (this message is harmless)
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Mono.Cecil.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.SerializationLogic.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\UnityScript.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\ICSharpCode.NRefactory.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Xml.Linq.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\nunit.core.dll (this message is harmless)
+Mono: successfully reloaded assembly
+- Completed reload, in  0.579 seconds
+Registering platform support modules:
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.Compiler.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.Parser.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\UnityScript.Lang.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Mono.Security.dll (this message is harmless)
+Registered platform support modules in: 0.0852174s.
+Native extension for WindowsStandalone target not found
+Reloading assemblies after successful script compilation.
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEngine.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEditor.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.Locator.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\I18N.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\I18N.CJK.dll (this message is harmless)
+Registering custom dll's ...
+Register platform support module: D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Core.dll (this message is harmless)
+Registered in 0.046898 seconds.
+Platform assembly: D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements\Editor\UnityEditor.Advertisements.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements\Editor\UnityEditor.Advertisements.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\nunit.framework.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\nunit.framework.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\UnityEditor.EditorTestsRunner.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\UnityEditor.EditorTestsRunner.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\UnityEngine.UI.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\UnityEngine.UI.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\Editor\UnityEditor.UI.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\Editor\UnityEditor.UI.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\Editor\UnityEditor.Networking.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\Editor\UnityEditor.Networking.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor\Editor\UnityEditor.TreeEditor.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor\Editor\UnityEditor.TreeEditor.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\UnityEditor.WindowsStandalone.Extensions.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\UnityEditor.WindowsStandalone.Extensions.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\nunit.core.interfaces.dll (this message is harmless)
+Refreshing native plugins compatible for Editor in 0.02 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Mono.Cecil.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.SerializationLogic.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.DataContract.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\UnityScript.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\ICSharpCode.NRefactory.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Xml.Linq.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.IvyParser.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\nunit.core.dll (this message is harmless)
+Mono: successfully reloaded assembly
+- Completed reload, in  0.395 seconds
+Initializing Unity.PackageManager (PackageManager) v5.4.0 for Unity v5.4.0f3
+Setting StandaloneWindows v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport
+Setting Advertisements v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements
+  UnityEngine.Advertisements.dll (Extension) GUID: 739bbd9f364b4268874f9fd86ab3beef
+  Editor/UnityEditor.Advertisements.dll (Extension) GUID: 97decbdab0634cdd991f8d23ddf0dead
+Setting EditorTestsRunner v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner
+  Editor/nunit.framework.dll (Extension) GUID: 7cbab2be89b54486bbd23a6fe637d30e
+  Editor/UnityEditor.EditorTestsRunner.dll (Extension) GUID: 3c0ad459c1534645b5d603b7cc258f97
+Setting GUISystem v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem
+  UnityEngine.UI.dll (Extension) GUID: f5f67c52d1564df4a8936ccd202a3bd8
+  Editor/UnityEditor.UI.dll (Extension) GUID: 80a3616ca19596e4da0f10f14d241e9f
+Setting UNetHLAPI v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking
+  UnityEngine.Networking.dll (Extension) GUID: 870353891bb340e2b2a9c8707e7419ba
+  Editor/UnityEditor.Networking.dll (Extension) GUID: 5f32cd94baa94578a686d4b9d6b660f7
+Setting TreeEditor v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor
+  Editor/UnityEditor.TreeEditor.dll (Extension) GUID: adebbd281f1a4ef3a30be7f21937e02f
+Setting UnityAnalytics v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\UnityAnalytics
+  UnityEngine.Analytics.dll (Extension) GUID: 852E56802EB941638ACBB491814497B0
+Setting UnityPurchasing v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\UnityPurchasing
+  UnityEngine.Purchasing.dll (Extension) GUID: 8E0CD8ED44D4412CBE0642067ABC9E44
+Registering platform support modules:
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.Compiler.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.Parser.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\UnityScript.Lang.dll (this message is harmless)
+Registered platform support modules in: 0.0472869s.
+Native extension for WindowsStandalone target not found
+Validating Project structure ... 0.000070 seconds.
+Shader import version has changed; will reimport all shaders...
+Upgrading shader files ...0.000043 seconds.
+Refresh: detecting if any assets need to be imported or removed ... Refresh: elapses 0.036596 seconds
+Updating Assets - GUID: 00000000000000001000000000000000...
+ done. [Time: 30.500690 ms] 
+Updating ProjectSettings/InputManager.asset - GUID: 00000000000000002000000000000000...
+ done. [Time: 9.931836 ms] 
+Updating ProjectSettings/TagManager.asset - GUID: 00000000000000003000000000000000...
+ done. [Time: 12.374498 ms] 
+Updating ProjectSettings/ProjectSettings.asset - GUID: 00000000000000004000000000000000...
+ done. [Time: 15.133605 ms] 
+Updating ProjectSettings/NavMeshAreas.asset - GUID: 00000000000000004100000000000000...
+ done. [Time: 8.971441 ms] 
+Updating Library/BuildPlayer.prefs - GUID: 00000000000000005000000000000000...
+ done. [Time: 11.734104 ms] 
+Updating ProjectSettings/Physics2DSettings.asset - GUID: 00000000000000005100000000000000...
+ done. [Time: 10.740131 ms] 
+Updating ProjectSettings/AudioManager.asset - GUID: 00000000000000006000000000000000...
+Audio: FMOD Profiler initialized on port 54900
+ done. [Time: 81.500710 ms] 
+Updating ProjectSettings/GraphicsSettings.asset - GUID: 00000000000000006100000000000000...
+ done. [Time: 9.163836 ms] 
+Updating ProjectSettings/TimeManager.asset - GUID: 00000000000000007000000000000000...
+ done. [Time: 12.462993 ms] 
+Updating ProjectSettings/ClusterInputManager.asset - GUID: 00000000000000007100000000000000...
+ done. [Time: 10.340724 ms] 
+Updating ProjectSettings/DynamicsManager.asset - GUID: 00000000000000008000000000000000...
+ done. [Time: 9.015689 ms] 
+Updating ProjectSettings/UnityAdsSettings.asset - GUID: 00000000000000008100000000000000...
+ done. [Time: 12.797215 ms] 
+Updating ProjectSettings/QualitySettings.asset - GUID: 00000000000000009000000000000000...
+ done. [Time: 9.906947 ms] 
+Updating ProjectSettings/NetworkManager.asset - GUID: 0000000000000000a000000000000000...
+ done. [Time: 20.769943 ms] 
+Updating ProjectSettings/UnityConnectSettings.asset - GUID: 0000000000000000a100000000000000...
+ done. [Time: 13.083633 ms] 
+Updating ProjectSettings/EditorBuildSettings.asset - GUID: 0000000000000000b000000000000000...
+ done. [Time: 9.571145 ms] 
+Updating ProjectSettings/EditorSettings.asset - GUID: 0000000000000000c000000000000000...
+ done. [Time: 9.061912 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/UnityEditor.EditorTestsRunner.dll - GUID: 3c0ad459c1534645b5d603b7cc258f97...
+ done. [Time: 72.822792 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll - GUID: 5f32cd94baa94578a686d4b9d6b660f7...
+ done. [Time: 27.111858 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll - GUID: 739bbd9f364b4268874f9fd86ab3beef...
+ done. [Time: 26.970427 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/nunit.framework.dll - GUID: 7cbab2be89b54486bbd23a6fe637d30e...
+ done. [Time: 21.666731 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll - GUID: 80a3616ca19596e4da0f10f14d241e9f...
+ done. [Time: 41.271637 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll - GUID: 852e56802eb941638acbb491814497b0...
+ done. [Time: 11.323636 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll - GUID: 870353891bb340e2b2a9c8707e7419ba...
+ done. [Time: 44.076969 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll - GUID: 8e0cd8ed44d4412cbe0642067abc9e44...
+ done. [Time: 28.642324 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll - GUID: 97decbdab0634cdd991f8d23ddf0dead...
+ done. [Time: 12.112178 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll - GUID: adebbd281f1a4ef3a30be7f21937e02f...
+ done. [Time: 30.473038 ms] 
+Updating D:/dev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll - GUID: f5f67c52d1564df4a8936ccd202a3bd8...
+ done. [Time: 66.084641 ms] 
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEngine.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEditor.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.Locator.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\I18N.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\I18N.CJK.dll (this message is harmless)
+Registering custom dll's ...
+Register platform support module: D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Core.dll (this message is harmless)
+Registered in 0.047164 seconds.
+Platform assembly: D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\PackageManager\Unity\PackageManager\5.4.0\Unity.PackageManager.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements\Editor\UnityEditor.Advertisements.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements\Editor\UnityEditor.Advertisements.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\nunit.framework.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\nunit.framework.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\UnityEditor.EditorTestsRunner.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner\Editor\UnityEditor.EditorTestsRunner.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\UnityEngine.UI.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\UnityEngine.UI.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\Editor\UnityEditor.UI.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem\Editor\UnityEditor.UI.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\UnityEngine.Networking.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\Editor\UnityEditor.Networking.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking\Editor\UnityEditor.Networking.dll into Unity Child Domain
+Non platform assembly: D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor\Editor\UnityEditor.TreeEditor.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor\Editor\UnityEditor.TreeEditor.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\UnityEditor.WindowsStandalone.Extensions.dll (this message is harmless)
+Loading D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport\UnityEditor.WindowsStandalone.Extensions.dll into Unity Child Domain
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\nunit.core.interfaces.dll (this message is harmless)
+Refreshing native plugins compatible for Editor in 2.08 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Mono.Cecil.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.SerializationLogic.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.DataContract.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\UnityScript.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\ICSharpCode.NRefactory.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\System.Xml.Linq.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\Unity.IvyParser.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Managed\nunit.core.dll (this message is harmless)
+Mono: successfully reloaded assembly
+- Completed reload, in  0.400 seconds
+Initializing Unity.PackageManager (PackageManager) v5.4.0 for Unity v5.4.0f3
+Setting StandaloneWindows v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport
+Setting Advertisements v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Advertisements
+  UnityEngine.Advertisements.dll (Extension) GUID: 739bbd9f364b4268874f9fd86ab3beef
+  Editor/UnityEditor.Advertisements.dll (Extension) GUID: 97decbdab0634cdd991f8d23ddf0dead
+Setting EditorTestsRunner v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\EditorTestsRunner
+  Editor/nunit.framework.dll (Extension) GUID: 7cbab2be89b54486bbd23a6fe637d30e
+  Editor/UnityEditor.EditorTestsRunner.dll (Extension) GUID: 3c0ad459c1534645b5d603b7cc258f97
+Setting GUISystem v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\GUISystem
+  UnityEngine.UI.dll (Extension) GUID: f5f67c52d1564df4a8936ccd202a3bd8
+  Editor/UnityEditor.UI.dll (Extension) GUID: 80a3616ca19596e4da0f10f14d241e9f
+Setting UNetHLAPI v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\Networking
+  UnityEngine.Networking.dll (Extension) GUID: 870353891bb340e2b2a9c8707e7419ba
+  Editor/UnityEditor.Networking.dll (Extension) GUID: 5f32cd94baa94578a686d4b9d6b660f7
+Setting TreeEditor v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\TreeEditor
+  Editor/UnityEditor.TreeEditor.dll (Extension) GUID: adebbd281f1a4ef3a30be7f21937e02f
+Setting UnityAnalytics v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\UnityAnalytics
+  UnityEngine.Analytics.dll (Extension) GUID: 852E56802EB941638ACBB491814497B0
+Setting UnityPurchasing v5.4.0 for Unity v5.4.0f3 to D:\dev\Unity\Editor\Data\UnityExtensions\Unity\UnityPurchasing
+  UnityEngine.Purchasing.dll (Extension) GUID: 8E0CD8ED44D4412CBE0642067ABC9E44
+Registering platform support modules:
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.Compiler.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\Boo.Lang.Parser.dll (this message is harmless)
+Platform assembly: D:\dev\Unity\Editor\Data\Mono\lib\mono\2.0\UnityScript.Lang.dll (this message is harmless)
+Registered platform support modules in: 0.0402946s.
+Native extension for WindowsStandalone target not found
+Unloading 30 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 16.3 MB.
+System memory in use after: 16.2 MB.
+
+Unloading 22 unused Assets to reduce memory usage. Loaded Objects now: 444.
+Total: 0.658566 ms (FindLiveObjects: 0.031604 ms CreateObjectMapping: 0.008296 ms MarkObjects: 0.607208 ms  DeleteObjects: 0.009481 ms)
+
+Refreshing native plugins compatible for Editor in 4.48 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+
+----- Total AssetImport time: 1.411434s, AssetImport time: 1.371261s, Asset hashing: 0.000000s [0 B, 0.000000 mb/s]
+
+Refresh: detecting if any assets need to be imported or removed ... Refresh: elapses 0.001376 seconds (Nothing changed)
+Determining assets that need to be reimported for target platform ... 0.011228 seconds.
+
+Hashing assets ... 0.000 seconds
+  file open: 0.000 seconds (0 files)
+  file read: 0.000 seconds (0.000 MB)
+  hash: 0.000 seconds
+Refreshing native plugins compatible for Editor in 0.08 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+
+----- Total AssetImport time: 0.012098s, AssetImport time: 0.000000s, Asset hashing: 0.000000s [0 B, 0.000000 mb/s]
+
+Updating ProjectSettings/ProjectSettings.asset - GUID: 00000000000000004000000000000000...
+ done. [Time: 27.224844 ms] 
+Refreshing native plugins compatible for Editor in 0.08 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+
+----- Total AssetImport time: 0.074927s, AssetImport time: 0.047065s, Asset hashing: 0.000000s [0 B, 0.000000 mb/s]
+
+Warming cache for 29 main assets: 0.000214 seconds elapsed
+Initializing Unity extensions:
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/UnityEditor.EditorTestsRunner.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/nunit.framework.dll' 
+ 'D:/dev/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll' 
+Unloading 12 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 15.0 MB.
+System memory in use after: 15.0 MB.
+
+Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 450.
+Total: 1.300936 ms (FindLiveObjects: 0.062419 ms CreateObjectMapping: 0.015802 ms MarkObjects: 1.214022 ms  DeleteObjects: 0.007506 ms)
+
+Batchmode quit successfully invoked - shutting down!
+Refresh: detecting if any assets need to be imported or removed ... Refresh: elapses 0.000545 seconds (Nothing changed)
+Updating ProjectSettings/ProjectSettings.asset - GUID: 00000000000000004000000000000000...
+ done. [Time: 6.623199 ms] 
+Refreshing native plugins compatible for Editor in 0.08 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+
+----- Total AssetImport time: 0.045551s, AssetImport time: 0.023719s, Asset hashing: 0.000000s [0 B, 0.000000 mb/s]
+
+Refresh: detecting if any assets need to be imported or removed ... Refresh: elapses 0.000500 seconds (Nothing changed)
+Cleanup mono
+Exiting batchmode successfully now!

@@ -30,11 +30,15 @@ public class ResourceFileForUnitTest : ScriptableObject {
 		string json = System.IO.File.ReadAllText(TestData.config_resource);
 		CopyMaps maps = JsonMapper.ToObject<CopyMaps>(json);
 
+		string home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
+
 		for(int i=0;i<maps.copyMap.Length;i++){
-			string source = Application.streamingAssetsPath + "/.root/" + maps.copyMap[i];
+			string source = home + "/.root/" + maps.copyMap[i];
 			string dest = TestData.testResource_path + System.IO.Path.GetFileName(maps.copyMap[i]);
-			if(System.IO.File.Exists(source)){
-				System.IO.File.Copy(source,dest,true);
+			if (System.IO.File.Exists (source)) {
+				System.IO.File.Copy (source, dest, true);
+			} else {
+				EditorUtility.DisplayDialog("搞不定","文件不存在："+source,"咋办");
 			}
 		}
 		EditorUtility.DisplayDialog("搞定了","拷贝完毕","好了");

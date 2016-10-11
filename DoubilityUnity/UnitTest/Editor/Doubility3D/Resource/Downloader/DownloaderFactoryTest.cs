@@ -76,7 +76,15 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			DownloaderFactory.configFile = "file_mode_www.json";
 			IDownloader downloader = DownloaderFactory.Instance.Create ();
 			Assert.IsInstanceOf<WWWDownloader> (downloader);
-			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://127.0.0.1");
+			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://127.0.0.1/");
+		}
+		[Test]
+		public void WWWModeNoPostFix ()
+		{
+			DownloaderFactory.configFile = "file_mode_www_nopostfix.json";
+			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			Assert.IsInstanceOf<WWWDownloader> (downloader);
+			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://127.0.0.1/");
 		}
 		[Test]
 		public void FileMode ()

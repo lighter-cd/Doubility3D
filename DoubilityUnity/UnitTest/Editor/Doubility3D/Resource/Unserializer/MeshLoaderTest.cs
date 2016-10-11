@@ -19,7 +19,6 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
     {
         Schema.Mesh mesh;
 		ResourceObjectMesh _resultMesh;
-        string[] _joints;
 
         [SetUp]
         public void Init()
@@ -39,7 +38,6 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
         {
 			_resultMesh.Dispose();
 			_resultMesh = null;
-            _joints = null;
             mesh = null;
         }
 
@@ -198,10 +196,10 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
         [Test]
         public void Joints()
         {
-            Assert.AreEqual(_joints.Length, mesh.JointsLength);
+			Assert.AreEqual(_resultMesh.joints.Length, mesh.JointsLength);
             for (int i = 0; i < mesh.JointsLength; i++)
             {
-                Assert.AreEqual(_joints[i], mesh.GetJoints(i));
+				Assert.AreEqual(_resultMesh.joints[i], mesh.GetJoints(i));
             }
         }
 
