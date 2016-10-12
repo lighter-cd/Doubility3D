@@ -34,10 +34,6 @@ namespace UnitTest.Doubility3D
 				return false;
 			}
 		}
-		public static bool AddToPacket(byte[] bytes, string pathFile, string pathPacket)
-		{
-			return false;
-		}
 		public static System.Random Random {get{ return random;}}
 	}
 }

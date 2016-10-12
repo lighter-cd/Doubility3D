@@ -68,11 +68,13 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			Assert.IsNotNull (fd);
 
 			bool runned = false;
-			CoroutineTest.Run (fd.ResourceTask ("NotExistFile.Dat", (bytes, error) => {
+			IEnumerator enumerator = fd.ResourceTask ("NotExistFile.Dat", (bytes, error) => {
 				Assert.IsNull (bytes);
 				Assert.IsFalse (string.IsNullOrEmpty (error));
 				runned = true;
-			}));
+			});
+			bool completed = enumerator.RunCoroutineWithoutYields (int.MaxValue);
+			Assert.IsTrue (completed);
 			Assert.IsTrue (runned);
 		}
 
@@ -91,20 +93,20 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			FileDownloader fd = downloader as FileDownloader;
 			Assert.IsNotNull (fd);
 			bool runned = false;
-			CoroutineTest.Run (
-				fd.ResourceTask (targetPath, (results, error) => {
-					Assert.IsNotNull (results);
-					Assert.AreEqual (bytes.Length, results.Length);
-					Assert.IsTrue (string.IsNullOrEmpty (error));
-					for (int i = 0; i < bytes.Length; i++) {
-						Assert.AreEqual (bytes [i], results [i]);
-					}
+			IEnumerator enumerator = fd.ResourceTask (targetPath, (results, error) => {
+				Assert.IsNotNull (results);
+				Assert.AreEqual (bytes.Length, results.Length);
+				Assert.IsTrue (string.IsNullOrEmpty (error));
+				for (int i = 0; i < bytes.Length; i++) {
+					Assert.AreEqual (bytes [i], results [i]);
+				}
 
-					// 删除文件
-					System.IO.File.Delete (TestData.testResource_path + targetPath);
-					runned = true;
-				})
-			);
+				// 删除文件
+				System.IO.File.Delete (TestData.testResource_path + targetPath);
+				runned = true;
+			});
+			bool completed = enumerator.RunCoroutineWithoutYields (int.MaxValue);
+			Assert.IsTrue (completed);
 			Assert.IsTrue (runned);
 		}
 	}

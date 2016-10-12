@@ -21,13 +21,14 @@ namespace Doubility3D.Resource.Downloader
 			Byte[] _bytes = null;
 
 			WWW www = new WWW (home + path);
-			yield return www;
-			if (www.isDone) {
-				if (string.IsNullOrEmpty (www.error)) {
-					_bytes = www.bytes;
-				} 
-				actOnComplate (_bytes, www.error);
+
+			while (!www.isDone) {
+				yield return www;
 			}
+			if (string.IsNullOrEmpty (www.error)) {
+				_bytes = www.bytes;
+			} 
+			actOnComplate (_bytes, www.error);
 		}
 
 		public string Home { get { return home;} }
