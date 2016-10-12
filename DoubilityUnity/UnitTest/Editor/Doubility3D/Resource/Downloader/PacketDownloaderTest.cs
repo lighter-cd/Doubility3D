@@ -31,17 +31,17 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void Init ()
 		{
 			// 拷贝底包
-			bassPacketPath = PreparePacket(dictBassPacket,"_bass",0,0);
+			bassPacketPath = System.IO.Path.Combine(Application.streamingAssetsPath,packetName + "_bass.pak");
+			PreparePacket(dictBassPacket,bassPacketPath,0,0);
 
 			// 向底包中添加
-			updatePacketPath = PreparePacket(dictUpdatePacket,"_update",10,dictBassPacket.Count);
+			updatePacketPath = System.IO.Path.Combine(Application.persistentDataPath,packetName + "_update.pak");
+			PreparePacket(dictUpdatePacket,updatePacketPath,10,dictBassPacket.Count);
 
 			// 初始化时，数据包必须已经存在。
 			downloader = DownloaderFactory.CreatePacketDownloader (packetName);
 		}
-		string PreparePacket(Dictionary<string,byte[]> dict,string packetPostfix,int version,int startIndex){
-
-			string packetPath = System.IO.Path.Combine(Application.streamingAssetsPath,packetName + packetPostfix +".pak");
+		void PreparePacket(Dictionary<string,byte[]> dict,string packetPath,int version,int startIndex){
 			ZipFile zip = new ZipFile ();
 
 			/// 随机文件数
@@ -56,8 +56,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			}
 			zip.Comment = version.ToString ();
 			zip.Save(packetPath);
-
-			return packetPath;
+			zip.Dispose ();
 		}
 
 		[TestFixtureTearDown]
@@ -65,8 +64,16 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		{
 			downloader = null;
 			// 删除两个压缩包
-			System.IO.File.Delete(bassPacketPath);
-			System.IO.File.Delete(updatePacketPath);
+			bool b = AssetDatabase.DeleteAsset("Assets/StreamingAssets/" + packetName + "_bass.pak");
+			Assert.IsTrue (b);
+			AssetDatabase.Refresh ();
+
+			try {
+				System.IO.File.Delete (bassPacketPath);
+				System.IO.File.Delete (updatePacketPath);
+			} catch (Exception e) {
+				Debug.Log (e.Message);
+			}
 		}
 
 

@@ -7,6 +7,7 @@ using Ionic.Zip;
 
 /// <summary>
 /// 解压多线程
+/// zipFile的内存方式
 /// 由Updater维护一个最新的文件列表
 /// </summary>
 
