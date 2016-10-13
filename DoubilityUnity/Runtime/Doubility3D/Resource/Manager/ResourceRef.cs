@@ -59,7 +59,7 @@ namespace Doubility3D.Resource.Manager
 
 		IEnumerator ProcessTask(ResourceRef refs){
 
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			if (downloader == null) {
 				State = ResourceState.Error; 
 				Error = "Create downloader error.";

@@ -13,6 +13,12 @@ using Ionic.Zip;
 
 namespace Doubility3D.Resource.Downloader
 {
+	public class PacketException : Exception {
+		public PacketException(Exception e) : base(e.GetType().FullName + ":" + e.Message,e)
+		{
+		}
+	}
+
 	public class ZipEntryComparerClass : IComparer  {
 
 		// Calls CaseInsensitiveComparer.Compare with the parameters reversed.
@@ -56,7 +62,22 @@ namespace Doubility3D.Resource.Downloader
 			string[] files = Directory.GetFiles(where,home + "*.pak",SearchOption.AllDirectories);
 			var options = new ReadOptions { StatusMessageWriter = System.Console.Out };
 			for (int i = 0; i < files.Length; i++) {
-				ZipFile zip = ZipFile.Read (files [i], options);
+				ZipFile zip = null;
+				try{
+					zip = ZipFile.Read (files [i], options);
+					int.Parse(zip.Comment);
+				}catch(Exception e){
+					if (zip != null) {
+						zip.Dispose ();
+					}
+					dictEntries.Clear ();
+					dictEntries = null;
+					for(int x=0;x<lstZipFiles.Count;x++){
+						lstZipFiles [x].Dispose ();
+					}
+					lstZipFiles.Clear ();
+					throw(new PacketException (e));
+				}
 				lstZipFiles.Add (zip);
 				ZipEntry[] entries = new ZipEntry[zip.EntriesSorted.Count];
 				zip.EntriesSorted.CopyTo (entries, 0);
@@ -83,11 +104,35 @@ namespace Doubility3D.Resource.Downloader
 				yield return null;
 				byte[] bytes = new byte[entry.UncompressedSize];
 				MemoryStream ms = new MemoryStream (bytes);
-				entry.Extract (ms);
-				actOnComplate (bytes, null);
+
+				try{
+					entry.Extract (ms);
+				}catch(Exception e){
+					throw(new PacketException (e));
+				}
+
+				if (actOnComplate != null) {
+					actOnComplate (bytes, null);
+				}
 			}
 		}
 		public string Home { get { return home;} }
+		public void Dispose(){
+			dictEntries.Clear ();
+			dictEntries = null;
+			for (int i = 0; i < zipFiles.Length; i++) {
+				zipFiles[i].Dispose();
+				zipFiles [i] = null;
+			}
+			zipFiles = null;
+		}
+
+
+		public int GetPacketVersion(string path){
+			for (int i = 0; i < zipFiles.Length; i++) {
+				ZipFile f = zipFiles [i];
+			}
+		}
 	}
 }
 

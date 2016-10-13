@@ -27,32 +27,28 @@ namespace Doubility3D.Resource.Downloader
 		ValidMode,
 	}
 
+	public class ConfigException : Exception
+	{
+		ConfigError error;
+		public ConfigException(ConfigError _error) : base(_error.ToString()){
+			error = _error;
+		}
+		public ConfigException(ConfigError _error, Exception e) : base (e.GetType().FullName + ":" + e.Message,e){
+			error = _error;
+		}
+		public ConfigError Error { get { return error; } }
+	}
+
 	public class DownloaderFactory
 	{
 		DownloadConfig config;
 		static public string configFile = "file_mode";
 		static public Func<string,TextAsset> funcTextAssetReader = Resources.Load<TextAsset>;
 
-		ConfigError error = ConfigError.NoError;
-		string errorMsg;
+		IDownloader downloader;
 
 		private DownloaderFactory ()
 		{
-			TextAsset asset = funcTextAssetReader (configFile);
-			if (asset != null) {
-				if (!string.IsNullOrEmpty (asset.text)) {
-					try {
-						config = JsonMapper.ToObject<DownloadConfig> (asset.text);
-					} catch (Exception e) {
-						error = ConfigError.ErrorJson;
-						errorMsg = e.Message;
-					}
-				} else {
-					error = ConfigError.EmptyFile;
-				}
-			} else {
-				error = ConfigError.NotExist;
-			}
 		}
 
 		static private DownloaderFactory _instance = null;
@@ -68,33 +64,55 @@ namespace Doubility3D.Resource.Downloader
 
 		static public void Dispose ()
 		{
+			if (_instance != null && _instance.Downloader != null) {
+				_instance.Downloader.Dispose ();
+			}
 			_instance = null;
 		}
 
-		public IDownloader Create ()
+		public void Initialize ()
 		{
-			if (config != null) {
+			TextAsset asset = funcTextAssetReader (configFile);
+			if (asset != null) {
+				if (!string.IsNullOrEmpty (asset.text)) {
+					try {
+						config = JsonMapper.ToObject<DownloadConfig> (asset.text);
+					} catch (Exception e) {
+						throw(new ConfigException ( ConfigError.ErrorJson, e));
+					}
+				} else {
+					throw(new ConfigException ( ConfigError.EmptyFile));
+				}
+			} else {
+				throw(new ConfigException ( ConfigError.NotExist));
+			}
+
+			if (config != null && downloader == null) {
 				switch (config.FileMode) {
 				case DownloadMode.File:
-					return new FileDownloader ();
+					downloader = new FileDownloader ();
+					break;
 				case DownloadMode.WWW:
-					return new WWWDownloader (config.URL);
+					downloader = new WWWDownloader (config.URL);
+					break;
 				case DownloadMode.Packet:
-					return new PacketDownloader (config.URL);
+					downloader = new PacketDownloader (config.URL);
+					break;
 				default:
-					return new NullDownloader (ConfigError.ValidMode, configFile, config.FileMode.ToString ());
+					throw(new ConfigException (ConfigError.ValidMode));
 				}
 			}
-			return new NullDownloader (error, configFile, errorMsg);
 		}
 
-		static public IDownloader CreateWWWDownloader (string url)
+		public IDownloader Downloader {get{ return downloader;}}
+
+		public void CreateWWWDownloader (string url)
 		{
-			return new WWWDownloader (url);
+			downloader = new WWWDownloader (url);
 		}
-		static public IDownloader CreatePacketDownloader (string name)
+		public void CreatePacketDownloader (string name)
 		{
-			return new PacketDownloader (name);
+			downloader =  new PacketDownloader (name);
 		}
 	}
 }

@@ -32,12 +32,12 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			DownloaderFactory.configFile = "file_mode_file.json";
 
 			fullPath = System.IO.Path.GetFullPath (TestData.testResource_path);
-			try{
+
+			Assert.DoesNotThrow (new TestDelegate (() => {
 				Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
-			}catch(Exception e){
-				Debug.LogError (e.Message);
-			}
-			downloader = DownloaderFactory.Instance.Create ();
+				DownloaderFactory.Instance.Initialize ();
+			}));
+			downloader = DownloaderFactory.Instance.Downloader;
 		}
 
 		[TestFixtureTearDown]
@@ -47,6 +47,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			DownloaderFactory.configFile = oldConfigFile;
 			DownloaderFactory.funcTextAssetReader = oldFuncTextAssetReader;
 			DownloaderFactory.Dispose ();
+			downloader = null;
 		}
 
 		[Test]		

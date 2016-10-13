@@ -39,34 +39,46 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void ConfigFileNotExist ()
 		{
 			DownloaderFactory.configFile = "file_mode_not_exist.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
-			Assert.IsInstanceOf<NullDownloader> (downloader);
-			Assert.AreEqual ((downloader as NullDownloader).Error, ConfigError.NotExist);
+			try{
+				DownloaderFactory.Instance.Initialize ();
+			}catch(ConfigException e){
+				Assert.IsNull (DownloaderFactory.Instance.Downloader);
+				Assert.AreEqual (e.Error, ConfigError.NotExist);
+			}
 		}
 		[Test]
 		public void ConfigFileIsEmpty ()
 		{
 			DownloaderFactory.configFile = "file_mode_empty.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
-			Assert.IsInstanceOf<NullDownloader> (downloader);
-			Assert.AreEqual ((downloader as NullDownloader).Error, ConfigError.EmptyFile);
+			try{
+				DownloaderFactory.Instance.Initialize ();
+			}catch(ConfigException e){
+				Assert.IsNull (DownloaderFactory.Instance.Downloader);
+				Assert.AreEqual (e.Error, ConfigError.EmptyFile);
+			}
 		}
 		[Test]
 		public void ConfigFileParseError ()
 		{
 			DownloaderFactory.configFile = "file_mode_error.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
-			Assert.IsInstanceOf<NullDownloader> (downloader);
-			Assert.AreEqual ((downloader as NullDownloader).Error, ConfigError.ErrorJson);
+			try{
+				DownloaderFactory.Instance.Initialize ();
+			}catch(ConfigException e){
+				Assert.IsNull (DownloaderFactory.Instance.Downloader);
+				Assert.AreEqual (e.Error, ConfigError.ErrorJson);
+			}
 		}
 
 		[Test]
 		public void ConfigModeNotValid ()
 		{
 			DownloaderFactory.configFile = "file_mode_not_valid.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
-			Assert.IsInstanceOf<NullDownloader> (downloader);
-			Assert.AreEqual ((downloader as NullDownloader).Error, ConfigError.ValidMode);
+			try{
+				DownloaderFactory.Instance.Initialize ();
+			}catch(ConfigException e){
+				Assert.IsNull (DownloaderFactory.Instance.Downloader);
+				Assert.AreEqual (e.Error, ConfigError.ValidMode);
+			}
 		}
 
 
@@ -74,7 +86,8 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void WWWMode ()
 		{
 			DownloaderFactory.configFile = "file_mode_www.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			DownloaderFactory.Instance.Initialize ();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			Assert.IsInstanceOf<WWWDownloader> (downloader);
 			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://127.0.0.1/");
 		}
@@ -82,7 +95,8 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void WWWModeNoPostFix ()
 		{
 			DownloaderFactory.configFile = "file_mode_www_nopostfix.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			DownloaderFactory.Instance.Initialize ();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			Assert.IsInstanceOf<WWWDownloader> (downloader);
 			Assert.AreEqual ((downloader as WWWDownloader).Home, "http://127.0.0.1/");
 		}
@@ -90,14 +104,16 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void FileMode ()
 		{
 			DownloaderFactory.configFile = "file_mode_file.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			DownloaderFactory.Instance.Initialize ();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			Assert.IsInstanceOf<FileDownloader> (downloader);
 		}
 		[Test]
 		public void PacketMode ()
 		{
 			DownloaderFactory.configFile = "file_mode_packet.json";
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			DownloaderFactory.Instance.Initialize ();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			Assert.IsInstanceOf<PacketDownloader> (downloader);
 		}
 	}

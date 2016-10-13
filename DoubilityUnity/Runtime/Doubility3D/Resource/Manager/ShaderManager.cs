@@ -57,7 +57,7 @@ namespace Doubility3D.Resource.Manager
 
 			actOnComplate = _actOnComplate;
 			// 装载数据
-			IDownloader downloader = DownloaderFactory.Instance.Create ();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			new Task (downloader.ResourceTask (coreDataBundle, OnDownloadComplate));
 		}
 

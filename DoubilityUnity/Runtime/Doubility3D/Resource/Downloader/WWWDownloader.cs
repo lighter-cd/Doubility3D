@@ -32,6 +32,8 @@ namespace Doubility3D.Resource.Downloader
 		}
 
 		public string Home { get { return home;} }
+		public void Dispose(){
+		}
 	}
 }
 

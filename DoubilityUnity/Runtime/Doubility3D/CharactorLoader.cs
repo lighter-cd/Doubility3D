@@ -3,6 +3,7 @@ using UnityEngine;
 
 using Doubility3D.Resource.Manager;
 using Doubility3D.Resource.ResourceObj;
+using Doubility3D.Resource.Downloader;
 using Doubility3D.Util;
 
 
@@ -22,7 +23,12 @@ public class CharactorLoader : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-		ShaderManager.Instance.LoadAssetBundle (OnShaderManagerComplate);
+		try{
+			DownloaderFactory.Instance.Initialize();
+			ShaderManager.Instance.LoadAssetBundle (OnShaderManagerComplate);
+		}catch(Exception e){
+			Debug.LogException (e);
+		}
 	}
 
     // Update is called once per frame
