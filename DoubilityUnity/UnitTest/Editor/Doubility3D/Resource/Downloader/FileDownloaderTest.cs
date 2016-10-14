@@ -26,16 +26,11 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void Init ()
 		{
 			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
-			oldConfigFile = DownloaderFactory.configFile;
-			oldFuncTextAssetReader = DownloaderFactory.funcTextAssetReader;
-			DownloaderFactory.funcTextAssetReader = ReadTestConfig;			
-			DownloaderFactory.configFile = "file_mode_file.json";
-
 			fullPath = System.IO.Path.GetFullPath (TestData.testResource_path);
 
 			Assert.DoesNotThrow (new TestDelegate (() => {
 				Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
-				DownloaderFactory.Instance.Initialize ();
+				DownloaderFactory.Instance.Initialize (DownloadMode.File,"");
 			}));
 			downloader = DownloaderFactory.Instance.Downloader;
 		}
@@ -44,8 +39,6 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		public void Clear ()
 		{
 			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.User);
-			DownloaderFactory.configFile = oldConfigFile;
-			DownloaderFactory.funcTextAssetReader = oldFuncTextAssetReader;
 			DownloaderFactory.Dispose ();
 			downloader = null;
 		}

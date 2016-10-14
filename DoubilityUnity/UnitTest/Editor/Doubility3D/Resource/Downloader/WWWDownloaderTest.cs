@@ -24,7 +24,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		{
 			url = System.IO.Path.GetFullPath (TestData.testResource_path);
 			url = "file:///" + url.Replace ('\\', '/');
-			DownloaderFactory.Instance.CreateWWWDownloader (url);
+			DownloaderFactory.Instance.Initialize (DownloadMode.WWW, url);
 			downloader = DownloaderFactory.Instance.Downloader;
 		}
 		[TestFixtureTearDown]

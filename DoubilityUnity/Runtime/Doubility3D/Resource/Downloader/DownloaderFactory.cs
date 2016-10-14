@@ -41,10 +41,6 @@ namespace Doubility3D.Resource.Downloader
 
 	public class DownloaderFactory
 	{
-		DownloadConfig config;
-		static public string configFile = "file_mode";
-		static public Func<string,TextAsset> funcTextAssetReader = Resources.Load<TextAsset>;
-
 		IDownloader downloader;
 
 		private DownloaderFactory ()
@@ -70,33 +66,48 @@ namespace Doubility3D.Resource.Downloader
 			_instance = null;
 		}
 
-		public void Initialize ()
+
+		public void InitializeWithConfig(string configFile,Func<string,string> funcTextAssetReader = null)
 		{
-			TextAsset asset = funcTextAssetReader (configFile);
-			if (asset != null) {
-				if (!string.IsNullOrEmpty (asset.text)) {
-					try {
-						config = JsonMapper.ToObject<DownloadConfig> (asset.text);
-					} catch (Exception e) {
-						throw(new ConfigException ( ConfigError.ErrorJson, e));
+			if (funcTextAssetReader == null) {
+				funcTextAssetReader = (configPath) => {
+					try{
+						return System.IO.File.ReadAllText(Application.streamingAssetsPath + "/" + configPath);
+					}catch(Exception e){
+						throw(new ConfigException (ConfigError.NotExist,e));
 					}
-				} else {
-					throw(new ConfigException ( ConfigError.EmptyFile));
-				}
-			} else {
-				throw(new ConfigException ( ConfigError.NotExist));
+				};
 			}
 
-			if (config != null && downloader == null) {
-				switch (config.FileMode) {
+			string json = funcTextAssetReader (configFile);
+			DownloadConfig config;
+
+			if (!string.IsNullOrEmpty (json)) {
+				try {
+					config = JsonMapper.ToObject<DownloadConfig> (json);
+				} catch (Exception e) {
+					throw(new ConfigException (ConfigError.ErrorJson, e));
+				}
+			} else {
+				throw(new ConfigException (ConfigError.EmptyFile));
+			}
+
+			Initialize(config.FileMode,config.URL);
+		}
+
+		public void Initialize (DownloadMode fileMode,string url)
+		{
+
+			if (downloader == null) {
+				switch (fileMode) {
 				case DownloadMode.File:
 					downloader = new FileDownloader ();
 					break;
 				case DownloadMode.WWW:
-					downloader = new WWWDownloader (config.URL);
+					downloader = new WWWDownloader (url);
 					break;
 				case DownloadMode.Packet:
-					downloader = new PacketDownloader (config.URL);
+					downloader = new PacketDownloader (url);
 					break;
 				default:
 					throw(new ConfigException (ConfigError.ValidMode));
@@ -105,15 +116,6 @@ namespace Doubility3D.Resource.Downloader
 		}
 
 		public IDownloader Downloader {get{ return downloader;}}
-
-		public void CreateWWWDownloader (string url)
-		{
-			downloader = new WWWDownloader (url);
-		}
-		public void CreatePacketDownloader (string name)
-		{
-			downloader =  new PacketDownloader (name);
-		}
 	}
 }
 

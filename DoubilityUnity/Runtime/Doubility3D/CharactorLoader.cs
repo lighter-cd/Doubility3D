@@ -24,7 +24,7 @@ public class CharactorLoader : MonoBehaviour
     void Start()
     {
 		try{
-			DownloaderFactory.Instance.Initialize();
+			DownloaderFactory.Instance.InitializeWithConfig("file_mode.json");
 			ShaderManager.Instance.LoadAssetBundle (OnShaderManagerComplate);
 		}catch(Exception e){
 			Debug.LogException (e);

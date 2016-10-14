@@ -13,13 +13,25 @@ using Ionic.Zip;
 
 namespace Doubility3D.Resource.Downloader
 {
+	public class PacketInfo {
+		ZipFile zipFile;
+		int version;
+
+		public PacketInfo(ZipFile zf,int ver){
+			zipFile = zf;
+			version = ver;
+		}
+		public ZipFile File { get { return zipFile; } }
+		public int Version { get { return version; } }
+	}
+
 	public class PacketException : Exception {
 		public PacketException(Exception e) : base(e.GetType().FullName + ":" + e.Message,e)
 		{
 		}
 	}
 
-	public class ZipEntryComparerClass : IComparer  {
+	internal class ZipEntryComparerClass : IComparer  {
 
 		// Calls CaseInsensitiveComparer.Compare with the parameters reversed.
 		int IComparer.Compare( object x, object y )  {
@@ -36,7 +48,7 @@ namespace Doubility3D.Resource.Downloader
 	public class PacketDownloader : IDownloader
 	{
 		string home;
-		ZipFile[] zipFiles;
+		PacketInfo[] packets;
 		Dictionary<ZipFile,ZipEntry[]> dictEntries = new Dictionary<ZipFile, ZipEntry[]> ();
 
 		internal PacketDownloader (string _home)
@@ -44,41 +56,40 @@ namespace Doubility3D.Resource.Downloader
 			home = _home;
 
 			// 在 streamingAssetsPath 和 dataPath 中寻找
-			List<ZipFile> lstZipFiles = new List<ZipFile> ();
-			SearchPackets (Application.streamingAssetsPath, lstZipFiles);
-			SearchPackets (Application.persistentDataPath, lstZipFiles);
-			lstZipFiles.Sort (
-				(z1,z2)=>{
-					int v1 = 0,v2 = 0;
-					int.TryParse(z1.Comment,out v1);
-					int.TryParse(z2.Comment,out v2);
-					return v2 - v1;
+			List<PacketInfo> lstPackets = new List<PacketInfo> ();
+			SearchPackets (Application.streamingAssetsPath, lstPackets);
+			SearchPackets (Application.persistentDataPath, lstPackets);
+			lstPackets.Sort (
+				(p1,p2)=>{
+					return p2.Version - p1.Version;
 				}
 			);
-			zipFiles = lstZipFiles.ToArray();
+			packets = lstPackets.ToArray();
 		}
 
-		void SearchPackets(string where,List<ZipFile> lstZipFiles){
+		void SearchPackets(string where,List<PacketInfo> lstPackets){
 			string[] files = Directory.GetFiles(where,home + "*.pak",SearchOption.AllDirectories);
 			var options = new ReadOptions { StatusMessageWriter = System.Console.Out };
 			for (int i = 0; i < files.Length; i++) {
 				ZipFile zip = null;
+				int version = -1;
 				try{
-					zip = ZipFile.Read (files [i], options);
-					int.Parse(zip.Comment);
+					zip = ZipFile.Read (files [i].Replace ("\\", "/"), options);
+					version = int.Parse(zip.Comment);
+
 				}catch(Exception e){
 					if (zip != null) {
 						zip.Dispose ();
 					}
 					dictEntries.Clear ();
 					dictEntries = null;
-					for(int x=0;x<lstZipFiles.Count;x++){
-						lstZipFiles [x].Dispose ();
+					for(int x=0;x<lstPackets.Count;x++){
+						lstPackets [x].File.Dispose ();
 					}
-					lstZipFiles.Clear ();
+					lstPackets.Clear ();
 					throw(new PacketException (e));
 				}
-				lstZipFiles.Add (zip);
+				lstPackets.Add (new PacketInfo(zip,version));
 				ZipEntry[] entries = new ZipEntry[zip.EntriesSorted.Count];
 				zip.EntriesSorted.CopyTo (entries, 0);
 				dictEntries.Add(zip,entries);
@@ -89,8 +100,8 @@ namespace Doubility3D.Resource.Downloader
 		{
 			// 在每个packets中找
 			ZipEntry entry = null;
-			for (int i = 0; i < zipFiles.Length; i++) {
-				ZipEntry[] entries = dictEntries[zipFiles[i]];
+			for (int i = 0; i < packets.Length; i++) {
+				ZipEntry[] entries = dictEntries[packets[i].File];
 				int where = Array.BinarySearch (entries, path, new ZipEntryComparerClass());
 				if (where >= 0) {
 					entry = entries [where];
@@ -120,19 +131,14 @@ namespace Doubility3D.Resource.Downloader
 		public void Dispose(){
 			dictEntries.Clear ();
 			dictEntries = null;
-			for (int i = 0; i < zipFiles.Length; i++) {
-				zipFiles[i].Dispose();
-				zipFiles [i] = null;
+			for (int i = 0; i < packets.Length; i++) {
+				packets[i].File.Dispose();
+				packets[i] = null;
 			}
-			zipFiles = null;
+			packets = null;
 		}
 
-
-		public int GetPacketVersion(string path){
-			for (int i = 0; i < zipFiles.Length; i++) {
-				ZipFile f = zipFiles [i];
-			}
-		}
+		public PacketInfo[] Packets { get { return packets; } }
 	}
 }
 
