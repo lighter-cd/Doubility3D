@@ -6,9 +6,11 @@ using FlatBuffers;
 using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.Schema;
 using Doubility3D.Resource.ResourceObj;
+using Doubility3D.Resource.Manager;
 using Schema = Doubility3D.Resource.Schema;
 using Doubility3D.Util;
 
+using System;
 using System.Collections.Generic;
 
 using UnitTest.Doubility3D;
@@ -21,38 +23,74 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
     {
 		ResourceObjectMaterial resultMaterial;
         Schema.Material material;
-        Dictionary<string, string> dictTextureName = new Dictionary<string, string>();
 
-        Shader GetShader(string name)
-        {
+		Func<string,Shader> funcOldAddShader = null;
+		Action<Shader> actOldDelShader = null;
+		Func<string,ResourceRef> funcOldGetResource = null;
+		Action<string> actOldDelResource = null;
+
+		Dictionary<string,ResourceRef> dictTextures = new Dictionary<string, ResourceRef> ();
+
+        Shader AddShader(string name){
             return Shader.Find(name);
         }
-		UnityEngine.Texture GetTexture(string nameTexture, string nameProperty)
-        {
-            dictTextureName.Add(nameProperty, nameTexture);
-            return null;
-        }
+		void DelShader(Shader shader){
+		}
+		ResourceRef GetResource(string url){
+			if (!dictTextures.ContainsKey (url)) {
+				ResourceRef _ref = new ResourceRef (url);
+				_ref.resourceObject = new ResourceObjectSingle (new Texture2D (4, 4));
+				dictTextures.Add (url, _ref);
+				return _ref;
+			}
+			return dictTextures[url];
+		}
+		void DelResource(string url){
+			ResourceRef _ref = null;
+			if (dictTextures.TryGetValue (url, out _ref)) {
+				_ref.resourceObject.Dispose();
+				dictTextures.Remove (url);
+			}
+		}
 
-        [SetUp]
+
+		[TestFixtureSetUp]
         public void Init()
         {
-            Context context = Context.Unknown;
+			funcOldAddShader = ResourceInterface.funcAddShader;
+			actOldDelShader = ResourceInterface.actDelShader;
+			funcOldGetResource = ResourceInterface.funcGetResource;
+			actOldDelResource = ResourceInterface.actDelResource;
+			ResourceInterface.funcAddShader = AddShader;
+			ResourceInterface.actDelShader = DelShader;
+			ResourceInterface.funcGetResource = GetResource;
+			ResourceInterface.actDelResource = DelResource;
+
+
+			Context context = Context.Unknown;
             ByteBuffer bb = TestData.LoadResource("Suit_Metal_Dragon_Male.doub", out context);
             Assert.IsNotNull(bb);
             Assert.AreNotEqual(context, Context.Unknown);
 
 			MaterialUnserializer unserializer = UnserializerFactory.Instance.Create (context) as MaterialUnserializer;
 			resultMaterial = unserializer.Parse(bb) as ResourceObjectMaterial;
+			resultMaterial.OnDependencesFinished ();
             material = Schema.Material.GetRootAsMaterial(bb);
         }
 
-        [TearDown]
+		[TestFixtureTearDown]
         public void Cleanup()
         {
 			resultMaterial.Dispose ();
             resultMaterial = null;
             material = null;
-            dictTextureName.Clear();
+
+			ResourceInterface.funcAddShader = funcOldAddShader;
+			ResourceInterface.actDelShader = actOldDelShader;
+			ResourceInterface.funcGetResource = funcOldGetResource;
+			ResourceInterface.actDelResource = actOldDelResource;
+
+			dictTextures.Clear ();
         }
 
         [Test]
@@ -114,9 +152,13 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
                             //这个测试用例不真正装载 texture.
                             //Assert.IsFalse(texture == null);
                             ShaderPropertyTexture t = p.GetValue<ShaderPropertyTexture>(new ShaderPropertyTexture());
+						string texturePath = resultMaterial.GetTexturePath (t.Name);
 
-                            Assert.IsTrue(dictTextureName.ContainsKey(p.Names));
-                            Assert.AreEqual(dictTextureName[p.Names], t.Name);
+							Assert.IsTrue(realMaterial.HasProperty (p.Names));
+							Assert.IsTrue (dictTextures.ContainsKey (texturePath));
+							Assert.IsNotNull (realMaterial.GetTexture (p.Names));
+							Assert.AreEqual (dictTextures[texturePath].resourceObject.Unity3dObject.GetInstanceID(), realMaterial.GetTexture (p.Names).GetInstanceID());
+
                             Assert.AreEqual(offset.x, t.Offset.X);
                             Assert.AreEqual(offset.y, t.Offset.Y);
                             Assert.AreEqual(scale.x, t.Scale.X);

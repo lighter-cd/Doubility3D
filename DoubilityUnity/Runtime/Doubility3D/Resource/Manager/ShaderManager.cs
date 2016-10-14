@@ -26,6 +26,8 @@ namespace Doubility3D.Resource.Manager
 
 	public class ShaderManager
 	{
+		public static Action<IEnumerator> actStartCoroutine = (e)=>{new Task (e);};
+
 		private string coreDataBundle;
 
 		private ShaderManager ()
@@ -56,9 +58,8 @@ namespace Doubility3D.Resource.Manager
 			}
 
 			actOnComplate = _actOnComplate;
-			// 装载数据
-			IDownloader downloader = DownloaderFactory.Instance.Downloader;
-			new Task (downloader.ResourceTask (coreDataBundle, OnDownloadComplate));
+
+			actStartCoroutine (AssetBundleTask());
 		}
 
 		public void DisposeBundle(){
@@ -68,15 +69,6 @@ namespace Doubility3D.Resource.Manager
 		}
 
 		public string CoreDataBundle { get { return coreDataBundle; } }
-
-		private void OnDownloadComplate (Byte[] bytes, string error)
-		{
-			if (string.IsNullOrEmpty (error)) {
-				new Task (AssetBundleTask (bytes));
-			} else {
-				actOnComplate (ShaderLoadResult.BundleDownloadError,error);
-			}
-		}
 
 		public Shader AddShader (string name)
 		{
@@ -129,8 +121,24 @@ namespace Doubility3D.Resource.Manager
 			return 0;			
 		}
 
-		IEnumerator AssetBundleTask (Byte[] bytes)
+		IEnumerator AssetBundleTask ()
 		{
+			Byte[] bytes = null;
+			string err = "";
+
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
+			yield return downloader.ResourceTask (coreDataBundle, (bs,e)=>{
+				bytes = bs;
+				err = e;
+			});
+
+
+			if (!string.IsNullOrEmpty (err)) {
+				actOnComplate (ShaderLoadResult.BundleDownloadError,err);
+				yield break;
+			}
+			yield return null;
+
 			ShaderLoadResult error = ShaderLoadResult.Ok;
 			string info = "";
 

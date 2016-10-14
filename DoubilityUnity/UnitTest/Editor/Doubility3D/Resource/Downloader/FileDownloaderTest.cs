@@ -10,13 +10,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 	[TestFixture]
 	public class FileDownloaderTest
 	{
-		TextAsset ReadTestConfig (string file)
-		{
-			return AssetDatabase.LoadAssetAtPath<TextAsset> (TestData.testConfig_path + file);
-		}
-
 		string oldConfigFile;
-		Func<string,TextAsset> oldFuncTextAssetReader;
 		string oldHome;
 
 		string fullPath;

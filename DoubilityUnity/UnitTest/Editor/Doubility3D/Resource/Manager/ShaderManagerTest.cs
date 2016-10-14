@@ -1,24 +1,23 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
 using Doubility3D.Resource.Downloader;
 using Doubility3D.Resource.Manager;
+using LitJson;
 
 namespace UnitTest.Doubility3D.Resource.Manager
 {
 	public class ShaderManagerTest
 	{
-		TextAsset ReadTestConfig (string file)
-		{
-			return AssetDatabase.LoadAssetAtPath<TextAsset> (TestData.testConfig_path + file);
-		}
-
 		string oldConfigFile;
-		Func<string,TextAsset> oldFuncTextAssetReader;
 		string oldHome;
 
 		string fullPath;
+
+		Action<IEnumerator> actOldStartCoroutine = null;
 
 		[TestFixtureSetUp]
 		public void Init ()
@@ -27,15 +26,23 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			fullPath = System.IO.Path.GetFullPath (TestData.testBundle_path);
 
 			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
-			TaskManagerTest.run = true;
+			DownloaderFactory.Instance.Initialize (DownloadMode.File, null);
+
+			actOldStartCoroutine = ShaderManager.actStartCoroutine;
+			ShaderManager.actStartCoroutine = StartCoroutine;
 		}
 
 		[TestFixtureTearDown]
 		public void Clear ()
 		{
-			TaskManagerTest.run = false;
+			ShaderManager.actStartCoroutine = actOldStartCoroutine;
 			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.User);
 			DownloaderFactory.Dispose ();
+		}
+
+		void StartCoroutine(IEnumerator e){
+			bool completed = e.RunCoroutineWithoutYields (int.MaxValue);
+			Assert.IsTrue (completed);
 		}
 
 		[Test]
@@ -48,13 +55,22 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					Assert.IsFalse(string.IsNullOrEmpty(error));
 					bRunned = true;
 				}, "ShaderNotExist.assetbundle");
-			TaskManagerTest.Instance.Run ();
 			Assert.IsTrue (bRunned);
 		}
 
 		[Test]
 		public void BundleLoadError ()
 		{
+			// 随机产生bytes数组
+			// 写入文件作为测试数据
+			byte[] bytes = RandomData.Build (2048, 512);
+
+			// 写入文件
+			const string targetPath = "ShaderErrorBundle.assetbundle";
+			bool writed = RandomData.WriteToFile (bytes, fullPath + targetPath);
+			Assert.IsTrue (writed);
+
+
 			bool bRunned = false;
 			ShaderManager.Instance.LoadAssetBundle (
 				(result, error) => {
@@ -62,8 +78,9 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					Assert.IsFalse(string.IsNullOrEmpty(error));
 					bRunned = true;
 				}, "ShaderErrorBundle.assetbundle");
-			TaskManagerTest.Instance.Run ();
 			Assert.IsTrue (bRunned);
+
+			System.IO.File.Delete (fullPath + targetPath);
 		}
 
 		[Test]
@@ -74,7 +91,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					Assert.IsTrue(result == ShaderLoadResult.DictionaryLoadError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
 				}, "ShaderNoDict.assetbundle");
-			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 		}
 
@@ -86,7 +102,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					Assert.IsTrue(result == ShaderLoadResult.DictionaryJsonError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
 				}, "ShaderDictError.assetbundle");
-			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 		}
 
@@ -98,7 +113,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					Assert.IsTrue(result == ShaderLoadResult.ContentCheckError);
 					Assert.IsFalse(string.IsNullOrEmpty(error));
 				}, "ShaderContentError.assetbundle");
-			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 		}
 
@@ -112,7 +126,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					RunAddAndDelete();
 					bRunned = true;
 				}, "ShaderOK.bundle");
-			TaskManagerTest.Instance.Run ();
 			ShaderManager.Instance.DisposeBundle ();
 			Assert.IsTrue (bRunned);
 		}
@@ -136,6 +149,31 @@ namespace UnitTest.Doubility3D.Resource.Manager
 					Assert.Equals (refs, j);
 				}
 			}
+		}
+
+		static void DoIt (string bundleName)
+		{
+			string[] _files = System.IO.Directory.GetFiles ("Assets/Doubility3D/CoreData", "*.shader", System.IO.SearchOption.AllDirectories);
+
+			AssetBundleBuild[] buildMap = new AssetBundleBuild[1];
+			buildMap [0].assetBundleName = bundleName;
+			buildMap [0].assetNames = new string[1];
+			buildMap [0].assetNames[0] = _files [0].Replace ('\\', '/');
+
+
+			Dictionary<string,string> dictShaderName2Path = new Dictionary<string, string> ();
+			Shader shader = AssetDatabase.LoadAssetAtPath<Shader> (buildMap [0].assetNames[0]);
+			dictShaderName2Path.Add (shader.name, _files [0]);
+
+
+			/*string jsonString = JsonMapper.ToJson (dictShaderName2Path);
+			System.IO.File.WriteAllText (ShaderDictionary.Path, jsonString);
+
+			Array.Resize<string> (ref buildMap [0].assetNames, buildMap [0].assetNames.Length + 1);
+			buildMap [0].assetNames [buildMap [0].assetNames.Length - 1] = ShaderDictionary.Path;
+
+
+			BuildPipeline.BuildAssetBundles (outputFolder, buildMap, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);	*/
 		}
 	}
 }

@@ -174,9 +174,6 @@ class TaskManager : MonoBehaviour
         public TaskState(IEnumerator c)
         {
             coroutine = c;
-			if(TaskManagerTest.run){
-				TaskManagerTest.Instance.AddTask(this);
-			}
         }
 
         public void Pause()
@@ -243,43 +240,3 @@ class TaskManager : MonoBehaviour
     }
 }
 
-public class TaskManagerTest {
-	List<TaskManager.TaskState> lstTasks = new List<TaskManager.TaskState>();
-
-	public void Run(){
-		while (lstTasks.Count > 0) {
-			List<TaskManager.TaskState>.Enumerator e = lstTasks.GetEnumerator ();
-			if (e.MoveNext ()) {
-				TaskManager.TaskState t = e.Current;
-				if (t.Running) {
-					if (t.Coroutine.MoveNext ()) {
-						var instruction = t.Coroutine.Current; //the yielded object
-						if (instruction is AsyncOperation) {
-							while (!((AsyncOperation)instruction).isDone) {
-								
-							}
-						}
-					} else {
-						lstTasks.Remove (t);
-					}
-				}
-			}
-		}
-	}
-
-	internal void AddTask(TaskManager.TaskState t)
-	{
-		lstTasks.Add (t);
-	}
-
-	static TaskManagerTest instance;
-	static public bool run = false;
-	static public TaskManagerTest Instance {
-		get {
-			if (instance == null) {
-				instance = new TaskManagerTest ();
-			}
-			return instance;
-		}
-	}
-}

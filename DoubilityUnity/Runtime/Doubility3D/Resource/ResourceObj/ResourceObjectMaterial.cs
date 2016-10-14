@@ -26,21 +26,21 @@ namespace Doubility3D.Resource.ResourceObj
 		}
 
 		public ResourceObjectMaterial(string shaderName){
-			Shader shader = ShaderManager.Instance.AddShader(shaderName);
+			Shader shader = ResourceInterface.funcAddShader(shaderName);
 			if (shader != null) {
 				UnityEngine.Material material = new UnityEngine.Material(shader);
 				unity3dObject = material;
 			}
 		}
 		public void AddTexture(string path,string propertyName){
-			lstTextureParams.Add (new TextureParam (path + "." + platform +".texture",propertyName));
-			dependencesPath.Add(path + "." + platform +".texture");
+			lstTextureParams.Add (new TextureParam (GetTexturePath(path),propertyName));
+			dependencesPath.Add(GetTexturePath(path));
 		}
 		override public string[] DependencePathes {	get{return dependencesPath.ToArray();}}
 		override public void OnDependencesFinished(){
 			Material material = unity3dObject as Material;
 			for (int i = 0; i < lstTextureParams.Count; i++) {
-				ResourceRef res = ResourceManager.Instance.getResource (lstTextureParams [i].path);
+				ResourceRef res = ResourceInterface.funcGetResource (lstTextureParams [i].path);
 				if (res != null) {
 					material.SetTexture (lstTextureParams [i].propertyName, res.resourceObject.Unity3dObject as Texture);
 				}
@@ -48,20 +48,23 @@ namespace Doubility3D.Resource.ResourceObj
 		}
 		override public void Dispose(){
 			for (int i = 0; i < lstTextureParams.Count; i++) {
-				ResourceRef res = ResourceManager.Instance.getResource (lstTextureParams [i].path);
+				ResourceRef res = ResourceInterface.funcGetResource (lstTextureParams [i].path);
 				if (res != null) {
-					ResourceManager.Instance.delResource (lstTextureParams [i].path);
+					ResourceInterface.actDelResource (lstTextureParams [i].path);
 				}
 			}
 
 			Material material = unity3dObject as Material;
-			ShaderManager.Instance.DelShader (material.shader);
+			ResourceInterface.actDelShader (material.shader);
 
 			// 删除资源物体
 			base.Dispose();
 
 			lstTextureParams.Clear ();
 			lstTextureParams = null;
+		}
+		public string GetTexturePath(string path){
+			return path + "." + platform + ".texture";
 		}
 	}
 }
