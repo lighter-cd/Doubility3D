@@ -1,8 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using FlatBuffers;
 using Doubility3D.Resource.Schema;
 using Doubility3D.Resource.Manager;
 using Doubility3D.Util;
+using Doubility3D.Resource.ResourceObj;
 
 namespace Doubility3D.Resource.Unserializing
 {
@@ -37,6 +39,17 @@ namespace Doubility3D.Resource.Unserializing
 			case Context.Texture:
 				return new TextureUnserializer();
 			}
+			return null;
+		}
+		public ResourceObject Unserialize(byte[] bytes){
+			Schema.Context context = Context.Unknown;
+			ByteBuffer bb = FileUnserializer.Load(bytes, out context);
+			IUnserializer serializer = Create (context);
+			if (serializer != null) {
+				ResourceObject resourceObject = serializer.Parse (bb);
+				serializer = null;
+				return resourceObject;
+			} 
 			return null;
 		}
 	}

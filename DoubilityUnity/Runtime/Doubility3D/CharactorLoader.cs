@@ -57,7 +57,8 @@ public class CharactorLoader : MonoBehaviour
 
 	void OnComplate(ResourceRef[] refs){
 
-		GameObject go = refs[0].resourceObject.Unity3dObject as GameObject;
+		GameObject go = GameObject.Instantiate(refs[0].resourceObject.Unity3dObject as GameObject);
+		go.name = refs [0].resourceObject.Unity3dObject.name;
 		go.transform.parent = gameObject.transform;
 
 		UnityEngine.Material material = refs[5].resourceObject.Unity3dObject as UnityEngine.Material;

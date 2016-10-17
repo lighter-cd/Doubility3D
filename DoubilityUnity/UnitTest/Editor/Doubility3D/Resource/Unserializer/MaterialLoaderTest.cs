@@ -27,7 +27,6 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
 		Func<string,Shader> funcOldAddShader = null;
 		Action<Shader> actOldDelShader = null;
 		Func<string,ResourceRef> funcOldGetResource = null;
-		Action<string> actOldDelResource = null;
 
 		Dictionary<string,ResourceRef> dictTextures = new Dictionary<string, ResourceRef> ();
 
@@ -57,15 +56,12 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
 		[TestFixtureSetUp]
         public void Init()
         {
-			funcOldAddShader = ResourceInterface.funcAddShader;
-			actOldDelShader = ResourceInterface.actDelShader;
-			funcOldGetResource = ResourceInterface.funcGetResource;
-			actOldDelResource = ResourceInterface.actDelResource;
-			ResourceInterface.funcAddShader = AddShader;
-			ResourceInterface.actDelShader = DelShader;
-			ResourceInterface.funcGetResource = GetResource;
-			ResourceInterface.actDelResource = DelResource;
-
+			funcOldAddShader = ResourceObjectInterface.funcAddShader;
+			actOldDelShader = ResourceObjectInterface.actDelShader;
+			funcOldGetResource = ResourceObjectInterface.funcGetResource;
+			ResourceObjectInterface.funcAddShader = AddShader;
+			ResourceObjectInterface.actDelShader = DelShader;
+			ResourceObjectInterface.funcGetResource = GetResource;
 
 			Context context = Context.Unknown;
             ByteBuffer bb = TestData.LoadResource("Suit_Metal_Dragon_Male.doub", out context);
@@ -85,10 +81,9 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
             resultMaterial = null;
             material = null;
 
-			ResourceInterface.funcAddShader = funcOldAddShader;
-			ResourceInterface.actDelShader = actOldDelShader;
-			ResourceInterface.funcGetResource = funcOldGetResource;
-			ResourceInterface.actDelResource = actOldDelResource;
+			ResourceObjectInterface.funcAddShader = funcOldAddShader;
+			ResourceObjectInterface.actDelShader = actOldDelShader;
+			ResourceObjectInterface.funcGetResource = funcOldGetResource;
 
 			dictTextures.Clear ();
         }

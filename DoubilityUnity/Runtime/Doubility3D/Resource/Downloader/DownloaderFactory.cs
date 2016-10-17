@@ -41,7 +41,7 @@ namespace Doubility3D.Resource.Downloader
 
 	public class DownloaderFactory
 	{
-		IDownloader downloader;
+		internal IDownloader downloader;
 
 		private DownloaderFactory ()
 		{
@@ -116,6 +116,7 @@ namespace Doubility3D.Resource.Downloader
 		}
 
 		public IDownloader Downloader {get{ return downloader;}}
+		public IDownloader GetDownloader() { return downloader; }
 	}
 }
 

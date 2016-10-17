@@ -26,7 +26,7 @@ namespace Doubility3D.Resource.ResourceObj
 		}
 
 		public ResourceObjectMaterial(string shaderName){
-			Shader shader = ResourceInterface.funcAddShader(shaderName);
+			Shader shader = ResourceObjectInterface.funcAddShader(shaderName);
 			if (shader != null) {
 				UnityEngine.Material material = new UnityEngine.Material(shader);
 				unity3dObject = material;
@@ -40,22 +40,15 @@ namespace Doubility3D.Resource.ResourceObj
 		override public void OnDependencesFinished(){
 			Material material = unity3dObject as Material;
 			for (int i = 0; i < lstTextureParams.Count; i++) {
-				ResourceRef res = ResourceInterface.funcGetResource (lstTextureParams [i].path);
+				ResourceRef res = ResourceObjectInterface.funcGetResource (lstTextureParams [i].path);
 				if (res != null) {
 					material.SetTexture (lstTextureParams [i].propertyName, res.resourceObject.Unity3dObject as Texture);
 				}
 			}
 		}
 		override public void Dispose(){
-			for (int i = 0; i < lstTextureParams.Count; i++) {
-				ResourceRef res = ResourceInterface.funcGetResource (lstTextureParams [i].path);
-				if (res != null) {
-					ResourceInterface.actDelResource (lstTextureParams [i].path);
-				}
-			}
-
 			Material material = unity3dObject as Material;
-			ResourceInterface.actDelShader (material.shader);
+			ResourceObjectInterface.actDelShader (material.shader);
 
 			// 删除资源物体
 			base.Dispose();

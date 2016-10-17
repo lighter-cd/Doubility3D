@@ -28,42 +28,57 @@ namespace Doubility3D.Resource.Manager
 		int refs;
 		string[] dependences;
 
-		public ResourceRef(string _path)
+		public ResourceRef (string _path)
 		{
 			path = _path;
 			State = ResourceState.WaitingInQueue;
 			refs = 1;
 		}
+
 		public int Refs { get { return refs; } }
-		public void AddRefs() { refs++; }
-		public void DelRefs() { refs--; }
+
+		public void AddRefs ()
+		{
+			refs++;
+		}
+
+		public void DelRefs ()
+		{
+			refs--;
+		}
 
 		public string Path { get { return path; } }
 
 		public ResourceObject resourceObject { get; set; }
+
 		public ResourceState State { get; set; }
+
 		public int Priority { get; set; }
+
 		public bool Async { get; set; }
 
 		public bool IsDone { get { return State == ResourceState.Complated; } }
+
 		public string Error { get; set; }
 
-		public Action<ResourceRef> Action { get; set;}
-		public int Processor { get; set;}
+		public Action<ResourceRef> Action { get; set; }
 
-		public void Start()
+		public int Processor { get; set; }
+
+		public void Start ()
 		{
 			State = ResourceState.Started;
 			new Task (ProcessTask (this));
 		}
 
-		IEnumerator ProcessTask(ResourceRef refs){
+		IEnumerator ProcessTask (ResourceRef refs)
+		{
 
-			IDownloader downloader = DownloaderFactory.Instance.Downloader;
+			IDownloader downloader = ResourceRefInterface.funcDownloader();
 			if (downloader == null) {
 				State = ResourceState.Error; 
 				Error = "Create downloader error.";
-				Action(this);				
+				Action (this);				
 				yield break;
 			}
 
@@ -72,29 +87,30 @@ namespace Doubility3D.Resource.Manager
 			yield return downloader.ResourceTask (resource_path, OnDownloadComplate);
 
 			if (State == ResourceState.Error) {
-				Action(this);				
+				Action (this);				
 				yield break;
 			}
 
 			if (dependences == null) {
 				State = ResourceState.Complated;
-				Action(this);
+				Action (this);
 				yield break;
 			} 
 
 			State = ResourceState.Depending;
-			int[] priorities = { Priority + 1};
+			int[] priorities = { Priority + 1 };
 			ResourceManager.Instance.RegisterDependWaiter (this);
 			ResourceManager.Instance.addResources (dependences, priorities, Async, OnDependResolved, OnDependError);
 			while (!IsDone) {
 				yield return null;
 			}
 
-			Action(this);
+			Action (this);
 		}
 
-		private void OnDownloadComplate(Byte[] bytes,string error){
-			if (string.IsNullOrEmpty (error) ) {
+		private void OnDownloadComplate (Byte[] bytes, string error)
+		{
+			if (string.IsNullOrEmpty (error)) {
 				State = ResourceState.Parsing;
 				Parse (bytes);
 			} else {
@@ -103,35 +119,33 @@ namespace Doubility3D.Resource.Manager
 			}
 		}
 
-		void Parse(Byte[] bytes)
+		void Parse (Byte[] bytes)
 		{
 			// 开始解析
-			Schema.Context context = Context.Unknown;
-			ByteBuffer bb = FileUnserializer.Load(bytes, out context);
-			IUnserializer serializer = UnserializerFactory.Instance.Create (context);
-			if (serializer != null) {
-				resourceObject = serializer.Parse (bb);
-				serializer = null;
-				if (resourceObject == null) {
-					State = ResourceState.Error;
-					Error = "Parse error, return null resourceObject";
-				} else {
-					dependences = resourceObject.DependencePathes;
-				}
-			} else {
+			resourceObject = ResourceRefInterface.funcUnserializer(bytes);
+			if (resourceObject == null) {
 				State = ResourceState.Error;
-				Error = "Create Unserializer error,context = " + context.ToString();
+				Error = "Parse error, return null resourceObject";
+			} else {
+				dependences = resourceObject.DependencePathes;
 			}
 		}
 
-		private void OnDependResolved(ResourceRef[] resources)
+		private void OnDependResolved (ResourceRef[] resources)
 		{
 			resourceObject.OnDependencesFinished ();
 			State = ResourceState.Complated;
 		}
-		private void OnDependError(Exception e){
+
+		private void OnDependError (Exception e)
+		{
 			State = ResourceState.Error;
 			Error = "DependError:" + e.Message;
+		}
+		public void OnRelease(){
+			ResourceManager.Instance.delResources (dependences);
+			resourceObject.Dispose ();
+			resourceObject = null;
 		}
 	}
 }

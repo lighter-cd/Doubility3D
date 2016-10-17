@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 
@@ -68,6 +69,10 @@ namespace Doubility3D.Resource.Manager
 		/// </summary>
 		public void ReSort(){
 			Array.Sort<T> (heap, comparer);
+		}
+
+		public IEnumerator GetEnumerator(){
+			return heap.GetEnumerator ();
 		}
     }
 }

@@ -161,17 +161,19 @@ namespace Doubility3D.Resource.Manager
 		private IEnumerator Update()
 		{
 			while (true) {
-				syncProcessor.ProcessQueue (queueResources);
-				asyncProcessor.ProcessQueue (queueResources);
-				syncProcessor.ProcessDependWaiter ();
-				asyncProcessor.ProcessDependWaiter ();
-
-				if (needRemoveUnused) {
-					Resources.UnloadUnusedAssets ();	//释放一下无用资源
-					needRemoveUnused = false;
-				}
-
+				UpdateLoop ();
 				yield return null;
+			}
+		}
+		public void UpdateLoop(){
+			syncProcessor.ProcessQueue (queueResources);
+			asyncProcessor.ProcessQueue (queueResources);
+			syncProcessor.ProcessDependWaiter ();
+			asyncProcessor.ProcessDependWaiter ();
+
+			if (needRemoveUnused) {
+				Resources.UnloadUnusedAssets ();	//释放一下无用资源
+				needRemoveUnused = false;
 			}
 		}
 		void OnResourceComplate(ResourceRef resource){
@@ -188,7 +190,7 @@ namespace Doubility3D.Resource.Manager
 			}			
 		}
 
-		public void RegisterDependWaiter(ResourceRef resource){
+		internal void RegisterDependWaiter(ResourceRef resource){
 			if (resource.Async) {
 				asyncProcessor.RegisterDependWaiter (resource);
 			} else {
