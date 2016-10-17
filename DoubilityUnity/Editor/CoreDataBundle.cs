@@ -58,6 +58,8 @@ namespace Doubility3D.Tools
 			}
 			BuildPipeline.BuildAssetBundles (outputFolder, buildMap, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);	
 			EditorUtility.DisplayDialog ("搞定了", "核心数据输出完毕", "好了");
+
+			//System.IO.File.Delete (ShaderDictionary.Path);
 		}
 	}
 }

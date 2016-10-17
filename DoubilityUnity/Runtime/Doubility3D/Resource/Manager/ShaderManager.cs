@@ -26,13 +26,16 @@ namespace Doubility3D.Resource.Manager
 
 	public class ShaderManager
 	{
-		public static Action<IEnumerator> actStartCoroutine = (e)=>{new Task (e);};
+		public static Action<IEnumerator> actStartCoroutine = (e) => {
+			new Task (e);
+		};
+		public static string shaderDictPath = ShaderDictionary.Path;
 
 		private string coreDataBundle;
 
 		private ShaderManager ()
 		{
-			coreDataBundle = ".coreData/" + PlatformPath.GetPath (Application.platform) + "/coreData.bundle";
+			coreDataBundle = ".coreData/" + PlatformPath.GetPath (Application.platform) + "/coredata.bundle";
 		}
 
 		static private ShaderManager _instance = null;
@@ -59,10 +62,22 @@ namespace Doubility3D.Resource.Manager
 
 			actOnComplate = _actOnComplate;
 
-			actStartCoroutine (AssetBundleTask());
+			actStartCoroutine (AssetBundleTask ());
 		}
 
-		public void DisposeBundle(){
+		public void DisposeBundle ()
+		{
+			Dictionary<string,ShaderRef>.Enumerator e = dictShaderRefs.GetEnumerator ();
+			while (e.MoveNext ()) {
+				ShaderRef refs = e.Current.Value;
+				#if !UNITY_EDITOR
+				UnityEngine.Object.Destroy(refs.shader); 
+				#else
+				UnityEngine.Object.DestroyImmediate (refs.shader, true);// 这里绝不关联到
+				#endif
+			}
+			dictShaderRefs.Clear ();
+			dictName2Path.Clear ();
 			if (ab != null) {
 				ab.Unload (true);
 			}
@@ -127,14 +142,14 @@ namespace Doubility3D.Resource.Manager
 			string err = "";
 
 			IDownloader downloader = DownloaderFactory.Instance.Downloader;
-			yield return downloader.ResourceTask (coreDataBundle, (bs,e)=>{
+			yield return downloader.ResourceTask (coreDataBundle, (bs, e) => {
 				bytes = bs;
 				err = e;
 			});
 
 
 			if (!string.IsNullOrEmpty (err)) {
-				actOnComplate (ShaderLoadResult.BundleDownloadError,err);
+				actOnComplate (ShaderLoadResult.BundleDownloadError, err);
 				yield break;
 			}
 			yield return null;
@@ -142,48 +157,59 @@ namespace Doubility3D.Resource.Manager
 			ShaderLoadResult error = ShaderLoadResult.Ok;
 			string info = "";
 
-			AssetBundleCreateRequest abcq = AssetBundle.LoadFromMemoryAsync (bytes);
-			yield return abcq;
+			/*AssetBundleCreateRequest abcq = AssetBundle.LoadFromMemoryAsync (bytes);
+			while (!abcq.isDone) {
+				yield return abcq;
+			}
+			ab = abcq.assetBundle;*/
+			ab = AssetBundle.LoadFromMemory (bytes);
 
-			if (abcq.isDone) {
-				if (abcq.assetBundle != null) {
-					ab = abcq.assetBundle;
-					AssetBundleRequest abr = ab.LoadAssetAsync (ShaderDictionary.Path);
+
+			if (ab != null) {
+				/*AssetBundleRequest abr = ab.LoadAssetAsync (shaderDictPath);
+				while (!abr.isDone) {
 					yield return abr;
-
-					if (abr.isDone) {
-						if (abr.asset != null && abr.asset is TextAsset) {
-							TextAsset asset = abr.asset as TextAsset;
-							if (!BuildDictName2Path (asset)) {
-								error = ShaderLoadResult.ContentCheckError;
-							}
-						} else {
-							error = ShaderLoadResult.DictionaryLoadError;
-							info = ShaderDictionary.Path;
-						}
-					}
-				} else {
-					error = ShaderLoadResult.BundleLoadError;
-					info = coreDataBundle;
 				}
+				UnityEngine.Object asset = abr.asset;*/
+				UnityEngine.Object asset = ab.LoadAsset (shaderDictPath);
+
+				if (asset != null && asset is TextAsset) {
+					TextAsset textAsset = asset as TextAsset;
+					JsonData data = null;
+					try {
+						data = JsonMapper.ToObject (textAsset.text);
+					} catch (Exception e) {
+						error = ShaderLoadResult.DictionaryJsonError;
+						info = e.Message + " in " + textAsset.text;
+					}
+
+					if (data != null && !BuildDictName2Path (data)) {
+						error = ShaderLoadResult.ContentCheckError;
+						info = textAsset.text;
+					}
+
+				} else {
+					error = ShaderLoadResult.DictionaryLoadError;
+					info = shaderDictPath;
+				}
+
 			} else {
 				error = ShaderLoadResult.BundleLoadError;
 				info = coreDataBundle;
 			}
-			actOnComplate (error,info);
+			actOnComplate (error, info);
 		}
 
-		private bool BuildDictName2Path (TextAsset asset)
+		private bool BuildDictName2Path (JsonData data)
 		{
 			string[] names = ab.GetAllAssetNames ();
-
-			JsonData data = JsonMapper.ToObject (asset.text);
 			IEnumerator e = data.Keys.GetEnumerator ();
 			while (e.MoveNext ()) {
 				string key = e.Current as string;
 				string value = (string)data [key];
 
-				int index = Array.IndexOf<string> (names, value.ToLower());
+				// the shader in dict must exist in ab
+				int index = Array.IndexOf<string> (names, value.ToLower ());
 				if (index < 0) {
 					return false;
 				}
@@ -193,7 +219,7 @@ namespace Doubility3D.Resource.Manager
 			return true;
 		}
 
-		public string[] GetShaderList()
+		public string[] GetShaderList ()
 		{
 			string[] shaderList = new string[dictName2Path.Count];
 			Dictionary<string,string>.Enumerator e = dictName2Path.GetEnumerator ();
