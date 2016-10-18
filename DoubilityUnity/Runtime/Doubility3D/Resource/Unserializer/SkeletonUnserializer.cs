@@ -42,7 +42,7 @@ namespace Doubility3D.Resource.Unserializing
             }
 
 			goes [0].hideFlags |= HideFlags.HideInHierarchy;
-			GameObject.DontDestroyOnLoad (goes [0]);
+			//GameObject.DontDestroyOnLoad (goes [0]);
 			return new ResourceObjectSingle(goes[0]);
         }
     }

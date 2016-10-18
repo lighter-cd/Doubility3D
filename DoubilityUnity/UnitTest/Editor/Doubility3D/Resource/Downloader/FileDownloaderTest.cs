@@ -10,21 +10,15 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 	[TestFixture]
 	public class FileDownloaderTest
 	{
-		string oldConfigFile;
-		string oldHome;
-
 		string fullPath;
 		IDownloader downloader;
 
 		[TestFixtureSetUp]
 		public void Init ()
 		{
-			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
 			fullPath = System.IO.Path.GetFullPath (TestData.testResource_path);
-
 			Assert.DoesNotThrow (new TestDelegate (() => {
-				Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
-				DownloaderFactory.Instance.Initialize (DownloadMode.File,"");
+				DownloaderFactory.Instance.Initialize (DownloadMode.File,fullPath);
 			}));
 			downloader = DownloaderFactory.Instance.Downloader;
 		}
@@ -32,7 +26,6 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 		[TestFixtureTearDown]
 		public void Clear ()
 		{
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.User);
 			DownloaderFactory.Dispose ();
 			downloader = null;
 		}

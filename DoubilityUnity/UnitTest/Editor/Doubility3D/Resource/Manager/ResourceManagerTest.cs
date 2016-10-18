@@ -10,6 +10,18 @@ using Doubility3D.Resource.Manager;
 
 namespace UnitTest.Doubility3D.Resource.Manager
 {
+	class TestParam {
+		public string path;
+		public string[] dependencs;
+		public int priority;
+
+		public TestParam(string p, int pri,string[] ds){
+			path = p;
+			dependencs = ds;
+			priority = pri;
+		}
+	};
+
 	class MockDownloader : IDownloader
 	{
 		public IEnumerator ResourceTask (string path, Action<Byte[],string> actOnComplate)
@@ -27,12 +39,11 @@ namespace UnitTest.Doubility3D.Resource.Manager
 	{
 		private List<string> dependencesPath = new List<string> (8);
 		private bool allDepndencesGotted;
-		public MockResourceObject (string name)
+		public MockResourceObject (TestParam param)
 		{
-			unity3dObject = TestResourceManager.Instance.GetObject (name);
-			string[] ds = TestResourceManager.Instance.GetDependices (name);
-			if (ds != null) {
-				dependencesPath.AddRange (ds);
+			unity3dObject = new GameObject(param.path);
+			if (param.dependencs != null) {
+				dependencesPath.AddRange (param.dependencs);
 			}
 		}
 		override public string[] DependencePathes {	get{return dependencesPath.ToArray();}}
@@ -49,44 +60,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		}
 		public bool AllDepndencesGotted { get { return allDepndencesGotted; } }
 	}
-	class TestResourceManager : IDisposable {
-		Dictionary<string,string[]> dictDependices = new Dictionary<string, string[]>();
-		Dictionary<string,UnityEngine.Object> dictObjects = new Dictionary<string, UnityEngine.Object> ();
-		Dictionary<string,MockResourceObject> dictResources = new Dictionary<string, MockResourceObject> ();
 
-		static private TestResourceManager _instance = null;
-		static public TestResourceManager Instance {
-			get { 
-				if (_instance == null) {
-					_instance = new TestResourceManager ();
-				}
-				return _instance;
-			}
-		}
-		public string[] GetDependices(string name){
-			string[] dependices = null;
-			dictDependices.TryGetValue(name,out dependices);
-			return dependices;
-		}
-		public UnityEngine.Object GetObject(string name){
-			UnityEngine.Object obj;
-			dictObjects.TryGetValue (name, out obj);
-			return obj;
-		}
-		public void AddObject(string name){
-			UnityEngine.Object obj = new UnityEngine.Object ();
-			obj.name = name;
-			dictObjects.Add (name, obj);
-		}
-		public void AddDependices(string name,string[] dependices){
-			dictDependices.Add (name, dependices);
-		}
-		public void Dispose(){
-			dictDependices.Clear ();
-			dictResources.Clear ();
-			dictObjects.Clear ();
-		}
-	}
 
 	public class ResourceManagerTest
 	{
@@ -96,18 +70,37 @@ namespace UnitTest.Doubility3D.Resource.Manager
 
 		MockDownloader downloader = new MockDownloader ();
 
+		// 数据：无依赖 有依赖(1层，2层，3层), 依赖无直接引用的，依赖也被直接引用的
+		// 手写 json ?
+		TestParam[] _params  = {
+			new TestParam("NDObject01",0,null),
+			new TestParam("NDObject02",3,null),
+			new TestParam("NDObject03",2,null),
+			new TestParam("NDObject04",4,new string[]{"NDObject01"}),
+			new TestParam("NDObject05",8,new string[]{"NDObject01","NDObject02"}),
+			new TestParam("NDObject06",7,new string[]{"NDObject01","NDObject02","NDObject03"}),
+			new TestParam("NDObject07",9,new string[]{"NDObject04"}),
+			new TestParam("NDObject08",6,new string[]{"NDObject07"}),
+		};
+		Dictionary<string,TestParam> dictParams = new Dictionary<string, TestParam>();
+
+
 		[TestFixtureSetUp]
 		public void Init ()
 		{
 			funcOldDownloader = ResourceRefInterface.funcDownloader;
 			funcOldUnserializer = ResourceRefInterface.funcUnserializer;
 			actOldStartCoroutine = ResourceRefInterface.actStartCoroutine;
+			ResourceManager.UseCoroutineLoop = false;
 
 			ResourceRefInterface.funcDownloader = () => {
 				return downloader;
 			};
 			ResourceRefInterface.funcUnserializer = (bytes) => {
-				MockResourceObject obj = new MockResourceObject (System.Text.Encoding.Default.GetString (bytes));
+				string path = System.Text.Encoding.Default.GetString (bytes);
+				// 文件名被加了一个 .root/的前缀。
+				path = System.IO.Path.GetFileName(path);
+				MockResourceObject obj = new MockResourceObject (dictParams[path]);
 				return obj;
 			};
 			ResourceRefInterface.actStartCoroutine = (e) => {
@@ -115,23 +108,8 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				Assert.IsTrue (completed);
 			};
 
-
-			// 数据：无依赖 有依赖(1层，2层，3层), 依赖无直接引用的，依赖也被直接引用的
-			// 手写 json ?
-			for(int i=0;i<10;i++){
-				TestResourceManager.Instance.AddObject ("NDObject" + (i + 1).ToString ("D2"));
-			}
-
-
-			int count = 1;
-			for(int i=0;i<10;i++){
-				string[] dd = new string[5];
-				for (int j = 0; j < 5; j++) {
-					dd [j] = "BDObject" + (j + count).ToString ("D2");
-					count++;
-				}
-				TestResourceManager.Instance.AddObject ("DDObject" + (i + 1).ToString ("D2"));
-				TestResourceManager.Instance.AddDependices ("DDObject" + (i + 1).ToString ("D2"),dd);
+			for (int i = 0; i < _params.Length; i++) {
+				dictParams.Add (_params [i].path, _params [i]);
 			}
 		}
 
@@ -141,18 +119,34 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			ResourceRefInterface.funcDownloader = funcOldDownloader;
 			ResourceRefInterface.funcUnserializer = funcOldUnserializer;
 			ResourceRefInterface.actStartCoroutine = actOldStartCoroutine;
-			TestResourceManager.Instance.Dispose ();
 		}
 
 
 		[Test]
 		public void AddAndDeleteWithoutDependices ()
 		{
-			ResourceManager.Instance.addResource ("NDObject01", 0, false, (_ref) => {
-			},
-				(e) => {
-			});
-			ResourceManager.Instance.UpdateLoop ();
+			int finished = 0;
+			int error = 0;
+
+			for (int i = 0; i < 10; i++) {
+				ResourceManager.Instance.addResource (_params [0].path, _params [0].priority, false, (_ref) => {
+					finished++;
+				},
+					(e) => {
+						error++;
+					});
+			}
+			while(ResourceManager.Instance.UpdateLoop () > 0);
+
+			ResourceRef refResult = ResourceManager.Instance.getResource (_params [0].path);
+			Assert.IsNotNull (refResult);
+			Assert.AreEqual (1, refResult.Refs); 
+
+
+			for (int i = 0; i < 10; i++) {
+				ResourceManager.Instance.delResource (_params [0].path);
+			}
+			while(ResourceManager.Instance.UpdateLoop () > 0);
 		}
 		[Test]
 		public void AddAndDeleteWithDependices ()

@@ -28,6 +28,7 @@ namespace Doubility3D.Resource.Manager
 	{
 		static private ResourceManager _instance = null;
 		static public int NumberOfProcessor = 4;
+		static public bool UseCoroutineLoop = true;
 
 		static public ResourceManager Instance{
 			get{ 
@@ -46,7 +47,9 @@ namespace Doubility3D.Resource.Manager
 
 		private ResourceManager ()
 		{
-			new Task (Update());
+			if (UseCoroutineLoop) {
+				new Task (Update ());
+			}
 			syncProcessor = new ResourceSchedulerLimitless ();
 			asyncProcessor = new ResourceSchedulerLimited (NumberOfProcessor);
 		}
@@ -165,7 +168,7 @@ namespace Doubility3D.Resource.Manager
 				yield return null;
 			}
 		}
-		public void UpdateLoop(){
+		public int UpdateLoop(){
 			syncProcessor.ProcessQueue (queueResources);
 			asyncProcessor.ProcessQueue (queueResources);
 			syncProcessor.ProcessDependWaiter ();
@@ -175,6 +178,7 @@ namespace Doubility3D.Resource.Manager
 				Resources.UnloadUnusedAssets ();	//释放一下无用资源
 				needRemoveUnused = false;
 			}
+			return queueResources.Count;
 		}
 		void OnResourceComplate(ResourceRef resource){
 			if (resource.Async) {

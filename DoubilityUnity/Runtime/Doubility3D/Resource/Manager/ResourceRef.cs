@@ -68,7 +68,7 @@ namespace Doubility3D.Resource.Manager
 		public void Start ()
 		{
 			State = ResourceState.Started;
-			new Task (ProcessTask (this));
+			ResourceRefInterface.actStartCoroutine (ProcessTask (this));
 		}
 
 		IEnumerator ProcessTask (ResourceRef refs)

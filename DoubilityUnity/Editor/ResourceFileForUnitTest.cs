@@ -30,7 +30,7 @@ public class ResourceFileForUnitTest : ScriptableObject {
 		string json = System.IO.File.ReadAllText(TestData.config_resource);
 		CopyMaps maps = JsonMapper.ToObject<CopyMaps>(json);
 
-		string home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
+		string home = TargetPath.GetHome();
 
 		for(int i=0;i<maps.copyMap.Length;i++){
 			string source = home + "/.root/" + maps.copyMap[i];

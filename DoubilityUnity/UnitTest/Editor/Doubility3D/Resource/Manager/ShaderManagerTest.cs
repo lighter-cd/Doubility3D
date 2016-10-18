@@ -14,8 +14,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 	public class ShaderManagerTest
 	{
 		string oldShaderDict;
-		string oldHome;
-
 		string fullPath;
 		string where;
 
@@ -24,12 +22,9 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		[TestFixtureSetUp]
 		public void Init ()
 		{
-			oldHome = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
 			fullPath = System.IO.Path.GetFullPath (TestData.testBundle_path).Replace ('\\', '/');
 			where = "Assets/Doubility3D/UnitTest/";
-
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", fullPath, EnvironmentVariableTarget.User);
-			DownloaderFactory.Instance.Initialize (DownloadMode.File, null);
+			DownloaderFactory.Instance.Initialize (DownloadMode.File, fullPath);
 
 			actOldStartCoroutine = ShaderManager.actStartCoroutine;
 			ShaderManager.actStartCoroutine = StartCoroutine;
@@ -42,7 +37,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			ShaderManager.Instance.DisposeBundle ();
 			ShaderManager.actStartCoroutine = actOldStartCoroutine;
 			ShaderManager.shaderDictPath = oldShaderDict;
-			Environment.SetEnvironmentVariable ("DOUBILITY_HOME", oldHome, EnvironmentVariableTarget.User);
 			DownloaderFactory.Dispose ();
 		}
 

@@ -8,9 +8,13 @@ namespace Doubility3D.Resource.Downloader
 	{
 		private string home;
 
-		internal FileDownloader ()
+		internal FileDownloader (string _home)
 		{
-			home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME",EnvironmentVariableTarget.User);
+			home = _home;
+			if (home.StartsWith ("<") && home.EndsWith (">")) {
+				string variable = home.Substring (1, home.Length - 2);
+				home = Environment.GetEnvironmentVariable (variable, EnvironmentVariableTarget.User);
+			}
 			if (string.IsNullOrEmpty (home)) {
 				home = Application.streamingAssetsPath;
 			}

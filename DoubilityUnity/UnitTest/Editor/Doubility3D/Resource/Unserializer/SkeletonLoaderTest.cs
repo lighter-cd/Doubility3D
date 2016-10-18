@@ -40,10 +40,10 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
 		[TearDown]
 		public void Cleanup ()
 		{
-			skeletonObj.Dispose ();
 			UnityEngine.Object.DestroyImmediate (go);
 			go = null;
 			skeletons = null;
+			skeletonObj.Dispose ();
 		}
 
 		[Test]

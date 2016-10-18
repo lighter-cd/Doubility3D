@@ -66,7 +66,6 @@ namespace Doubility3D.Resource.Downloader
 			_instance = null;
 		}
 
-
 		public void InitializeWithConfig(string configFile,Func<string,string> funcTextAssetReader = null)
 		{
 			if (funcTextAssetReader == null) {
@@ -91,7 +90,6 @@ namespace Doubility3D.Resource.Downloader
 			} else {
 				throw(new ConfigException (ConfigError.EmptyFile));
 			}
-
 			Initialize(config.FileMode,config.URL);
 		}
 
@@ -101,7 +99,7 @@ namespace Doubility3D.Resource.Downloader
 			if (downloader == null) {
 				switch (fileMode) {
 				case DownloadMode.File:
-					downloader = new FileDownloader ();
+					downloader = new FileDownloader (url);
 					break;
 				case DownloadMode.WWW:
 					downloader = new WWWDownloader (url);
