@@ -72,7 +72,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 
 		// 数据：无依赖 有依赖(1层，2层，3层), 依赖无直接引用的，依赖也被直接引用的
 		// 手写 json ?
-		TestParam[] _params  = {
+		/*TestParam[] _params  = {
 			new TestParam("NDObject01",0,null),
 			new TestParam("NDObject02",3,null),
 			new TestParam("NDObject03",2,null),
@@ -81,7 +81,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			new TestParam("NDObject06",7,new string[]{"NDObject01","NDObject02","NDObject03"}),
 			new TestParam("NDObject07",9,new string[]{"NDObject04"}),
 			new TestParam("NDObject08",6,new string[]{"NDObject07"}),
-		};
+		};*/
 		Dictionary<string,TestParam> dictParams = new Dictionary<string, TestParam>();
 
 
@@ -108,9 +108,9 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				Assert.IsTrue (completed);
 			};
 
-			for (int i = 0; i < _params.Length; i++) {
+			/*for (int i = 0; i < _params.Length; i++) {
 				dictParams.Add (_params [i].path, _params [i]);
-			}
+			}*/
 		}
 
 		[TestFixtureTearDown]
@@ -120,16 +120,23 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			ResourceRefInterface.funcUnserializer = funcOldUnserializer;
 			ResourceRefInterface.actStartCoroutine = actOldStartCoroutine;
 		}
-
+		[TearDown]
+		public void ClearManager(){
+			dictParams.Clear ();
+			ResourceManager.Instance.ReleaseAll ();
+		}
 
 		[Test]
-		public void AddAndDeleteWithoutDependices ()
+		public void AddGetDeleteSingle ()
 		{
+			TestParam _param = new TestParam ("NDObject01", 0, null);
+			dictParams.Add (_param.path, _param);
+
 			int finished = 0;
 			int error = 0;
 
 			for (int i = 0; i < 10; i++) {
-				ResourceManager.Instance.addResource (_params [0].path, _params [0].priority, false, (_ref) => {
+				ResourceManager.Instance.addResource (_param.path, _param.priority, false, (_ref) => {
 					finished++;
 				},
 					(e) => {
@@ -138,22 +145,38 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			}
 			while(ResourceManager.Instance.UpdateLoop () > 0);
 
-			ResourceRef refResult = ResourceManager.Instance.getResource (_params [0].path);
+			ResourceRef refResult = ResourceManager.Instance.getResource (_param.path);
 			Assert.IsNotNull (refResult);
-			Assert.AreEqual (1, refResult.Refs); 
+			Assert.AreEqual (finished, refResult.Refs); 
 
 
 			for (int i = 0; i < 10; i++) {
-				ResourceManager.Instance.delResource (_params [0].path);
+				refResult = ResourceManager.Instance.getResource (_param.path);
+				Assert.AreEqual (10-i, refResult.Refs);
+				ResourceManager.Instance.delResource (_param.path);
 			}
 			while(ResourceManager.Instance.UpdateLoop () > 0);
+			refResult = ResourceManager.Instance.getResource (_param.path);
+			Assert.IsNull (refResult);
+
 		}
 		[Test]
-		public void AddAndDeleteWithDependices ()
+		public void AddGetDeleteMuilty ()
 		{
+			int counts = RandomData.Random.Next (5, 10);
+			TestParam[] _params = new TestParam[counts]; 
+			for (int i = 0; i < counts; i++) {
+				TestParam _param = new TestParam ("NDObject" + (i+1).ToString("D2"), 0, null);
+				dictParams.Add (_param.path, _param);
+			}
+
+
+
 		}
 		[Test]
 		public void ValidPriority(){
+			
+			TestParam _param = new TestParam ("NDObject01", 0, null);
 		}
 
 	}

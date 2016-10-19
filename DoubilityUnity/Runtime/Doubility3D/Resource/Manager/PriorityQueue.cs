@@ -74,5 +74,9 @@ namespace Doubility3D.Resource.Manager
 		public IEnumerator GetEnumerator(){
 			return heap.GetEnumerator ();
 		}
+
+		public void Clear(){
+			Count = 0;
+		}
     }
 }

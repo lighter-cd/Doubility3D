@@ -17,6 +17,13 @@ namespace Doubility3D.Resource.Manager
 		public static Action<IEnumerator> actStartCoroutine = (e) => {
 			new Task (e);
 		};
+		public static Action<string[],ResourceRef,Action<ResourceRef[]>,Action<Exception>> actAddDepences = (dependences,_ref, actComplate,actError)=>{
+			int[] priorities = { _ref.Priority + 1 };
+			ResourceManager.Instance.addResources (dependences, priorities, _ref.Async, actComplate, actError);
+		};
+		public static Action<string[]> actDelDepences = (dependences) => {
+			ResourceManager.Instance.delResources(dependences);
+		};
 	}
 }
 

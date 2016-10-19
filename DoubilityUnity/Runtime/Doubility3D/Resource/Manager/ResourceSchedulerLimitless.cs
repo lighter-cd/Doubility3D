@@ -5,7 +5,6 @@ namespace Doubility3D.Resource.Manager
 {
 	public class ResourceSchedulerLimitless : IResourceScheduler
 	{
-		private Stack<ResourceRef> stackWaiter = new Stack<ResourceRef> ();
 		public ResourceSchedulerLimitless ()
 		{
 		}
@@ -28,19 +27,6 @@ namespace Doubility3D.Resource.Manager
 					break;
 				}
 			}
-		}
-		public void ProcessDependWaiter()
-		{
-			if (stackWaiter.Count > 0) {
-				ResourceRef top = stackWaiter.Peek ();
-				if (top.IsDone) {
-					stackWaiter.Pop ();
-				}
-			}
-		}
-		public void RegisterDependWaiter(ResourceRef resource)
-		{
-			stackWaiter.Push (resource);
 		}
 		public void OnResourceComplate(ResourceRef resource)
 		{

@@ -114,7 +114,6 @@ namespace Doubility3D.Resource.Downloader
 		}
 
 		public IDownloader Downloader {get{ return downloader;}}
-		public IDownloader GetDownloader() { return downloader; }
 	}
 }
 

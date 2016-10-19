@@ -8,7 +8,6 @@ namespace Doubility3D.Resource.Manager
 		class Processor
 		{
 			public ResourceRef current = null;
-			public Stack<ResourceRef> stackWaiter = new Stack<ResourceRef> ();
 		}
 
 		Processor[] processor;
@@ -39,25 +38,6 @@ namespace Doubility3D.Resource.Manager
 					}
 				}
 			}
-		}
-		public void ProcessDependWaiter()
-		{
-			for (int i = 0; i < processor.Length; i++) {
-				if (processor[i].stackWaiter.Count > 0) {
-					ResourceRef top = processor[i].stackWaiter.Peek ();
-					if (top.IsDone) {
-						processor[i].stackWaiter.Pop ();
-					}
-				}
-			}
-		}
-		public void RegisterDependWaiter(ResourceRef resource)
-		{
-			if (processor[resource.Processor].current==resource)
-			{
-				processor[resource.Processor].current = null;
-			}
-			processor[resource.Processor].stackWaiter.Push (resource);			
 		}
 		public void OnResourceComplate(ResourceRef resource)
 		{

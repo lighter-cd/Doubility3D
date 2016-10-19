@@ -65,6 +65,7 @@ namespace Doubility3D.Resource.Manager
 				resource = new ResourceRef(url);
 				resource.Priority = priority;
 				resource.Async = bAsync;
+				resource.ComplatedEvent += OnResourceComplate;
 				dictResources[url] = resource;
 				queueResources.Push(resource);
 			}
@@ -73,7 +74,7 @@ namespace Doubility3D.Resource.Manager
 				resource = dictResources[url];
 				resource.AddRefs();
 
-				if (resource.State == ResourceState.WaitingInQueue) {
+				if (resource.InQueue) {
 					int oldPriority = resource.Priority;
 					bool oldAsync = resource.Async;
 					resource.Priority = Math.Max (priority, resource.Priority);
@@ -84,23 +85,7 @@ namespace Doubility3D.Resource.Manager
 				}
 			}
 
-			Promise<ResourceRef> promise = new Promise<ResourceRef> ();
-			if (resource.IsDone) {
-				promise.Resolve (resource);
-
-			} else {
-				resource.Action = (refs)=>{
-					if(refs.State != ResourceState.Error){
-						promise.Resolve (refs);
-					}else{
-						promise.Reject(new Exception(refs.Path + " Load Error."));
-					}
-					refs.Action = null;
-					OnResourceComplate(refs);
-				};
-			}
-
-			return promise;
+			return resource.AcceptPromise ();
 		}
 
 		public ResourceRef addResource(string url, int priority, bool bAsync,Action<ResourceRef> actComplate,Action<Exception> actError){
@@ -171,9 +156,6 @@ namespace Doubility3D.Resource.Manager
 		public int UpdateLoop(){
 			syncProcessor.ProcessQueue (queueResources);
 			asyncProcessor.ProcessQueue (queueResources);
-			syncProcessor.ProcessDependWaiter ();
-			asyncProcessor.ProcessDependWaiter ();
-
 			if (needRemoveUnused) {
 				Resources.UnloadUnusedAssets ();	//释放一下无用资源
 				needRemoveUnused = false;
@@ -181,6 +163,8 @@ namespace Doubility3D.Resource.Manager
 			return queueResources.Count;
 		}
 		void OnResourceComplate(ResourceRef resource){
+			resource.ComplatedEvent -= OnResourceComplate;
+
 			if (resource.Async) {
 				asyncProcessor.OnResourceComplate (resource);
 			} else {
@@ -194,14 +178,6 @@ namespace Doubility3D.Resource.Manager
 			}			
 		}
 
-		internal void RegisterDependWaiter(ResourceRef resource){
-			if (resource.Async) {
-				asyncProcessor.RegisterDependWaiter (resource);
-			} else {
-				syncProcessor.RegisterDependWaiter (resource);
-			}
-		}
-
 		private void ReleaseResource(ResourceRef resource){
 			if (resource.IsDone && resource.resourceObject != null)
 			{
@@ -209,6 +185,18 @@ namespace Doubility3D.Resource.Manager
 				resource.resourceObject = null;
 				needRemoveUnused = true;
 			}
+		}
+
+		public void ReleaseAll(){
+
+			Dictionary<string, ResourceRef>.Enumerator e = dictResources.GetEnumerator ();
+			while(e.MoveNext()){
+				ResourceRef resource = e.Current.Value;
+				resource.DelRefs();
+				ReleaseResource (resource);
+			}
+			dictResources.Clear ();
+			queueResources.Clear ();
 		}
 	}
 }

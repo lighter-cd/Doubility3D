@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using FlatBuffers;
+using RSG;
 using Doubility3D.Resource.Schema;
 using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.ResourceObj;
@@ -27,6 +28,10 @@ namespace Doubility3D.Resource.Manager
 		string path;
 		int refs;
 		string[] dependences;
+		List<Promise<ResourceRef>> lstPromises = new List<Promise<ResourceRef>> ();
+
+		public delegate void ComplatedHandle(ResourceRef _ref);
+		public event ComplatedHandle ComplatedEvent = null;
 
 		public ResourceRef (string _path)
 		{
@@ -34,6 +39,7 @@ namespace Doubility3D.Resource.Manager
 			State = ResourceState.WaitingInQueue;
 			refs = 1;
 		}
+
 
 		public int Refs { get { return refs; } }
 
@@ -47,23 +53,27 @@ namespace Doubility3D.Resource.Manager
 			refs--;
 		}
 
-		public string Path { get { return path; } }
-
-		public ResourceObject resourceObject { get; set; }
-
-		public ResourceState State { get; set; }
-
 		public int Priority { get; set; }
 
 		public bool Async { get; set; }
 
-		public bool IsDone { get { return State == ResourceState.Complated; } }
-
-		public string Error { get; set; }
-
-		public Action<ResourceRef> Action { get; set; }
-
 		public int Processor { get; set; }
+
+
+
+		public string Path { get { return path; } }
+
+		public ResourceObject resourceObject { get; set; }
+
+		public bool IsDone { get { return State <= ResourceState.Complated; } }
+
+		public bool InQueue { get { return State == ResourceState.WaitingInQueue; } }
+
+		public string[] Dependences { get { return dependences; } }
+
+		private ResourceState State { get; set; }
+		private string Error { get; set; }
+
 
 		public void Start ()
 		{
@@ -78,7 +88,7 @@ namespace Doubility3D.Resource.Manager
 			if (downloader == null) {
 				State = ResourceState.Error; 
 				Error = "Create downloader error.";
-				Action (this);				
+				OnComplated ();				
 				yield break;
 			}
 
@@ -87,25 +97,27 @@ namespace Doubility3D.Resource.Manager
 			yield return downloader.ResourceTask (resource_path, OnDownloadComplate);
 
 			if (State == ResourceState.Error) {
-				Action (this);				
+				OnComplated ();
 				yield break;
 			}
 
 			if (dependences == null) {
 				State = ResourceState.Complated;
-				Action (this);
+				OnComplated ();
 				yield break;
 			} 
 
 			State = ResourceState.Depending;
 			int[] priorities = { Priority + 1 };
-			ResourceManager.Instance.RegisterDependWaiter (this);
 			ResourceManager.Instance.addResources (dependences, priorities, Async, OnDependResolved, OnDependError);
 			while (!IsDone) {
 				yield return null;
 			}
 
-			Action (this);
+			OnComplated ();
+			if (ComplatedEvent != null) {
+				ComplatedEvent (this);
+			}
 		}
 
 		private void OnDownloadComplate (Byte[] bytes, string error)
@@ -146,6 +158,38 @@ namespace Doubility3D.Resource.Manager
 			ResourceManager.Instance.delResources (dependences);
 			resourceObject.Dispose ();
 			resourceObject = null;
+		}
+
+
+		private void ProcessPromise(Promise<ResourceRef> promise){
+			if (State != ResourceState.Error) {
+				promise.Resolve (this);
+			} else {
+				promise.Reject (new Exception (Path + " Load Error."));
+			}
+
+		}
+		private void OnComplated(){
+			List<Promise<ResourceRef>>.Enumerator e = lstPromises.GetEnumerator ();
+			while (e.MoveNext ()) {
+				Promise<ResourceRef> promise = e.Current;
+				ProcessPromise (promise);
+			}
+			lstPromises.Clear ();
+
+			if (ComplatedEvent != null) {
+				ComplatedEvent (this);
+			}
+		}
+
+		public Promise<ResourceRef> AcceptPromise(){
+			Promise<ResourceRef> promise = new Promise<ResourceRef> ();
+			if (IsDone) {
+				ProcessPromise (promise);
+			} else {
+				lstPromises.Add (promise);
+			}
+			return promise;
 		}
 	}
 }
