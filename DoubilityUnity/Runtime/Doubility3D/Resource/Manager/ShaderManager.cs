@@ -24,11 +24,13 @@ namespace Doubility3D.Resource.Manager
 		ContentCheckError,
 	}
 
+	/// <summary>
+	/// Shader manager.
+	/// 依赖于 DownloaderFactory
+	/// 依赖于 CoroutineRunner
+	/// </summary>
 	public class ShaderManager
 	{
-		public static Action<IEnumerator> actStartCoroutine = (e) => {
-			new Task (e);
-		};
 		public static string shaderDictPath = ShaderDictionary.Path;
 
 		private string coreDataBundle;
@@ -62,7 +64,7 @@ namespace Doubility3D.Resource.Manager
 
 			actOnComplate = _actOnComplate;
 
-			actStartCoroutine (AssetBundleTask ());
+			CoroutineRunner.Instance.Run (AssetBundleTask ());
 		}
 
 		public void DisposeBundle ()

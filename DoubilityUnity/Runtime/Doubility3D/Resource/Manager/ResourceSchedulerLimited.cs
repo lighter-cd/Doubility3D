@@ -32,9 +32,9 @@ namespace Doubility3D.Resource.Manager
 
 					// 取到了一个引用计数不为0的资源
 					if (resource.Refs > 0) {
-						resource.Start ();
 						resource.Processor = i;
 						processor [i].current = resource;
+						resource.Start ();
 					}
 				}
 			}

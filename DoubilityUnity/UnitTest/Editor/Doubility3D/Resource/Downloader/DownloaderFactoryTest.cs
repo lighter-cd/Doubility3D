@@ -125,6 +125,28 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 			Assert.IsInstanceOf<FileDownloader> (downloader);
 		}
 		[Test]
+		public void FileModeEnvVarTest(){
+			bool exist = true;
+			string home = Environment.GetEnvironmentVariable ("DOUBILITY_HOME", EnvironmentVariableTarget.User);
+			if (string.IsNullOrEmpty (home)) {
+				Environment.SetEnvironmentVariable ("DOUBILITY_HOME", "Z:\\ThePath", EnvironmentVariableTarget.User);
+				exist = false;
+			}
+			home = home.Replace ('\\', '/');
+			if (home [home.Length - 1] != '/') {
+				home += "/";
+			}
+
+			DownloaderFactory.Instance.Initialize (DownloadMode.File, "<DOUBILITY_HOME>");
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
+			Assert.IsInstanceOf<FileDownloader> (downloader);
+			Assert.AreEqual((downloader as FileDownloader).Home,home);
+
+			if (!exist) {
+				Environment.SetEnvironmentVariable ("DOUBILITY_HOME", null, EnvironmentVariableTarget.User);
+			}
+		}
+		[Test]
 		public void PacketMode ()
 		{
 			DownloaderFactory.Instance.InitializeWithConfig ("file_mode_packet.json",(f)=>{

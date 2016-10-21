@@ -41,6 +41,7 @@ namespace Doubility3D.Tools
 
 			string jsonString = JsonMapper.ToJson (dictShaderName2Path);
 			System.IO.File.WriteAllText (ShaderDictionary.Path, jsonString);
+			AssetDatabase.Refresh ();
 
 			Array.Resize<string> (ref buildMap [0].assetNames, buildMap [0].assetNames.Length + 1);
 			buildMap [0].assetNames [buildMap [0].assetNames.Length - 1] = ShaderDictionary.Path;
@@ -59,7 +60,8 @@ namespace Doubility3D.Tools
 			BuildPipeline.BuildAssetBundles (outputFolder, buildMap, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);	
 			EditorUtility.DisplayDialog ("搞定了", "核心数据输出完毕", "好了");
 
-			//System.IO.File.Delete (ShaderDictionary.Path);
+			System.IO.File.Delete (ShaderDictionary.Path);
+			AssetDatabase.Refresh ();
 		}
 	}
 }

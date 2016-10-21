@@ -17,7 +17,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		string fullPath;
 		string where;
 
-		Action<IEnumerator> actOldStartCoroutine = null;
 
 		[TestFixtureSetUp]
 		public void Init ()
@@ -25,9 +24,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			fullPath = System.IO.Path.GetFullPath (TestData.testBundle_path).Replace ('\\', '/');
 			where = "Assets/Doubility3D/UnitTest/";
 			DownloaderFactory.Instance.Initialize (DownloadMode.File, fullPath);
-
-			actOldStartCoroutine = ShaderManager.actStartCoroutine;
-			ShaderManager.actStartCoroutine = StartCoroutine;
+			CoroutineRunner.Instance.ActRunner = StartCoroutine;
 			oldShaderDict = ShaderManager.shaderDictPath;
 		}
 
@@ -35,7 +32,6 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		public void Clear ()
 		{
 			ShaderManager.Instance.DisposeBundle ();
-			ShaderManager.actStartCoroutine = actOldStartCoroutine;
 			ShaderManager.shaderDictPath = oldShaderDict;
 			DownloaderFactory.Dispose ();
 		}

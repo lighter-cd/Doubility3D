@@ -64,15 +64,11 @@ namespace Doubility3D.Resource.Manager
         }
 
 		/// <summary>
-		/// Res the sort.
+		/// TODO:Resort the sort.
 		/// Add by Lighter:参数改变后，重新排序
 		/// </summary>
 		public void ReSort(){
-			Array.Sort<T> (heap, comparer);
-		}
-
-		public IEnumerator GetEnumerator(){
-			return heap.GetEnumerator ();
+			//SiftUp(Count);
 		}
 
 		public void Clear(){

@@ -37,7 +37,7 @@ namespace UnitTest.Doubility3D.Resource.Unserializing
 		}
 		ResourceRef GetResource(string url){
 			if (!dictTextures.ContainsKey (url)) {
-				ResourceRef _ref = new ResourceRef (url);
+				ResourceRef _ref = new ResourceRef (url, null);
 				_ref.resourceObject = new ResourceObjectSingle (new Texture2D (4, 4));
 				dictTextures.Add (url, _ref);
 				return _ref;

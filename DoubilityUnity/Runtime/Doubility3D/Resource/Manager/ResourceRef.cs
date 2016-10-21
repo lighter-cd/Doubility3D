@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FlatBuffers;
 using RSG;
+using Doubility3D.Util;
 using Doubility3D.Resource.Schema;
 using Doubility3D.Resource.Unserializing;
 using Doubility3D.Resource.ResourceObj;
@@ -23,21 +24,34 @@ namespace Doubility3D.Resource.Manager
 		Error,
 	}
 
+	public interface IDepencesManager {
+		ResourceRef[] addResources (string[] urls, int[] priorities, bool bAsync, Action<ResourceRef[]> actComplate, Action<Exception> actError);
+		void delResources (string[] urls);
+	}
+
+	/// <summary>
+	/// Resource reference.
+	/// 依赖于 DownloaderFactory
+	/// 依赖于 UnserializerFactory
+	/// 依赖于 CoroutineRunner
+	/// </summary>
 	public class ResourceRef
 	{
 		string path;
 		int refs;
 		string[] dependences;
+		IDepencesManager depencesManager;
 		List<Promise<ResourceRef>> lstPromises = new List<Promise<ResourceRef>> ();
 
 		public delegate void ComplatedHandle(ResourceRef _ref);
 		public event ComplatedHandle ComplatedEvent = null;
 
-		public ResourceRef (string _path)
+		public ResourceRef (string _path, IDepencesManager _depencesManager)
 		{
 			path = _path;
 			State = ResourceState.WaitingInQueue;
 			refs = 1;
+			depencesManager = _depencesManager;
 		}
 
 
@@ -65,11 +79,11 @@ namespace Doubility3D.Resource.Manager
 
 		public ResourceObject resourceObject { get; set; }
 
-		public bool IsDone { get { return State <= ResourceState.Complated; } }
+		public bool IsDone { get { return State >= ResourceState.Complated; } }
 
 		public bool InQueue { get { return State == ResourceState.WaitingInQueue; } }
 
-		public string[] Dependences { get { return dependences; } }
+		internal string[] Dependences { get { return dependences; } }
 
 		private ResourceState State { get; set; }
 		private string Error { get; set; }
@@ -78,13 +92,13 @@ namespace Doubility3D.Resource.Manager
 		public void Start ()
 		{
 			State = ResourceState.Started;
-			ResourceRefInterface.actStartCoroutine (ProcessTask (this));
+			CoroutineRunner.Instance.Run (ProcessTask ());
 		}
 
-		IEnumerator ProcessTask (ResourceRef refs)
+		IEnumerator ProcessTask ()
 		{
 
-			IDownloader downloader = ResourceRefInterface.funcDownloader();
+			IDownloader downloader = DownloaderFactory.Instance.Downloader;
 			if (downloader == null) {
 				State = ResourceState.Error; 
 				Error = "Create downloader error.";
@@ -109,15 +123,12 @@ namespace Doubility3D.Resource.Manager
 
 			State = ResourceState.Depending;
 			int[] priorities = { Priority + 1 };
-			ResourceManager.Instance.addResources (dependences, priorities, Async, OnDependResolved, OnDependError);
+			depencesManager.addResources (dependences, priorities, Async, OnDependResolved, OnDependError);
 			while (!IsDone) {
 				yield return null;
 			}
 
 			OnComplated ();
-			if (ComplatedEvent != null) {
-				ComplatedEvent (this);
-			}
 		}
 
 		private void OnDownloadComplate (Byte[] bytes, string error)
@@ -134,7 +145,7 @@ namespace Doubility3D.Resource.Manager
 		void Parse (Byte[] bytes)
 		{
 			// 开始解析
-			resourceObject = ResourceRefInterface.funcUnserializer(bytes);
+			resourceObject = UnserializerFactory.Instance.Unserialize (bytes);
 			if (resourceObject == null) {
 				State = ResourceState.Error;
 				Error = "Parse error, return null resourceObject";
@@ -143,19 +154,19 @@ namespace Doubility3D.Resource.Manager
 			}
 		}
 
-		private void OnDependResolved (ResourceRef[] resources)
+		internal void OnDependResolved (ResourceRef[] resources)
 		{
 			resourceObject.OnDependencesFinished ();
 			State = ResourceState.Complated;
 		}
 
-		private void OnDependError (Exception e)
+		internal void OnDependError (Exception e)
 		{
 			State = ResourceState.Error;
 			Error = "DependError:" + e.Message;
 		}
 		public void OnRelease(){
-			ResourceManager.Instance.delResources (dependences);
+			depencesManager.delResources (dependences);
 			resourceObject.Dispose ();
 			resourceObject = null;
 		}

@@ -10,7 +10,7 @@ namespace Doubility3D.Resource.Unserializing
 {
 	public class UnserializerFactory
 	{
-		private UnserializerFactory ()
+		protected UnserializerFactory ()
 		{
 		}
 
@@ -41,7 +41,7 @@ namespace Doubility3D.Resource.Unserializing
 			}
 			return null;
 		}
-		public ResourceObject Unserialize(byte[] bytes){
+		virtual public ResourceObject Unserialize(byte[] bytes){
 			Schema.Context context = Context.Unknown;
 			ByteBuffer bb = FileUnserializer.Load(bytes, out context);
 			IUnserializer serializer = Create (context);

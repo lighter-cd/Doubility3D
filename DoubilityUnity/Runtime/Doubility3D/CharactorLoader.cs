@@ -23,6 +23,9 @@ public class CharactorLoader : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+		CoroutineRunner.Instance.ActRunner = (e) => {
+			new Task (e);
+		};
 		try{
 			DownloaderFactory.Instance.InitializeWithConfig("file_mode.json");
 			ShaderManager.Instance.LoadAssetBundle (OnShaderManagerComplate);

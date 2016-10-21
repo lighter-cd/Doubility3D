@@ -41,7 +41,9 @@ namespace Doubility3D.Resource.Downloader
 
 	public class DownloaderFactory
 	{
-		internal IDownloader downloader;
+		private IDownloader downloader;
+
+		public string UrlFixer = null;
 
 		private DownloaderFactory ()
 		{
@@ -99,18 +101,39 @@ namespace Doubility3D.Resource.Downloader
 			if (downloader == null) {
 				switch (fileMode) {
 				case DownloadMode.File:
-					downloader = new FileDownloader (url);
+					downloader = new FileDownloader (PostfixUrl(url));
 					break;
 				case DownloadMode.WWW:
-					downloader = new WWWDownloader (url);
+					downloader = new WWWDownloader (PostfixUrl(url));
 					break;
 				case DownloadMode.Packet:
-					downloader = new PacketDownloader (url);
+					downloader = new PacketDownloader (PrefixUrl(url));
 					break;
 				default:
 					throw(new ConfigException (ConfigError.ValidMode));
 				}
 			}
+		}
+
+		private string PostfixUrl(string url){
+			if (!string.IsNullOrEmpty (UrlFixer)) {
+				string fixer = UrlFixer;
+				if (fixer [fixer.Length - 1] != '/') {
+					fixer += "/";
+				}
+				url += fixer;
+			}
+			return url;
+		}
+		private string PrefixUrl(string url){
+			if (!string.IsNullOrEmpty (UrlFixer)) {
+				string fixer = UrlFixer;
+				if (fixer [fixer.Length - 1] != '/') {
+					fixer += "/";
+				}
+				url = fixer + url;
+			}
+			return url;
 		}
 
 		public IDownloader Downloader {get{ return downloader;}}

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using RSG;
 using UnityEngine;
+using Doubility3D.Util;
 using Doubility3D.Resource.Downloader;
 
 namespace Doubility3D.Resource.Manager
@@ -24,7 +25,7 @@ namespace Doubility3D.Resource.Manager
 		}
 	}
 
-	public class ResourceManager
+	public class ResourceManager : IDepencesManager
 	{
 		static private ResourceManager _instance = null;
 		static public int NumberOfProcessor = 4;
@@ -45,6 +46,13 @@ namespace Doubility3D.Resource.Manager
 		PriorityQueue<ResourceRef> queueResources = new PriorityQueue<ResourceRef>(new ResourceComparer());
 		Dictionary<string, ResourceRef> dictResources = new Dictionary<string, ResourceRef>();
 
+		public delegate void ResourceHandle(ResourceRef _ref,Exception e);
+		public delegate void ResourceArrayHandle(ResourceRef[] _ref,Exception e);
+		public event ResourceHandle OnResourceComplated = null;
+		public event ResourceArrayHandle OnResourceArrayComplated = null;
+		public event ResourceHandle OnResourceError = null;
+		public event ResourceArrayHandle OnResourceArrayError = null;
+
 		private ResourceManager ()
 		{
 			if (UseCoroutineLoop) {
@@ -62,7 +70,7 @@ namespace Doubility3D.Resource.Manager
 			Debug.Assert(url != string.Empty, "addResource url 不能为 string.Empty");
 			if (!dictResources.ContainsKey(url))
 			{
-				resource = new ResourceRef(url);
+				resource = new ResourceRef(url,this);
 				resource.Priority = priority;
 				resource.Async = bAsync;
 				resource.ComplatedEvent += OnResourceComplate;
