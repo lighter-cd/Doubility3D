@@ -47,7 +47,8 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		public IEnumerator ResourceTask (string path, Action<Byte[],string> actOnComplate)
 		{
 			yield return null;
-			if (!hashSetErrorFiles.Contains (path)) {
+			string realPath = System.IO.Path.GetFileName (path);
+			if (!hashSetErrorFiles.Contains (realPath)) {
 				actOnComplate (System.Text.Encoding.Default.GetBytes (path), null);
 			} else {
 				actOnComplate (null, "File read error:" + path);
@@ -63,8 +64,14 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				hashSetErrorFiles.Add (files [i]);
 			}
 		}
+		public void AddErrorFile(string file){
+			hashSetErrorFiles.Add (file);
+		}
 		public void ClearErrorFiles(){
 			hashSetErrorFiles.Clear ();
+		}
+		public bool InErrorList(string file){
+			return hashSetErrorFiles.Contains (file);
 		}
 	}
 
@@ -97,9 +104,12 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		}
 
 		public bool AllDepndencesGotted { get { return allDepndencesGotted; } }
+		public void AddDependences(string[] ds){
+			dependencesPath.AddRange (ds);
+		}
 	}
 
-
+	[TestFixture]
 	public class ResourceManagerTest
 	{
 		MockDownloader downloader = new MockDownloader ();
@@ -300,18 +310,14 @@ namespace UnitTest.Doubility3D.Resource.Manager
 
 		[Test]
 		public void ValidPriorityNoChanged (){
-			ValidPriority (null, null);
+			ValidPriority (false, false);
 		}
 		[Test]
 		public void ValidPriorityChanged (){
-			ValidPriority ((TestParam[] ps)=>{
-				Array.Sort<TestParam> (ps, new Comparison<TestParam>((t1,t2)=>{return t1.priority - t2.priority;}));
-			}, (ResourceRef[] refs)=>{
-				refs[0].Priority = int.MaxValue - 50;
-			});
+			ValidPriority (true,true);
 		}
 
-		private void ValidPriority (Action<TestParam[]> actSort,Action<ResourceRef[]> actChangePri)
+		private void ValidPriority (bool bSortArray,bool bChangePri)
 		{
 			List<TestParam> lstParams = new List<TestParam> ();		
 			int resources = RandomData.Random.Next (5, 10);
@@ -325,8 +331,8 @@ namespace UnitTest.Doubility3D.Resource.Manager
 
 			int error = 0;
 			TestParam[] arrayParams = lstParams.ToArray ();	// todo:输入参数最好不区分是 List 或者 Array
-			if (actSort != null) {
-				actSort (arrayParams);
+			if (bSortArray) {
+				Array.Sort<TestParam> (arrayParams, new Comparison<TestParam>((t1,t2)=>{return t1.priority - t2.priority;}));
 			}
 			List<ResourceRef> refs = new List<ResourceRef>();
 
@@ -341,8 +347,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 				//Debug.Log("R:" + arrayParams [i].path + ":" + arrayParams [i].priority);
 				ResourceManager.Instance.addResource (arrayParams [i].path, arrayParams [i].priority, true, actOnComplated,actOnException);				
 			}	
-			if (actChangePri != null) {
-				//actChangePri (refs);
+			if (bChangePri) {
 				ResourceManager.Instance.addResource (arrayParams [0].path, int.MaxValue - 50, true, actOnComplated,actOnException);	
 			}
 			while (ResourceManager.Instance.UpdateLoop () > 0)
@@ -362,7 +367,7 @@ namespace UnitTest.Doubility3D.Resource.Manager
 			for (int i = 0; i < arrayParams.Length; i++) {
 				ResourceManager.Instance.delResource (arrayParams [i].path);
 			}
-			if (actChangePri != null) {
+			if (bChangePri) {
 				ResourceManager.Instance.delResource (arrayParams [0].path);
 			}
 			while (ResourceManager.Instance.UpdateLoop () > 0)
@@ -384,30 +389,323 @@ namespace UnitTest.Doubility3D.Resource.Manager
 		[Test]
 		public void SingleWithDownloadError ()
 		{
+			downloader.AddErrorFiles (new string[]{"NDObject01"});
+
+			TestParam _param = new TestParam ("NDObject01", 0, null);
+			dictParams.Add (_param.path, _param);
+
+			int finished = 0;
+			int error = 0;
+			ResourceManager.Instance.addResource (_param.path, _param.priority, false, (_ref) => {
+				finished++;
+			}, (e) => {
+				error++;
+			});
+
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			ResourceRef refResult = ResourceManager.Instance.getResource (_param.path);
+			Assert.IsNotNull (refResult);
+			Assert.AreEqual (0, finished); 
+			Assert.AreEqual (1, error); 
+
+
+			ResourceManager.Instance.delResource (_param.path);
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+			refResult = ResourceManager.Instance.getResource (_param.path);
+			Assert.IsNull (refResult);
+
+			downloader.ClearErrorFiles ();
+
 		}
 		[Test]
 		public void SingleWithPaserError ()
 		{
+			hashSetErrorUnserializer.Add ("NDObject01");
+
+			TestParam _param = new TestParam ("NDObject01", 0, null);
+			dictParams.Add (_param.path, _param);
+
+			int finished = 0;
+			int error = 0;
+			ResourceManager.Instance.addResource (_param.path, _param.priority, false, (_ref) => {
+				finished++;
+			}, (e) => {
+				error++;
+			});
+
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			ResourceRef refResult = ResourceManager.Instance.getResource (_param.path);
+			Assert.IsNotNull (refResult);
+			Assert.AreEqual (0, finished); 
+			Assert.AreEqual (1, error); 
+
+
+			ResourceManager.Instance.delResource (_param.path);
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+			refResult = ResourceManager.Instance.getResource (_param.path);
+			Assert.IsNull (refResult);
+
+			hashSetErrorUnserializer.Clear ();
+
 		}
 		[Test]
 		public void MuiltyWithAllError ()
 		{
+			Dictionary<string,TestCounter> dictCounter = new Dictionary<string, TestCounter> ();
+			List<TestParam> lstParams = new List<TestParam> ();		
+			int resources = RandomData.Random.Next (5, 10);
+			for (int i = 0; i < resources; i++) {
+				int count = RandomData.Random.Next (2, 5);
+				TestParam _param = new TestParam ("NDObject" + (i + 1).ToString ("D2"), 0, null);
+				dictParams.Add (_param.path, _param);
+				dictCounter.Add (_param.path, new TestCounter (count));
+				for (int j = 0; j < count; j++) {
+					lstParams.Add (_param);
+				}
+				downloader.AddErrorFile (_param.path);
+			}
+
+			TestParam[] arrayParams = ShufftList (lstParams);
+			for (int i = 0; i < arrayParams.Length; i++) {
+				string path = arrayParams [i].path;
+				ResourceManager.Instance.addResource (arrayParams [i].path, arrayParams [i].priority, false, (_ref) => {
+					dictCounter [_ref.Path].finished++;
+				},
+					(e) => {
+						dictCounter [path].error++;
+					});				
+			}
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			Dictionary<string,TestParam>.Enumerator eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNotNull (refResult);
+				Assert.AreEqual (dictCounter [eDictParam.Current.Key].error, refResult.Refs); 
+				Assert.AreEqual (0,dictCounter [eDictParam.Current.Key].finished); 
+			}
+
+			arrayParams = ShufftList (lstParams);
+			for (int i = 0; i < arrayParams.Length; i++) {
+				ResourceManager.Instance.delResource (arrayParams [i].path);
+			}
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNull (refResult);
+			}
+
+			downloader.ClearErrorFiles ();
 		}
 		[Test]
 		public void MuiltyWithSomeError ()
 		{
+			Dictionary<string,TestCounter> dictCounter = new Dictionary<string, TestCounter> ();
+			List<TestParam> lstParams = new List<TestParam> ();		
+			int resources = RandomData.Random.Next (5, 10);
+			for (int i = 0; i < resources; i++) {
+				int count = RandomData.Random.Next (2, 5);
+				TestParam _param = new TestParam ("NDObject" + (i + 1).ToString ("D2"), 0, null);
+				dictParams.Add (_param.path, _param);
+				dictCounter.Add (_param.path, new TestCounter (count));
+				for (int j = 0; j < count; j++) {
+					lstParams.Add (_param);
+				}
+				if (i % 2 == 0) {
+					downloader.AddErrorFile (_param.path);
+				}
+			}
+
+			TestParam[] arrayParams = ShufftList (lstParams);
+			for (int i = 0; i < arrayParams.Length; i++) {
+				string path = arrayParams [i].path;
+				ResourceManager.Instance.addResource (arrayParams [i].path, arrayParams [i].priority, false, (_ref) => {
+					dictCounter [_ref.Path].finished++;
+				},
+					(e) => {
+						dictCounter [path].error++;
+					});				
+			}
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			Dictionary<string,TestParam>.Enumerator eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNotNull (refResult);
+				if (downloader.InErrorList (eDictParam.Current.Key)) {
+					Assert.AreEqual (dictCounter [eDictParam.Current.Key].error, refResult.Refs); 
+					Assert.AreEqual (0, dictCounter [eDictParam.Current.Key].finished); 
+				} else {
+					Assert.AreEqual (dictCounter [eDictParam.Current.Key].finished, refResult.Refs); 
+					Assert.AreEqual (0, dictCounter [eDictParam.Current.Key].error); 
+				}
+			}
+
+			arrayParams = ShufftList (lstParams);
+			for (int i = 0; i < arrayParams.Length; i++) {
+				ResourceManager.Instance.delResource (arrayParams [i].path);
+			}
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNull (refResult);
+			}
+
+			downloader.ClearErrorFiles ();			
 		}
 		[Test]
 		public void ArrayWithAllError ()
 		{
+			List<string> pathes = new List<string> ();
+			int resources = RandomData.Random.Next (5, 10);
+			for (int i = 0; i < resources; i++) {
+				TestParam _param = new TestParam ("NDObject" + (i + 1).ToString ("D2"), 0, null);
+				dictParams.Add (_param.path, _param);
+				pathes.Add (_param.path);
+				downloader.AddErrorFile (_param.path);
+			}
+			string[] arrayPathes = pathes.ToArray ();	// todo:输入参数最好不区分是 List 或者 Array
+
+			int finished = 0;
+			int error = 0;
+			ResourceManager.Instance.addResources (arrayPathes, new int[]{ 0 }, true, (_ref) => {
+				finished++;
+			},
+				(e) => {
+					error++;
+				});	
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			Dictionary<string,TestParam>.Enumerator eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNotNull (refResult);
+				Assert.AreEqual (1, error);
+				Assert.AreEqual (0, finished);
+				Assert.IsFalse (string.IsNullOrEmpty (refResult.Error));
+			}
+
+			ResourceManager.Instance.delResources (arrayPathes);
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNull (refResult);
+			}		
+			downloader.ClearErrorFiles ();		
 		}
 		[Test]
 		public void ArrayWithSomeError ()
 		{
+			List<string> pathes = new List<string> ();
+			int resources = RandomData.Random.Next (5, 10);
+			for (int i = 0; i < resources; i++) {
+				TestParam _param = new TestParam ("NDObject" + (i + 1).ToString ("D2"), 0, null);
+				dictParams.Add (_param.path, _param);
+				pathes.Add (_param.path);
+				if (i % 2 == 0) {
+					downloader.AddErrorFile (_param.path);
+				}
+			}
+			string[] arrayPathes = pathes.ToArray ();	// todo:输入参数最好不区分是 List 或者 Array
+
+			int error = 0;
+			int finished = 0;
+			ResourceManager.Instance.addResources (arrayPathes, new int[]{ 0 }, true, (_ref) => {
+				finished ++;
+			},
+				(e) => {
+					error++;
+				});	
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			Dictionary<string,TestParam>.Enumerator eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNotNull (refResult);
+				Assert.AreEqual (1, error);
+				Assert.AreEqual (0, finished);
+				if (downloader.InErrorList (eDictParam.Current.Key)) {
+					Assert.IsFalse (string.IsNullOrEmpty (refResult.Error));
+				} else {
+					Assert.IsTrue (string.IsNullOrEmpty (refResult.Error));
+				}
+			}
+
+			ResourceManager.Instance.delResources (arrayPathes);
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNull (refResult);
+			}		
+			downloader.ClearErrorFiles ();				
 		}
 		[Test]
 		public void LimitedProcessor ()
 		{
+			List<string> pathes = new List<string> ();
+			int resources = ResourceManager.NumberOfProcessor * 3;
+			for (int i = 0; i < resources; i++) {
+				TestParam _param = new TestParam ("NDObject" + (i + 1).ToString ("D2"), 0, null);
+				dictParams.Add (_param.path, _param);
+				pathes.Add (_param.path);
+			}
+			string[] arrayPathes = pathes.ToArray ();	// todo:输入参数最好不区分是 List 或者 Array
+
+			int finished = 0;
+			int error = 0;
+			ResourceManager.Instance.addResources (arrayPathes, new int[]{ 0 }, true, (_ref) => {
+				finished++;
+			},
+				(e) => {
+					error++;
+				});	
+
+			int total = resources;
+			int processed = 0;
+			for (int i = 0; i < resources / ResourceManager.NumberOfProcessor; i++) {
+				int left = ResourceManager.Instance.UpdateLoop ();
+				processed += ResourceManager.NumberOfProcessor;
+				Assert.AreEqual (left, total - processed);
+			}
+			Assert.AreEqual (processed, total);
+
+			Dictionary<string,TestParam>.Enumerator eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNotNull (refResult);
+			}
+
+			ResourceManager.Instance.delResources (arrayPathes);
+			while (ResourceManager.Instance.UpdateLoop () > 0)
+				;
+
+			eDictParam = dictParams.GetEnumerator ();
+			while (eDictParam.MoveNext ()) {
+				ResourceRef refResult = ResourceManager.Instance.getResource (eDictParam.Current.Key);
+				Assert.IsNull (refResult);
+			}
 		}
 	}
 }

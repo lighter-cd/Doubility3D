@@ -15,7 +15,8 @@ using UnitTest.Doubility3D;
 
 namespace UnitTest.Doubility3D.Resource.Saver
 {
-    public class ClipSaverTest
+	[TestFixture]
+	public class ClipSaverTest
     {
         AssetBundle ab;
         UnityEngine.AnimationClip originClip;

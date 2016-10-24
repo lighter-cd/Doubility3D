@@ -24,11 +24,6 @@ namespace Doubility3D.Resource.Manager
 		Error,
 	}
 
-	public interface IDepencesManager {
-		ResourceRef[] addResources (string[] urls, int[] priorities, bool bAsync, Action<ResourceRef[]> actComplate, Action<Exception> actError);
-		void delResources (string[] urls);
-	}
-
 	/// <summary>
 	/// Resource reference.
 	/// 依赖于 DownloaderFactory
@@ -40,13 +35,13 @@ namespace Doubility3D.Resource.Manager
 		string path;
 		int refs;
 		string[] dependences;
-		IDepencesManager depencesManager;
+		IResourceManager depencesManager;
 		List<Promise<ResourceRef>> lstPromises = new List<Promise<ResourceRef>> ();
 
 		public delegate void ComplatedHandle(ResourceRef _ref);
 		public event ComplatedHandle ComplatedEvent = null;
 
-		public ResourceRef (string _path, IDepencesManager _depencesManager)
+		public ResourceRef (string _path, IResourceManager _depencesManager)
 		{
 			path = _path;
 			State = ResourceState.WaitingInQueue;
@@ -86,7 +81,7 @@ namespace Doubility3D.Resource.Manager
 		internal string[] Dependences { get { return dependences; } }
 
 		private ResourceState State { get; set; }
-		private string Error { get; set; }
+		public string Error { get; private set; }
 
 
 		public void Start ()
@@ -115,7 +110,7 @@ namespace Doubility3D.Resource.Manager
 				yield break;
 			}
 
-			if (dependences == null) {
+			if (dependences == null || dependences.Length == 0) {
 				State = ResourceState.Complated;
 				OnComplated ();
 				yield break;
@@ -176,7 +171,7 @@ namespace Doubility3D.Resource.Manager
 			if (State != ResourceState.Error) {
 				promise.Resolve (this);
 			} else {
-				promise.Reject (new Exception (Path + " Load Error."));
+				promise.Reject (new Exception (Path + ":" + Error));
 			}
 
 		}

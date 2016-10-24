@@ -11,6 +11,7 @@ using LitJson;
 
 namespace UnitTest.Doubility3D.Resource.Manager
 {
+	[TestFixture]
 	public class ShaderManagerTest
 	{
 		string oldShaderDict;

@@ -11,6 +11,7 @@ namespace UnitTest.Doubility3D.Resource.Downloader
 	/// WWW downloader test.
 	/// 使用了 files:/// 模拟了 www ,不需要真正的 http 服务器。
 	/// </summary>
+	[TestFixture]
 	public class WWWDownloaderTest
 	{
 		string url;

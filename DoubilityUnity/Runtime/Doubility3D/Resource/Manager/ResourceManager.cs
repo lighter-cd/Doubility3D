@@ -25,7 +25,12 @@ namespace Doubility3D.Resource.Manager
 		}
 	}
 
-	public class ResourceManager : IDepencesManager
+	public interface IResourceManager {
+		ResourceRef[] addResources (string[] urls, int[] priorities, bool bAsync, Action<ResourceRef[]> actComplate, Action<Exception> actError);
+		void delResources (string[] urls);
+	}
+
+	public class ResourceManager : IResourceManager
 	{
 		static private ResourceManager _instance = null;
 		static public int NumberOfProcessor = 4;
@@ -48,10 +53,10 @@ namespace Doubility3D.Resource.Manager
 
 		public delegate void ResourceHandle(ResourceRef _ref,Exception e);
 		public delegate void ResourceArrayHandle(ResourceRef[] _ref,Exception e);
-		public event ResourceHandle OnResourceComplated = null;
+		/*public event ResourceHandle OnResourceComplated = null;
 		public event ResourceArrayHandle OnResourceArrayComplated = null;
 		public event ResourceHandle OnResourceError = null;
-		public event ResourceArrayHandle OnResourceArrayError = null;
+		public event ResourceArrayHandle OnResourceArrayError = null;*/
 
 		private ResourceManager ()
 		{
